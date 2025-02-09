@@ -6,11 +6,11 @@
   <title>Yurie</title>
   <!-- Importing the Google Font "Roboto" -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-
+  
   <!-- Chatbot Widget Scripts -->
   <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
   <script src="https://files.bpcontent.cloud/2025/02/01/23/20250201230052-W386CTHX.js"></script>
-
+  
   <style>
     /* CSS Reset */
     *, *::before, *::after {
@@ -31,7 +31,6 @@
       --timeline-line: #ddd;
       --toggle-bg: #ccc;
     }
-    /* Dark mode overrides */
     .dark {
       --primary-color: #89b4f8;
       --secondary-color: #b4befe;
@@ -52,16 +51,9 @@
       line-height: 1.6;
       transition: background 0.3s, color 0.3s;
     }
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-    h1, h2, h3 {
-      margin-bottom: 10px;
-    }
-    p {
-      margin-bottom: 15px;
-    }
+    a { text-decoration: none; color: inherit; }
+    h1, h2, h3 { margin-bottom: 10px; }
+    p { margin-bottom: 15px; }
     
     /* Header Styling */
     header {
@@ -69,7 +61,6 @@
       color: #fff;
       text-align: center;
       padding: 40px 20px;
-      margin-bottom: 20px;
       position: relative;
     }
     header h1 {
@@ -105,12 +96,8 @@
       height: 16px;
       fill: var(--primary-color);
     }
-    .toggle-switch .sun-icon {
-      left: 8px;
-    }
-    .toggle-switch .moon-icon {
-      right: 8px;
-    }
+    .toggle-switch .sun-icon { left: 8px; }
+    .toggle-switch .moon-icon { right: 8px; }
     .toggle-switch .switch-knob {
       position: absolute;
       top: 2px;
@@ -122,98 +109,100 @@
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       transition: transform 0.3s;
     }
-    input[type="checkbox"] {
-      display: none;
-    }
+    input[type="checkbox"] { display: none; }
     input[type="checkbox"]:checked + .toggle-switch .switch-knob {
       transform: translateX(30px);
     }
     
-    /* Timeline Container */
+    /* Minimal & Aesthetic Timeline Layout */
     .timeline {
       position: relative;
-      max-width: 1100px;
-      margin: 0 auto;
+      max-width: 800px;
+      margin: 40px auto;
       padding: 20px 0;
     }
-    /* Vertical Timeline Line */
-    .timeline::after {
+    /* Central vertical line */
+    .timeline::before {
       content: "";
       position: absolute;
-      width: 4px;
-      background: var(--timeline-line);
       top: 0;
       bottom: 0;
       left: 50%;
+      width: 2px;
+      background: var(--timeline-line);
       transform: translateX(-50%);
-      transition: background 0.3s;
     }
-    
-    /* Timeline Item Container */
-    .container {
-      padding: 20px 40px;
+    /* Timeline items */
+    .timeline-item {
       position: relative;
       width: 50%;
+      padding: 20px 40px;
     }
-    /* Left Side Items */
-    .container.left {
+    /* Alternate left/right positioning */
+    .timeline-item:nth-child(odd) {
       left: 0;
+      text-align: right;
     }
-    /* Right Side Items */
-    .container.right {
+    .timeline-item:nth-child(even) {
       left: 50%;
+      text-align: left;
     }
-    
-    /* Timeline Item Content */
-    .content {
+    /* Timeline markers */
+    .timeline-item::before {
+      content: "";
+      position: absolute;
+      top: 30px;
+      width: 12px;
+      height: 12px;
+      background: var(--primary-color);
+      border: 2px solid var(--card-bg);
+      border-radius: 50%;
+      z-index: 1;
+    }
+    .timeline-item:nth-child(odd)::before {
+      right: -6px;
+    }
+    .timeline-item:nth-child(even)::before {
+      left: -6px;
+    }
+    /* Timeline content cards */
+    .timeline-content {
       background: var(--card-bg);
       padding: 20px;
       border-radius: 8px;
-      position: relative;
       box-shadow: 0 2px 10px var(--card-shadow);
-      transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
-    .content:hover {
+    .timeline-content:hover {
       transform: translateY(-5px);
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    .timeline-date {
+      font-size: 0.9em;
+      color: var(--primary-color);
+      font-weight: 500;
+      margin-bottom: 8px;
+      display: block;
     }
     
-    /* Timeline Circle Indicator */
-    .container::before {
-      content: "";
-      position: absolute;
-      width: 16px;
-      height: 16px;
-      background: var(--card-bg);
-      border: 4px solid var(--primary-color);
-      top: 30px;
-      border-radius: 50%;
-      z-index: 1;
-      transition: background 0.3s, border-color 0.3s;
-    }
-    .container.left::before {
-      right: -8px;
-    }
-    .container.right::before {
-      left: -8px;
-    }
-    
-    /* Responsive Adjustments */
+    /* Responsive Design */
     @media screen and (max-width: 768px) {
-      .timeline::after {
+      .timeline {
+        max-width: 100%;
+        padding: 20px;
+      }
+      .timeline::before {
         left: 20px;
       }
-      .container {
+      .timeline-item {
         width: 100%;
         padding-left: 60px;
         padding-right: 25px;
+        text-align: left;
         margin-bottom: 20px;
       }
-      .container.right {
-        left: 0%;
-      }
-      .container::before {
-        left: 8px;
+      .timeline-item::before {
+        left: 16px;
       }
     }
   </style>
@@ -251,32 +240,31 @@
   
   <div class="timeline">
     <!-- Timeline Item 1 -->
-    <div class="container left">
-      <div class="content">
-        <h2>January 2025</h2>
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <span class="timeline-date">January 2025</span>
         <h3>Post Title One</h3>
         <p>This is the content for the first blog post. It includes details about the topic along with interesting insights.</p>
       </div>
     </div>
     
     <!-- Timeline Item 2 -->
-    <div class="container right">
-      <div class="content">
-        <h2>February 2025</h2>
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <span class="timeline-date">February 2025</span>
         <h3>Post Title Two</h3>
         <p>This is the content for the second blog post. More engaging content is provided here with a neat timeline layout.</p>
       </div>
     </div>
     
     <!-- Timeline Item 3 -->
-    <div class="container left">
-      <div class="content">
-        <h2>March 2025</h2>
+    <div class="timeline-item">
+      <div class="timeline-content">
+        <span class="timeline-date">March 2025</span>
         <h3>Post Title Three</h3>
         <p>Here is more content for another blog post, continuing the timeline theme and sharing useful information.</p>
       </div>
     </div>
-    <!-- Add additional timeline items as needed -->
   </div>
   
   <script>
