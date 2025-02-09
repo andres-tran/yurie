@@ -10,217 +10,217 @@
   <style>
     /* CSS Reset */
     *, *::before, *::after {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
     }
 
-    /* CSS Variables for Light and Dark Modes (Black & White Only) */
+    /* CSS Variables for Light and Dark Modes */
     :root {
-      /* Light mode */
-      --primary-color: #000;         /* Used for markers and accents */
-      --background-color: #fff;        /* White background */
-      --text-color: #000;              /* Black text */
-      --card-bg: #fff;                 /* Card background remains white */
-      --card-shadow: rgba(0, 0, 0, 0.1); /* Subtle shadow */
-      --timeline-line: #000;           /* Black timeline line */
-      --toggle-bg: #ccc;               /* Gray toggle background */
+        /* Light mode */
+        --primary-color: #000;         /* Used for markers and accents */
+        --background-color: #fff;        /* White background */
+        --text-color: #000;              /* Black text */
+        --card-bg: #fff;                 /* Card background remains white */
+        --card-shadow: rgba(0, 0, 0, 0.1); /* Subtle shadow */
+        --timeline-line: #000;           /* Black timeline line */
+        --toggle-bg: #ccc;               /* Gray toggle background */
     }
     .dark {
-      /* Dark mode (Pitch Black) */
-      --primary-color: #fff;         /* White accents */
-      --background-color: #000;        /* Pitch black background */
-      --text-color: #fff;              /* White text */
-      --card-bg: #000;                 /* Cards become pitch black */
-      --card-shadow: rgba(255, 255, 255, 0.1); /* Subtle white glow shadow */
-      --timeline-line: #fff;           /* White timeline line */
-      --toggle-bg: #444;               /* Darker gray toggle background */
+        /* Dark mode (Pitch Black) */
+        --primary-color: #fff;         /* White accents */
+        --background-color: #000;        /* Pitch black background */
+        --text-color: #fff;              /* White text */
+        --card-bg: #000;                 /* Cards become pitch black */
+        --card-shadow: rgba(255, 255, 255, 0.1); /* Subtle white glow shadow */
+        --timeline-line: #fff;           /* White timeline line */
+        --toggle-bg: #444;               /* Darker gray toggle background */
     }
 
     /* Global Styles */
     body {
-      font-family: 'Inter', sans-serif;
-      background: var(--background-color);
-      color: var(--text-color);
-      line-height: 1.6;
-      transition: background 0.3s, color 0.3s;
+        font-family: 'Inter', sans-serif;
+        background: var(--background-color);
+        color: var(--text-color);
+        line-height: 1.6;
+        transition: background 0.3s, color 0.3s;
     }
     a {
-      text-decoration: none;
-      color: inherit;
+        text-decoration: none;
+        color: inherit;
     }
     h1, h2, h3 {
-      margin-bottom: 10px;
+        margin-bottom: 10px;
     }
     p {
-      margin-bottom: 15px;
+        margin-bottom: 15px;
     }
 
     /* Header Styling */
     header {
-      background: var(--background-color);
-      color: var(--text-color);
-      text-align: center;
-      padding: 40px 20px;
-      position: relative;
-      border-bottom: 2px solid var(--primary-color);
+        background: var(--background-color);
+        color: var(--text-color);
+        text-align: center;
+        padding: 40px 20px;
+        position: relative;
+        border-bottom: 2px solid var(--primary-color);
     }
     header h1 {
-      font-size: 2.5em;
-      font-weight: 700;
+        font-size: 2.5em;
+        font-weight: 700;
     }
     header p {
-      font-size: 1.1em;
-      opacity: 0.8;
+        font-size: 1.1em;
+        opacity: 0.8;
     }
 
     /* Redesigned Dark/Light Mode Toggle */
     .mode-toggle {
-      position: absolute;
-      top: 20px;
-      right: 20px;
+        position: absolute;
+        top: 20px;
+        right: 20px;
     }
     .toggle-switch {
-      display: block;
-      width: 60px;
-      height: 30px;
-      background: var(--toggle-bg);
-      border-radius: 15px;
-      position: relative;
-      cursor: pointer;
-      transition: background 0.3s;
+        display: block;
+        width: 60px;
+        height: 30px;
+        background: var(--toggle-bg);
+        border-radius: 15px;
+        position: relative;
+        cursor: pointer;
+        transition: background 0.3s;
     }
     .toggle-switch .icon {
-      position: absolute;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 16px;
-      height: 16px;
-      fill: var(--primary-color);
+        position: absolute;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 16px;
+        height: 16px;
+        fill: var(--primary-color);
     }
     .toggle-switch .sun-icon {
-      left: 8px;
+        left: 8px;
     }
     .toggle-switch .moon-icon {
-      right: 8px;
+        right: 8px;
     }
     .toggle-switch .switch-knob {
-      position: absolute;
-      top: 2px;
-      left: 2px;
-      width: 26px;
-      height: 26px;
-      background: var(--background-color);
-      border-radius: 50%;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-      transition: transform 0.3s;
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 26px;
+        height: 26px;
+        background: var(--background-color);
+        border-radius: 50%;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        transition: transform 0.3s;
     }
     input[type="checkbox"] {
-      display: none;
+        display: none;
     }
     input[type="checkbox"]:checked + .toggle-switch .switch-knob {
-      transform: translateX(30px);
+        transform: translateX(30px);
     }
 
     /* Minimal & Aesthetic Timeline Layout */
     .timeline {
-      position: relative;
-      max-width: 800px;
-      margin: 40px auto;
-      padding: 20px 0;
+        position: relative;
+        max-width: 800px;
+        margin: 40px auto;
+        padding: 20px 0;
     }
     /* Central vertical line */
     .timeline::before {
-      content: "";
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 50%;
-      width: 2px;
-      background: var(--timeline-line);
-      transform: translateX(-50%);
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        width: 2px;
+        background: var(--timeline-line);
+        transform: translateX(-50%);
     }
     /* Timeline items */
     .timeline-item {
-      position: relative;
-      width: 50%;
-      padding: 20px 40px;
+        position: relative;
+        width: 50%;
+        padding: 20px 40px;
     }
     /* Alternate left/right positioning for larger screens */
     .timeline-item:nth-child(odd) {
-      left: 0;
-      text-align: right;
+        left: 0;
+        text-align: right;
     }
     .timeline-item:nth-child(even) {
-      left: 50%;
-      text-align: left;
+        left: 50%;
+        text-align: left;
     }
     /* Timeline markers */
     .timeline-item::before {
-      content: "";
-      position: absolute;
-      top: 30px;
-      width: 12px;
-      height: 12px;
-      background: var(--primary-color);
-      border: 2px solid var(--card-bg);
-      border-radius: 50%;
-      z-index: 1;
+        content: "";
+        position: absolute;
+        top: 30px;
+        width: 12px;
+        height: 12px;
+        background: var(--primary-color);
+        border: 2px solid var(--card-bg);
+        border-radius: 50%;
+        z-index: 1;
     }
     .timeline-item:nth-child(odd)::before {
-      right: -6px;
+        right: -6px;
     }
     .timeline-item:nth-child(even)::before {
-      left: -6px;
+        left: -6px;
     }
     /* Timeline content cards */
     .timeline-content {
-      background: var(--card-bg);
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 2px 10px var(--card-shadow);
-      transition: transform 0.3s ease, box-shadow 0.3s ease;
+        background: var(--card-bg);
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px var(--card-shadow);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
     .timeline-content:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+        transform: translateY(-5px);
+        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
     }
     .timeline-date {
-      font-size: 0.9em;
-      color: var(--primary-color);
-      font-weight: 500;
-      margin-bottom: 8px;
-      display: block;
+        font-size: 0.9em;
+        color: var(--primary-color);
+        font-weight: 500;
+        margin-bottom: 8px;
+        display: block;
     }
 
     /* Responsive Design for Mobile Devices */
     @media screen and (max-width: 768px) {
-      .timeline {
-        max-width: 100%;
-        margin: 20px auto;
-        padding: 20px 10px;
-      }
-      /* Shift vertical line to the left side */
-      .timeline::before {
-        left: 20px;
-        transform: none;
-      }
-      .timeline-item {
-        width: 100%;
-        padding: 20px 20px 20px 60px;
-        text-align: left;
-        margin-bottom: 20px;
-        position: relative;
-      }
-      /* Remove left/right positioning */
-      .timeline-item:nth-child(odd),
-      .timeline-item:nth-child(even) {
-        left: 0;
-      }
-      /* Adjust marker to align with the vertical line */
-      .timeline-item::before {
-        left: 12px;
-      }
+        .timeline {
+            max-width: 100%;
+            margin: 20px auto;
+            padding: 20px 10px;
+        }
+        /* Shift vertical line to the left side */
+        .timeline::before {
+            left: 20px;
+            transform: none;
+        }
+        .timeline-item {
+            width: 100%;
+            padding: 20px 20px 20px 60px;
+            text-align: left;
+            margin-bottom: 20px;
+            position: relative;
+        }
+        /* Remove left/right positioning */
+        .timeline-item:nth-child(odd),
+        .timeline-item:nth-child(even) {
+            left: 0;
+        }
+        /* Adjust marker to align with the vertical line */
+        .timeline-item::before {
+            left: 12px;
+        }
     }
   </style>
 </head>
@@ -228,7 +228,7 @@
   <header>
     <h1>Yurie</h1>
     <p>Sharing stories, one timeline at a time</p>
-    <!-- Redesigned Dark/Light Mode Toggle -->
+    <!-- Dark/Light Mode Toggle -->
     <div class="mode-toggle">
       <input type="checkbox" id="modeSwitch" />
       <label for="modeSwitch" class="toggle-switch">
@@ -254,7 +254,7 @@
       </label>
     </div>
   </header>
-  
+
   <div class="timeline">
     <!-- Timeline Item 1 -->
     <div class="timeline-item">
@@ -264,7 +264,6 @@
         <p>This is the content for the first blog post. It includes details about the topic along with interesting insights.</p>
       </div>
     </div>
-    
     <!-- Timeline Item 2 -->
     <div class="timeline-item">
       <div class="timeline-content">
@@ -273,7 +272,6 @@
         <p>This is the content for the second blog post. More engaging content is provided here with a neat timeline layout.</p>
       </div>
     </div>
-    
     <!-- Timeline Item 3 -->
     <div class="timeline-item">
       <div class="timeline-content">
@@ -283,11 +281,12 @@
       </div>
     </div>
   </div>
-  
-  <!-- Chatbot Widget Scripts moved to the bottom with defer -->
+
+  <!-- Chatbot Widget Scripts -->
   <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js" defer></script>
   <script src="https://files.bpcontent.cloud/2025/02/01/23/20250201230052-W386CTHX.js" defer></script>
   
+  <!-- Dark/Light Mode JavaScript -->
   <script>
     // Dark/Light mode toggle handling
     const modeSwitch = document.getElementById('modeSwitch');
@@ -295,18 +294,18 @@
     
     // Check for a saved theme in localStorage
     if (localStorage.getItem('theme') === 'dark') {
-      bodyElement.classList.add('dark');
-      modeSwitch.checked = true;
+        bodyElement.classList.add('dark');
+        modeSwitch.checked = true;
     }
     
     modeSwitch.addEventListener('change', () => {
-      if (modeSwitch.checked) {
-        bodyElement.classList.add('dark');
-        localStorage.setItem('theme', 'dark');
-      } else {
-        bodyElement.classList.remove('dark');
-        localStorage.setItem('theme', 'light');
-      }
+        if (modeSwitch.checked) {
+            bodyElement.classList.add('dark');
+            localStorage.setItem('theme', 'dark');
+        } else {
+            bodyElement.classList.remove('dark');
+            localStorage.setItem('theme', 'light');
+        }
     });
   </script>
 </body>
