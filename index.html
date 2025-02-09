@@ -4,9 +4,9 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Yurie</title>
-  <!-- Importing the Google Font "Roboto" -->
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-  
+  <!-- Importing the Google Font "Inter" -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
+
   <style>
     /* CSS Reset */
     *, *::before, *::after {
@@ -14,50 +14,56 @@
       padding: 0;
       box-sizing: border-box;
     }
-    
-    /* CSS Variables for Light and Dark Modes */
+
+    /* CSS Variables for Light and Dark Modes (Black & White Only) */
     :root {
-      --primary-color: #667eea;
-      --secondary-color: #764ba2;
-      --background-color: #f7f9fc;
-      --text-color: #333;
-      --header-bg: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-      --card-bg: #fff;
-      --card-shadow: rgba(0, 0, 0, 0.1);
-      --timeline-line: #ddd;
-      --toggle-bg: #ccc;
+      /* Light mode */
+      --primary-color: #000;         /* Used for markers and accents */
+      --background-color: #fff;        /* White background */
+      --text-color: #000;              /* Black text */
+      --card-bg: #fff;                 /* Card background remains white */
+      --card-shadow: rgba(0, 0, 0, 0.1); /* Subtle shadow */
+      --timeline-line: #000;           /* Black timeline line */
+      --toggle-bg: #ccc;               /* Gray toggle background */
     }
     .dark {
-      --primary-color: #89b4f8;
-      --secondary-color: #b4befe;
-      --background-color: #1e1e2e;
-      --text-color: #ddd;
-      --header-bg: linear-gradient(135deg, #3e3e55, #2e2e45);
-      --card-bg: #2e2e3e;
-      --card-shadow: rgba(0, 0, 0, 0.5);
-      --timeline-line: #555;
-      --toggle-bg: #444;
+      /* Dark mode (Pitch Black) */
+      --primary-color: #fff;         /* White accents */
+      --background-color: #000;        /* Pitch black background */
+      --text-color: #fff;              /* White text */
+      --card-bg: #000;                 /* Cards become pitch black */
+      --card-shadow: rgba(255, 255, 255, 0.1); /* Subtle white glow shadow */
+      --timeline-line: #fff;           /* White timeline line */
+      --toggle-bg: #444;               /* Darker gray toggle background */
     }
-    
+
     /* Global Styles */
     body {
-      font-family: 'Roboto', sans-serif;
+      font-family: 'Inter', sans-serif;
       background: var(--background-color);
       color: var(--text-color);
       line-height: 1.6;
       transition: background 0.3s, color 0.3s;
     }
-    a { text-decoration: none; color: inherit; }
-    h1, h2, h3 { margin-bottom: 10px; }
-    p { margin-bottom: 15px; }
-    
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    h1, h2, h3 {
+      margin-bottom: 10px;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+
     /* Header Styling */
     header {
-      background: var(--header-bg);
-      color: #fff;
+      background: var(--background-color);
+      color: var(--text-color);
       text-align: center;
       padding: 40px 20px;
       position: relative;
+      border-bottom: 2px solid var(--primary-color);
     }
     header h1 {
       font-size: 2.5em;
@@ -65,9 +71,9 @@
     }
     header p {
       font-size: 1.1em;
-      opacity: 0.9;
+      opacity: 0.8;
     }
-    
+
     /* Redesigned Dark/Light Mode Toggle */
     .mode-toggle {
       position: absolute;
@@ -92,24 +98,30 @@
       height: 16px;
       fill: var(--primary-color);
     }
-    .toggle-switch .sun-icon { left: 8px; }
-    .toggle-switch .moon-icon { right: 8px; }
+    .toggle-switch .sun-icon {
+      left: 8px;
+    }
+    .toggle-switch .moon-icon {
+      right: 8px;
+    }
     .toggle-switch .switch-knob {
       position: absolute;
       top: 2px;
       left: 2px;
       width: 26px;
       height: 26px;
-      background: var(--card-bg);
+      background: var(--background-color);
       border-radius: 50%;
       box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       transition: transform 0.3s;
     }
-    input[type="checkbox"] { display: none; }
+    input[type="checkbox"] {
+      display: none;
+    }
     input[type="checkbox"]:checked + .toggle-switch .switch-knob {
       transform: translateX(30px);
     }
-    
+
     /* Minimal & Aesthetic Timeline Layout */
     .timeline {
       position: relative;
@@ -134,7 +146,7 @@
       width: 50%;
       padding: 20px 40px;
     }
-    /* Alternate left/right positioning */
+    /* Alternate left/right positioning for larger screens */
     .timeline-item:nth-child(odd) {
       left: 0;
       text-align: right;
@@ -180,25 +192,34 @@
       margin-bottom: 8px;
       display: block;
     }
-    
-    /* Responsive Design */
+
+    /* Responsive Design for Mobile Devices */
     @media screen and (max-width: 768px) {
       .timeline {
         max-width: 100%;
-        padding: 20px;
+        margin: 20px auto;
+        padding: 20px 10px;
       }
+      /* Shift vertical line to the left side */
       .timeline::before {
         left: 20px;
+        transform: none;
       }
       .timeline-item {
         width: 100%;
-        padding-left: 60px;
-        padding-right: 25px;
+        padding: 20px 20px 20px 60px;
         text-align: left;
         margin-bottom: 20px;
+        position: relative;
       }
+      /* Remove left/right positioning */
+      .timeline-item:nth-child(odd),
+      .timeline-item:nth-child(even) {
+        left: 0;
+      }
+      /* Adjust marker to align with the vertical line */
       .timeline-item::before {
-        left: 16px;
+        left: 12px;
       }
     }
   </style>
