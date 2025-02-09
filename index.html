@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>My Timeline Blog</title>
-  <!-- Importing a modern Google Font -->
+  <title>Yurie</title>
+  <!-- Importing the Google Font "Roboto" -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
   <style>
     /* CSS Reset */
@@ -13,7 +13,7 @@
       padding: 0;
       box-sizing: border-box;
     }
-
+    
     /* CSS Variables for Light and Dark Modes */
     :root {
       --primary-color: #667eea;
@@ -24,6 +24,7 @@
       --card-bg: #fff;
       --card-shadow: rgba(0, 0, 0, 0.1);
       --timeline-line: #ddd;
+      --toggle-bg: #ccc;
     }
     /* Dark mode overrides */
     .dark {
@@ -35,8 +36,9 @@
       --card-bg: #2e2e3e;
       --card-shadow: rgba(0, 0, 0, 0.5);
       --timeline-line: #555;
+      --toggle-bg: #444;
     }
-
+    
     /* Global Styles */
     body {
       font-family: 'Roboto', sans-serif;
@@ -55,8 +57,8 @@
     p {
       margin-bottom: 15px;
     }
-
-    /* Header styling */
+    
+    /* Header Styling */
     header {
       background: var(--header-bg);
       color: #fff;
@@ -73,57 +75,63 @@
       font-size: 1.1em;
       opacity: 0.9;
     }
-
-    /* Dark/Light mode toggle button styling */
+    
+    /* Redesigned Dark/Light Mode Toggle */
     .mode-toggle {
       position: absolute;
       top: 20px;
       right: 20px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      user-select: none;
     }
-    .mode-toggle input {
-      display: none;
-    }
-    .toggle-label {
-      background-color: #fff;
-      width: 50px;
-      height: 25px;
-      border-radius: 25px;
+    .toggle-switch {
+      display: block;
+      width: 60px;
+      height: 30px;
+      background: var(--toggle-bg);
+      border-radius: 15px;
       position: relative;
+      cursor: pointer;
       transition: background 0.3s;
     }
-    .toggle-label::after {
-      content: "";
+    .toggle-switch .icon {
       position: absolute;
-      width: 21px;
-      height: 21px;
-      border-radius: 50%;
-      background: var(--primary-color);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 16px;
+      height: 16px;
+      fill: var(--primary-color);
+    }
+    .toggle-switch .sun-icon {
+      left: 8px;
+    }
+    .toggle-switch .moon-icon {
+      right: 8px;
+    }
+    .toggle-switch .switch-knob {
+      position: absolute;
       top: 2px;
       left: 2px;
+      width: 26px;
+      height: 26px;
+      background: var(--card-bg);
+      border-radius: 50%;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.2);
       transition: transform 0.3s;
     }
-    /* When toggled, move the circle to the right */
-    input:checked + .toggle-label::after {
-      transform: translateX(25px);
+    input[type="checkbox"] {
+      display: none;
     }
-    .toggle-text {
-      margin-left: 10px;
-      font-size: 0.9em;
-      color: #fff;
+    input[type="checkbox"]:checked + .toggle-switch .switch-knob {
+      transform: translateX(30px);
     }
-
-    /* Timeline container */
+    
+    /* Timeline Container */
     .timeline {
       position: relative;
       max-width: 1100px;
       margin: 0 auto;
       padding: 20px 0;
     }
-    /* Vertical timeline line */
+    /* Vertical Timeline Line */
     .timeline::after {
       content: "";
       position: absolute;
@@ -135,23 +143,23 @@
       transform: translateX(-50%);
       transition: background 0.3s;
     }
-
-    /* Timeline item container */
+    
+    /* Timeline Item Container */
     .container {
       padding: 20px 40px;
       position: relative;
       width: 50%;
     }
-    /* Left side items */
+    /* Left Side Items */
     .container.left {
       left: 0;
     }
-    /* Right side items */
+    /* Right Side Items */
     .container.right {
       left: 50%;
     }
-
-    /* Timeline item content styling */
+    
+    /* Timeline Item Content */
     .content {
       background: var(--card-bg);
       padding: 20px;
@@ -164,8 +172,8 @@
       transform: translateY(-5px);
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     }
-
-    /* Timeline circle indicator */
+    
+    /* Timeline Circle Indicator */
     .container::before {
       content: "";
       position: absolute;
@@ -184,8 +192,8 @@
     .container.right::before {
       left: -8px;
     }
-
-    /* Responsive adjustments */
+    
+    /* Responsive Adjustments */
     @media screen and (max-width: 768px) {
       .timeline::after {
         left: 20px;
@@ -207,72 +215,81 @@
 </head>
 <body>
   <header>
-    <h1>My Timeline Blog</h1>
+    <h1>Yurie</h1>
     <p>Sharing stories, one timeline at a time</p>
-    <!-- Dark/Light mode toggle -->
+    <!-- Redesigned Dark/Light Mode Toggle -->
     <div class="mode-toggle">
       <input type="checkbox" id="modeSwitch" />
-      <label for="modeSwitch" class="toggle-label"></label>
-      <span class="toggle-text">Dark Mode</span>
+      <label for="modeSwitch" class="toggle-switch">
+        <span class="icon sun-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="5"></circle>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
+            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+            <line x1="1" y1="12" x2="3" y2="12"></line>
+            <line x1="21" y1="12" x2="23" y2="12"></line>
+            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+          </svg>
+        </span>
+        <span class="icon moon-icon">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.79A9 9 0 0111.21 3 7 7 0 1012 21a9 9 0 009-8.21z"></path>
+          </svg>
+        </span>
+        <span class="switch-knob"></span>
+      </label>
     </div>
   </header>
-
+  
   <div class="timeline">
     <!-- Timeline Item 1 -->
     <div class="container left">
       <div class="content">
         <h2>January 2025</h2>
         <h3>Post Title One</h3>
-        <p>
-          This is the content for the first blog post. It includes details about the topic along with interesting insights.
-        </p>
+        <p>This is the content for the first blog post. It includes details about the topic along with interesting insights.</p>
       </div>
     </div>
-
+    
     <!-- Timeline Item 2 -->
     <div class="container right">
       <div class="content">
         <h2>February 2025</h2>
         <h3>Post Title Two</h3>
-        <p>
-          This is the content for the second blog post. More engaging content is provided here with a neat timeline layout.
-        </p>
+        <p>This is the content for the second blog post. More engaging content is provided here with a neat timeline layout.</p>
       </div>
     </div>
-
+    
     <!-- Timeline Item 3 -->
     <div class="container left">
       <div class="content">
         <h2>March 2025</h2>
         <h3>Post Title Three</h3>
-        <p>
-          Here is more content for another blog post, continuing the timeline theme and sharing useful information.
-        </p>
+        <p>Here is more content for another blog post, continuing the timeline theme and sharing useful information.</p>
       </div>
     </div>
-    <!-- Add more timeline items as needed -->
+    <!-- Add additional timeline items as needed -->
   </div>
-
+  
   <script>
     const modeSwitch = document.getElementById('modeSwitch');
     const bodyElement = document.body;
-    const toggleText = document.querySelector('.toggle-text');
-
+    
     // Check for a saved theme in localStorage
     if (localStorage.getItem('theme') === 'dark') {
       bodyElement.classList.add('dark');
       modeSwitch.checked = true;
-      toggleText.textContent = 'Light Mode';
     }
-
+    
     modeSwitch.addEventListener('change', () => {
       if (modeSwitch.checked) {
         bodyElement.classList.add('dark');
-        toggleText.textContent = 'Light Mode';
         localStorage.setItem('theme', 'dark');
       } else {
         bodyElement.classList.remove('dark');
-        toggleText.textContent = 'Dark Mode';
         localStorage.setItem('theme', 'light');
       }
     });
