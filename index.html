@@ -4,47 +4,74 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>My Timeline Blog</title>
+  <!-- Importing a modern Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Basic reset */
-    * {
-      box-sizing: border-box;
-    }
-    body, html {
+    /* CSS Reset */
+    *, *::before, *::after {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f4f4f4;
+      box-sizing: border-box;
     }
+    
+    /* Global Styles */
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: #f7f9fc;
+      color: #333;
+      line-height: 1.6;
+    }
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    h1, h2, h3 {
+      margin-bottom: 10px;
+    }
+    p {
+      margin-bottom: 15px;
+    }
+    
     /* Header styling */
     header {
-      background-color: #333;
+      background: linear-gradient(135deg, #667eea, #764ba2);
       color: #fff;
-      padding: 20px;
       text-align: center;
+      padding: 40px 20px;
+      margin-bottom: 20px;
     }
+    header h1 {
+      font-size: 2.5em;
+      font-weight: 700;
+    }
+    header p {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+    
     /* Timeline container */
     .timeline {
       position: relative;
-      max-width: 1200px;
-      margin: 20px auto;
+      max-width: 1100px;
+      margin: 0 auto;
       padding: 20px 0;
     }
-    /* The vertical timeline line */
+    /* Vertical timeline line */
     .timeline::after {
-      content: '';
+      content: "";
       position: absolute;
-      width: 6px;
-      background-color: #ddd;
+      width: 4px;
+      background: #ddd;
       top: 0;
       bottom: 0;
       left: 50%;
-      margin-left: -3px;
+      transform: translateX(-50%);
     }
-    /* Timeline items container */
+    
+    /* Timeline item container */
     .container {
-      padding: 10px 40px;
+      padding: 20px 40px;
       position: relative;
-      background-color: inherit;
       width: 50%;
     }
     /* Left side items */
@@ -55,52 +82,56 @@
     .container.right {
       left: 50%;
     }
-    /* Circle indicator for timeline items */
-    .container::after {
-      content: '';
+    
+    /* Timeline item content styling */
+    .content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      position: relative;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .content:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+    
+    /* Timeline circle indicator */
+    .container::before {
+      content: "";
       position: absolute;
-      width: 25px;
-      height: 25px;
-      top: 15px;
-      background-color: #fff;
-      border: 4px solid #FF9F55;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border: 4px solid #667eea;
+      top: 30px;
       border-radius: 50%;
       z-index: 1;
     }
-    /* Position the circle on the left or right */
-    .container.left::after {
-      right: -17px;
+    .container.left::before {
+      right: -8px;
     }
-    .container.right::after {
-      left: -16px;
+    .container.right::before {
+      left: -8px;
     }
-    /* Content box styling for each timeline event */
-    .content {
-      padding: 20px 30px;
-      background-color: #fff;
-      position: relative;
-      border-radius: 6px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    /* Responsive adjustments for smaller screens */
+    
+    /* Responsive adjustments */
     @media screen and (max-width: 768px) {
-      /* Move the timeline line to the left */
       .timeline::after {
-        left: 31px;
+        left: 20px;
       }
-      /* Make timeline items full-width */
       .container {
         width: 100%;
-        padding-left: 70px;
+        padding-left: 60px;
         padding-right: 25px;
+        margin-bottom: 20px;
       }
       .container.right {
-        left: 0;
+        left: 0%;
       }
-      /* Adjust the circle position for mobile */
-      .container.left::after,
-      .container.right::after {
-        left: 15px;
+      .container::before {
+        left: 8px;
       }
     }
   </style>
@@ -109,37 +140,38 @@
 
   <header>
     <h1>My Timeline Blog</h1>
+    <p>Sharing stories, one timeline at a time</p>
   </header>
 
   <div class="timeline">
-    <!-- Blog Post 1 -->
+    <!-- Timeline Item 1 -->
     <div class="container left">
       <div class="content">
         <h2>January 2025</h2>
         <h3>Post Title One</h3>
-        <p>This is the content for the first blog post. It includes some details about the topic and other interesting insights.</p>
+        <p>This is the content for the first blog post. It includes details about the topic along with interesting insights.</p>
       </div>
     </div>
     
-    <!-- Blog Post 2 -->
+    <!-- Timeline Item 2 -->
     <div class="container right">
       <div class="content">
         <h2>February 2025</h2>
         <h3>Post Title Two</h3>
-        <p>This is the content for the second blog post. More interesting stuff goes here in a neat timeline layout.</p>
+        <p>This is the content for the second blog post. More engaging content is provided here with a neat timeline layout.</p>
       </div>
     </div>
     
-    <!-- Blog Post 3 -->
+    <!-- Timeline Item 3 -->
     <div class="container left">
       <div class="content">
         <h2>March 2025</h2>
         <h3>Post Title Three</h3>
-        <p>Here is some more content for another blog post, continuing the timeline theme and providing more useful information.</p>
+        <p>Here is more content for another blog post, continuing the timeline theme and sharing useful information.</p>
       </div>
     </div>
     
-    <!-- Add more blog posts as needed -->
+    <!-- Add more timeline items as needed -->
   </div>
 
 </body>
