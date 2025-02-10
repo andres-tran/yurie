@@ -22,8 +22,36 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Yurie</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet"></noscript>
+    <meta http-equiv="Cache-Control" content="max-age=31536000, must-revalidate">
     <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        .theme-toggle {
+            will-change: transform;
+        }
+
+        .timeline-post {
+            will-change: transform;
+        }
+
+        .timeline-content {
+            will-change: transform;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .timeline-post,
+            .timeline-content,
+            .theme-toggle {
+                transition: none !important;
+                animation: none !important;
+                transform: none !important;
+            }
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -518,7 +546,11 @@
             }
         };
 
+        let debounceTimeout;
         function toggleTheme() {
+            if (debounceTimeout) return;
+            debounceTimeout = setTimeout(() => debounceTimeout = null, 300);
+
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             const toggleButton = document.querySelector(".theme-toggle");
@@ -527,9 +559,11 @@
             toggleButton.style.transition = "transform 0.3s ease";
             toggleButton.style.transform = "rotate(180deg)";
             
-            setTimeout(() => {
-                toggleButton.style.transform = "rotate(0deg)";
-            }, 300);
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    toggleButton.style.transform = "rotate(0deg)";
+                }, 300);
+            });
             
             ThemeManager.applyTheme(newTheme);
         }
@@ -538,19 +572,16 @@
             const filter = document.querySelector('.filter-select').value;
             const posts = document.querySelectorAll('.timeline-post');
             let found = false;
-            
-            posts.forEach(post => {
-                post.classList.remove('show');
-                if (filter === 'all' || post.getAttribute('data-category') === filter) {
-                    found = true;
-                    requestAnimationFrame(() => {
-                        post.classList.add('show');
-                    });
-                }
+
+            requestAnimationFrame(() => {
+                posts.forEach(post => {
+                    const matches = filter === 'all' || post.getAttribute('data-category') === filter;
+                    post.classList.toggle('show', matches);
+                    found ||= matches;
+                });
+
+                document.querySelector('.no-results').style.display = found ? 'none' : 'block';
             });
-            
-            const noResults = document.querySelector('.no-results');
-            noResults.style.display = found ? 'none' : 'block';
         }
 
         // Initialize the page
@@ -559,5 +590,7 @@
             filterPosts();
         });
     </script>
+    <script defer src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
+    <script defer src="https://files.bpcontent.cloud/2025/02/01/23/20250201230052-W386CTHX.js"></script>
 </body>
 </html>
