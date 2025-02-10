@@ -5,8 +5,7 @@
     <!-- Favicons -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2340E0D0'/><stop offset='100%' style='stop-color:%230000CD'/></linearGradient><filter id='glow'><feGaussianBlur stdDeviation='3' result='coloredBlur'/><feMerge><feMergeNode in='coloredBlur'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><rect width='100' height='100' rx='20' fill='url(%23bg)'/><path d='M50 25 L60 45 L40 45 Z M50 75 L60 55 L40 55 Z M25 50 L45 60 L45 40 Z M75 50 L55 60 L55 40 Z' fill='%2387CEEB' filter='url(%23glow)'/></svg>" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2340E0D0'/><stop offset='100%' style='stop-color:%230000CD'/></linearGradient><filter id='glow'><feGaussianBlur stdDeviation='3' result='coloredBlur'/><feMerge><feMergeNode in='coloredBlur'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><rect width='100' height='100' rx='20' fill='url(%23bg)'/><path d='M50 25 L60 45 L40 45 Z M50 75 L60 55 L40 55 Z M25 50 L45 60 L45 40 Z M75 50 L55 60 L55 40 Z' fill='%2387CEEB' filter='url(%23glow)'/></svg>">
-    <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#ffffff">
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -450,10 +449,16 @@
 
     <script>
         // Load theme from localStorage or default to light
+        function updateMetaThemeColor(theme) {
+            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+            metaThemeColor.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+        }
+
         function loadTheme() {
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
             updateThemeIcon(savedTheme);
+            updateMetaThemeColor(savedTheme);
         }
 
         function updateThemeIcon(theme) {
@@ -478,9 +483,10 @@
             // Save theme to localStorage
             localStorage.setItem('theme', newTheme);
             
-            // Update DOM
+            // Update DOM and metadata
             html.setAttribute('data-theme', newTheme);
             updateThemeIcon(newTheme);
+            updateMetaThemeColor(newTheme);
         }
 
         function filterPosts() {
