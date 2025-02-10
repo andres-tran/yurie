@@ -521,6 +521,16 @@
         function toggleTheme() {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            const toggleButton = document.querySelector(".theme-toggle");
+            
+            // Add rotation animation
+            toggleButton.style.transition = "transform 0.3s ease";
+            toggleButton.style.transform = "rotate(180deg)";
+            
+            setTimeout(() => {
+                toggleButton.style.transform = "rotate(0deg)";
+            }, 300);
+            
             ThemeManager.applyTheme(newTheme);
         }
 
