@@ -2,9 +2,6 @@
 <html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <!-- Favicons -->
-    <link rel="icon" href="attached_assets/Icon%20-%20Icon.png" type="image/png" sizes="80x80">
-    <link rel="apple-touch-icon" href="attached_assets/Icon%20-%20Icon.png" sizes="180x180">
     <script>
         (function() {
             let savedTheme = localStorage.getItem('theme');
@@ -235,33 +232,7 @@
             margin: 0 auto;
         }
 
-        @keyframes logoAnimation {
-            0% {
-                opacity: 0;
-                transform: translateY(-20px) rotate(0deg);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) rotate(360deg);
-            }
-        }
-
-        .header-logo {
-            width: 80px;
-            height: 80px;
-            margin-bottom: 1.5rem;
-            filter: drop-shadow(0 0 10px var(--accent-glow));
-            animation: logoAnimation 2s ease-out forwards, logoRotate 8s linear infinite;
-        }
-
-        @keyframes logoRotate {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        
 
         @keyframes titleAnimation {
             0% {
@@ -655,7 +626,6 @@
         </div>
 
         <header class="header">
-            <img src="attached_assets/Icon%20-%20Icon.png" alt="Yurie Logo" class="header-logo" width="80" height="80" loading="eager" decoding="async" fetchpriority="high">
             <h1 class="site-title">Yurie</h1>
             <p class="site-description">A minimalist journal chronicling the evolution of ideas and experiences in development.</p>
         </header>
