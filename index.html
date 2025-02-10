@@ -51,9 +51,9 @@
             --accent: #a78bfa;
             --accent-light: rgba(167, 139, 250, 0.15);
             --accent-glow: rgba(167, 139, 250, 0.25);
-            --bg: #121212;
-            --card: #1e1e1e;
-            --card-gradient: #1e1e1e;
+            --bg: #000000;
+            --card: #0a0a0a;
+            --card-gradient: #0a0a0a;
             --border: #222222;
             --shadow: rgba(0,0,0,0.15);
             --title-gradient: linear-gradient(135deg, var(--primary) 30%, var(--accent) 100%);
@@ -428,27 +428,27 @@
             <p class="site-description">A minimalist journal chronicling the evolution of ideas and experiences in development.</p>
         </header>
         
-        <div class="timeline">
-            <div class="timeline-post" data-category="backend">
+        <div class="timeline" role="feed" aria-label="Journal entries">
+            <div class="timeline-post" role="article" aria-labelledby="post-title-1" data-category="backend">
                 <div class="timeline-content">
-                    <div class="timeline-date">January 2024</div>
-                    <h2 class="timeline-title">Server-Side Evolution</h2>
+                    <div class="timeline-date" aria-label="Posted in January 2024">January 2024</div>
+                    <h2 class="timeline-title" id="post-title-1">Server-Side Evolution</h2>
                     <p>Venturing into backend development. Creating robust APIs and exploring the world of databases and server architecture.</p>
                 </div>
             </div>
 
-            <div class="timeline-post" data-category="frontend">
+            <div class="timeline-post" role="article" aria-labelledby="post-title-2" data-category="frontend">
                 <div class="timeline-content">
-                    <div class="timeline-date">September 2023</div>
-                    <h2 class="timeline-title">Framework Journey</h2>
+                    <div class="timeline-date" aria-label="Posted in September 2023">September 2023</div>
+                    <h2 class="timeline-title" id="post-title-2">Framework Journey</h2>
                     <p>Embracing modern frameworks. Building sophisticated applications with React and Vue, understanding component architecture.</p>
                 </div>
             </div>
 
-            <div class="timeline-post" data-category="frontend">
+            <div class="timeline-post" role="article" aria-labelledby="post-title-3" data-category="frontend">
                 <div class="timeline-content">
-                    <div class="timeline-date">June 2023</div>
-                    <h2 class="timeline-title">Exploring JavaScript</h2>
+                    <div class="timeline-date" aria-label="Posted in June 2023">June 2023</div>
+                    <h2 class="timeline-title" id="post-title-3">Exploring JavaScript</h2>
                     <p>Diving into the world of JavaScript. Discovering the power of interactivity and dynamic content creation.</p>
                 </div>
             </div>
@@ -456,10 +456,10 @@
             <!-- No results message for filters yielding no entries -->
             <div class="no-results">No entries found.</div>
 
-            <div class="timeline-post" data-category="fundamentals">
+            <div class="timeline-post" role="article" aria-labelledby="post-title-4" data-category="fundamentals">
                 <div class="timeline-content">
-                    <div class="timeline-date">March 2023</div>
-                    <h2 class="timeline-title">The Beginning</h2>
+                    <div class="timeline-date" aria-label="Posted in March 2023">March 2023</div>
+                    <h2 class="timeline-title" id="post-title-4">The Beginning</h2>
                     <p>First steps into web development. Learning the art of HTML and CSS, understanding the building blocks of modern websites.</p>
                 </div>
             </div>
@@ -468,58 +468,60 @@
 
     <script>
         // Load theme from localStorage or default to light
-        function updateMetaThemeColor(theme) {
-            let existingMeta = document.querySelector('meta[name="theme-color"]');
-            if (existingMeta) existingMeta.remove();
+        const ThemeManager = {
+            init() {
+                this.loadTheme();
+                this.setupListeners();
+            },
 
-            let newMeta = document.createElement('meta');
-            newMeta.name = "theme-color";
-            newMeta.content = theme === 'dark' ? '#000000' : '#ffffff';
-            document.head.appendChild(newMeta);
-        }
+            loadTheme() {
+                const savedTheme = localStorage.getItem('theme') ||
+                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+                this.applyTheme(savedTheme);
+            },
 
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            document.documentElement.setAttribute('data-theme', savedTheme);
-            updateThemeIcon(savedTheme);
-            updateMetaThemeColor(savedTheme);
-        }
+            applyTheme(theme) {
+                document.documentElement.setAttribute('data-theme', theme);
+                localStorage.setItem('theme', theme);
+                this.updateMetaThemeColor(theme);
+                this.updateThemeIcon(theme);
+            },
 
-        function updateThemeIcon(theme) {
-            const svg = document.querySelector('.theme-toggle svg');
-            svg.style.transition = "transform 0.3s ease, opacity 0.3s ease";
-            svg.style.opacity = "0";
+            setupListeners() {
+                window.matchMedia('(prefers-color-scheme: dark)')
+                    .addEventListener('change', e => {
+                        if (!localStorage.getItem('theme')) {
+                            this.applyTheme(e.matches ? 'dark' : 'light');
+                        }
+                    });
+            },
 
-            setTimeout(() => {
-                svg.innerHTML = theme === 'dark'
-                    ? `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`
-                    : `<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>`;
+            updateMetaThemeColor(theme) {
+                const metaTheme = document.querySelector('meta[name="theme-color"]');
+                if (metaTheme) {
+                    metaTheme.content = theme === 'dark' ? '#000000' : '#ffffff';
+                }
+            },
 
-                svg.style.opacity = "1";
-            }, 150);
-        }
+            updateThemeIcon(theme) {
+                const svg = document.querySelector('.theme-toggle svg');
+                svg.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+                svg.style.opacity = "0";
+
+                setTimeout(() => {
+                    svg.innerHTML = theme === 'dark'
+                        ? `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`
+                        : `<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>`;
+
+                    svg.style.opacity = "1";
+                }, 150);
+            }
+        };
 
         function toggleTheme() {
-            const html = document.documentElement;
-            const toggleButton = document.querySelector(".theme-toggle");
-            const currentTheme = html.getAttribute("data-theme");
-            const newTheme = currentTheme === "light" ? "dark" : "light";
-
-            // Save theme to localStorage
-            localStorage.setItem("theme", newTheme);
-
-            // Apply new theme
-            html.setAttribute("data-theme", newTheme);
-            updateThemeIcon(newTheme);
-            updateMetaThemeColor(newTheme);
-
-            // Add rotation animation
-            toggleButton.style.transition = "transform 0.3s ease";
-            toggleButton.style.transform = "rotate(180deg)";
-
-            setTimeout(() => {
-                toggleButton.style.transform = "rotate(0deg)";
-            }, 300);
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            ThemeManager.applyTheme(newTheme);
         }
 
         function filterPosts() {
@@ -543,7 +545,7 @@
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
-            loadTheme();
+            ThemeManager.init();
             filterPosts();
         });
     </script>
