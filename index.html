@@ -1,312 +1,506 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Yurie</title>
-  <!-- Importing the Google Font "Inter" -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet" />
-
-  <style>
-    /* CSS Reset */
-    *, *::before, *::after {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-    }
-
-    /* CSS Variables for Light and Dark Modes */
-    :root {
-        /* Light mode */
-        --primary-color: #000;         /* Used for markers and accents */
-        --background-color: #fff;        /* White background */
-        --text-color: #000;              /* Black text */
-        --card-bg: #fff;                 /* Card background remains white */
-        --card-shadow: rgba(0, 0, 0, 0.1); /* Subtle shadow */
-        --timeline-line: #000;           /* Black timeline line */
-        --toggle-bg: #ccc;               /* Gray toggle background */
-    }
-    .dark {
-        /* Dark mode (Pitch Black) */
-        --primary-color: #fff;         /* White accents */
-        --background-color: #000;        /* Pitch black background */
-        --text-color: #fff;              /* White text */
-        --card-bg: #000;                 /* Cards become pitch black */
-        --card-shadow: rgba(255, 255, 255, 0.1); /* Subtle white glow shadow */
-        --timeline-line: #fff;           /* White timeline line */
-        --toggle-bg: #444;               /* Darker gray toggle background */
-    }
-
-    /* Global Styles */
-    body {
-        font-family: 'Inter', sans-serif;
-        background: var(--background-color);
-        color: var(--text-color);
-        line-height: 1.6;
-        transition: background 0.3s, color 0.3s;
-    }
-    a {
-        text-decoration: none;
-        color: inherit;
-    }
-    h1, h2, h3 {
-        margin-bottom: 10px;
-    }
-    p {
-        margin-bottom: 15px;
-    }
-
-    /* Header Styling */
-    header {
-        background: var(--background-color);
-        color: var(--text-color);
-        text-align: center;
-        padding: 40px 20px;
-        position: relative;
-        border-bottom: 2px solid var(--primary-color);
-    }
-    header h1 {
-        font-size: 2.5em;
-        font-weight: 700;
-    }
-    header p {
-        font-size: 1.1em;
-        opacity: 0.8;
-    }
-
-    /* Redesigned Dark/Light Mode Toggle */
-    .mode-toggle {
-        position: absolute;
-        top: 20px;
-        right: 20px;
-    }
-    .toggle-switch {
-        display: block;
-        width: 60px;
-        height: 30px;
-        background: var(--toggle-bg);
-        border-radius: 15px;
-        position: relative;
-        cursor: pointer;
-        transition: background 0.3s;
-    }
-    .toggle-switch .icon {
-        position: absolute;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 16px;
-        height: 16px;
-        fill: var(--primary-color);
-    }
-    .toggle-switch .sun-icon {
-        left: 8px;
-    }
-    .toggle-switch .moon-icon {
-        right: 8px;
-    }
-    .toggle-switch .switch-knob {
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 26px;
-        height: 26px;
-        background: var(--background-color);
-        border-radius: 50%;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-        transition: transform 0.3s;
-    }
-    input[type="checkbox"] {
-        display: none;
-    }
-    input[type="checkbox"]:checked + .toggle-switch .switch-knob {
-        transform: translateX(30px);
-    }
-
-    /* Minimal & Aesthetic Timeline Layout */
-    .timeline {
-        position: relative;
-        max-width: 800px;
-        margin: 40px auto;
-        padding: 20px 0;
-    }
-    /* Central vertical line */
-    .timeline::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        left: 50%;
-        width: 2px;
-        background: var(--timeline-line);
-        transform: translateX(-50%);
-    }
-    /* Timeline items */
-    .timeline-item {
-        position: relative;
-        width: 50%;
-        padding: 20px 40px;
-    }
-    /* Alternate left/right positioning for larger screens */
-    .timeline-item:nth-child(odd) {
-        left: 0;
-        text-align: right;
-    }
-    .timeline-item:nth-child(even) {
-        left: 50%;
-        text-align: left;
-    }
-    /* Timeline markers */
-    .timeline-item::before {
-        content: "";
-        position: absolute;
-        top: 30px;
-        width: 12px;
-        height: 12px;
-        background: var(--primary-color);
-        border: 2px solid var(--card-bg);
-        border-radius: 50%;
-        z-index: 1;
-    }
-    .timeline-item:nth-child(odd)::before {
-        right: -6px;
-    }
-    .timeline-item:nth-child(even)::before {
-        left: -6px;
-    }
-    /* Timeline content cards */
-    .timeline-content {
-        background: var(--card-bg);
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px var(--card-shadow);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-    .timeline-content:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    }
-    .timeline-date {
-        font-size: 0.9em;
-        color: var(--primary-color);
-        font-weight: 500;
-        margin-bottom: 8px;
-        display: block;
-    }
-
-    /* Responsive Design for Mobile Devices */
-    @media screen and (max-width: 768px) {
-        .timeline {
-            max-width: 100%;
-            margin: 20px auto;
-            padding: 20px 10px;
+    <meta charset="UTF-8">
+    <!-- Favicons -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2340E0D0'/><stop offset='100%' style='stop-color:%230000CD'/></linearGradient><filter id='glow'><feGaussianBlur stdDeviation='3' result='coloredBlur'/><feMerge><feMergeNode in='coloredBlur'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><rect width='100' height='100' rx='20' fill='url(%23bg)'/><path d='M50 25 L60 45 L40 45 Z M50 75 L60 55 L40 55 Z M25 50 L45 60 L45 40 Z M75 50 L55 60 L55 40 Z' fill='%2387CEEB' filter='url(%23glow)'/></svg>" type="image/svg+xml">
+    <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2340E0D0'/><stop offset='100%' style='stop-color:%230000CD'/></linearGradient><filter id='glow'><feGaussianBlur stdDeviation='3' result='coloredBlur'/><feMerge><feMergeNode in='coloredBlur'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><rect width='100' height='100' rx='20' fill='url(%23bg)'/><path d='M50 25 L60 45 L40 45 Z M50 75 L60 55 L40 55 Z M25 50 L45 60 L45 40 Z M75 50 L55 60 L55 40 Z' fill='%2387CEEB' filter='url(%23glow)'/></svg>">
+    <meta name="theme-color" content="#40E0D0">
+    <meta name="msapplication-TileColor" content="#40E0D0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yurie</title>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
-        /* Shift vertical line to the left side */
-        .timeline::before {
-            left: 20px;
-            transform: none;
+
+        [data-theme="light"] {
+            --primary: #1a1a1a;
+            --secondary: #666666;
+            --accent: #7c3aed;
+            --accent-light: rgba(124, 58, 237, 0.12);
+            --accent-glow: rgba(124, 58, 237, 0.2);
+            --bg: #ffffff;
+            --card: #fafafa;
+            --card-gradient: #fafafa;
+            --border: #e0e0e0;
+            --shadow: rgba(0,0,0,0.06);
+            --title-gradient: linear-gradient(135deg, var(--primary) 30%, var(--accent) 100%);
         }
-        .timeline-item {
-            width: 100%;
-            padding: 20px 20px 20px 60px;
-            text-align: left;
-            margin-bottom: 20px;
+
+        [data-theme="dark"] {
+            --primary: #f3f3f3;
+            --secondary: #a3a3a3;
+            --accent: #a78bfa;
+            --accent-light: rgba(167, 139, 250, 0.15);
+            --accent-glow: rgba(167, 139, 250, 0.25);
+            --bg: #000000;
+            --card: #0a0a0a;
+            --card-gradient: #0a0a0a;
+            --border: #222222;
+            --shadow: rgba(0,0,0,0.15);
+            --title-gradient: linear-gradient(135deg, var(--primary) 30%, var(--accent) 100%);
+        }
+
+        body {
+            background-color: var(--bg);
+            font-family: 'DM Sans', sans-serif;
+            line-height: 1.7;
+            color: var(--primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 4rem 1rem;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5rem;
+            padding: 0;
+        }
+
+        .theme-toggle {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--primary);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            box-shadow: 0 2px 10px var(--shadow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 0;
+        }
+
+        .theme-toggle:hover {
+            transform: translateY(-2px) rotate(8deg);
+            box-shadow: 0 4px 15px var(--shadow);
+            border-color: var(--accent);
+        }
+
+        .theme-toggle svg {
+            width: 20px;
+            height: 20px;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .filter-select {
+            background: var(--card);
+            border: 1px solid var(--border);
+            color: var(--primary);
+            padding: 0.4rem 0.75rem;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.75rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            min-width: 120px;
+            text-align: center;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='none' stroke='currentColor' viewBox='0 0 10 10'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M2 4l3 3 3-3'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            padding-right: 2rem;
             position: relative;
         }
-        /* Remove left/right positioning */
-        .timeline-item:nth-child(odd),
-        .timeline-item:nth-child(even) {
-            left: 0;
+
+        .filter-select:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
         }
-        /* Adjust marker to align with the vertical line */
-        .timeline-item::before {
-            left: 12px;
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
         }
-    }
-  </style>
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 0;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .site-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 5rem;
+            font-weight: 500;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            line-height: 1.1;
+            background: var(--title-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 1px 10px var(--shadow);
+        }
+
+        .site-description {
+            color: var(--secondary);
+            font-size: 1rem;
+            max-width: 460px;
+            margin: 0 auto;
+            line-height: 1.7;
+            letter-spacing: 0.01em;
+        }
+
+        .timeline {
+            position: relative;
+            padding: 2rem 0;
+            margin: 0 auto;
+        }
+
+
+        .timeline-post {
+            padding: 1rem;
+            position: relative;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
+            will-change: transform, opacity;
+            cursor: pointer;
+        }
+
+        @media (hover: hover) {
+            .timeline-post:hover {
+                transform: translateY(-2px);
+            }
+        }
+
+        .timeline-post:active {
+            transform: scale(0.98);
+            opacity: 0.95;
+        }
+
+        .timeline-post + .timeline-post {
+            margin-top: 1rem;
+        }
+
+        .timeline-content {
+            padding: 2rem;
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            position: relative;
+            transition: transform 0.2s ease, border-color 0.2s ease;
+            will-change: transform;
+            box-shadow: 0 2px 10px var(--shadow);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            transform-origin: center;
+        }
+
+        @media (hover: hover) {
+            .timeline-content:hover {
+                border-color: var(--accent);
+                transform: translateY(-1px);
+            }
+        }
+
+        .timeline-date {
+            font-size: 0.8rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+            font-weight: 500;
+            letter-spacing: 0.02em;
+            display: inline-block;
+            padding: 0.35rem 1.25rem;
+            background-color: var(--accent-light);
+            border-radius: 99px;
+            box-shadow: 0 0 15px var(--accent-glow);
+            border: 1px solid var(--accent);
+        }
+
+        .timeline-title {
+            font-family: 'Playfair Display', serif;
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.4rem;
+            font-weight: 500;
+            line-height: 1.25;
+            letter-spacing: -0.01em;
+        }
+
+        .timeline-post p {
+            color: var(--secondary);
+            font-size: 0.875rem;
+            line-height: 1.7;
+            letter-spacing: 0.01em;
+        }
+
+
+        .timeline-post[data-category] {
+            display: none;
+            opacity: 0;
+            transform: translateY(5px);
+            will-change: opacity, transform;
+        }
+
+        .timeline-post[data-category].show {
+            display: block;
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media screen and (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .controls {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 100;
+                flex-direction: row;
+                justify-content: space-between;
+                gap: 1rem;
+                margin: 0;
+                padding: 1rem;
+                background: var(--bg);
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                box-shadow: 0 2px 10px var(--shadow);
+                border-bottom: 1px solid var(--border);
+            }
+
+            .theme-toggle {
+                width: 44px;
+                height: 44px;
+            }
+
+            .theme-toggle svg {
+                width: 22px;
+                height: 22px;
+            }
+
+            .filter-select {
+                flex: 1;
+                max-width: 120px;
+                font-size: 0.75rem;
+                padding: 0.35rem 1.25rem 0.35rem 0.75rem;
+            }
+
+            .header {
+                margin: 5rem 0 3rem 0;
+            }
+
+            .site-title {
+                font-size: 3rem;
+                margin-bottom: 0.75rem;
+            }
+
+
+            .timeline-post {
+                padding: 1rem;
+            }
+
+            .timeline-post + .timeline-post {
+                margin-top: 0.75rem;
+            }
+
+
+            .timeline-content {
+                padding: 1.75rem;
+            }
+
+            .timeline-date {
+                margin-bottom: 0.75rem;
+                padding: 0.5rem 1.5rem;
+                font-size: 0.9rem;
+            }
+
+            .timeline-title {
+                font-size: 1.3rem;
+            }
+
+            .timeline-post p {
+                font-size: 0.95rem;
+                line-height: 1.7;
+            }
+        }
+
+        @media screen and (max-width: 480px) {
+            .container {
+                padding: 1.5rem;
+            }
+
+            .site-title {
+                font-size: 3rem;
+            }
+
+            .site-description {
+                font-size: 0.95rem;
+                line-height: 1.6;
+                padding: 0 0.5rem;
+            }
+
+            .timeline-title {
+                font-size: 1.25rem;
+            }
+
+            .timeline-content {
+                padding: 1.25rem;
+            }
+
+            .timeline-post {
+                padding: 0.75rem;
+            }
+
+            .timeline-post + .timeline-post {
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>Yurie</h1>
-    <p>Sharing stories, one timeline at a time</p>
-    <!-- Dark/Light Mode Toggle -->
-    <div class="mode-toggle">
-      <input type="checkbox" id="modeSwitch" />
-      <label for="modeSwitch" class="toggle-switch">
-        <span class="icon sun-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="12" y2="3"></line>
-            <line x1="12" y1="21" x2="12" y2="23"></line>
-            <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-            <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-            <line x1="1" y1="12" x2="3" y2="12"></line>
-            <line x1="21" y1="12" x2="23" y2="12"></line>
-            <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-            <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-          </svg>
-        </span>
-        <span class="icon moon-icon">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.79A9 9 0 0111.21 3 7 7 0 1012 21a9 9 0 009-8.21z"></path>
-          </svg>
-        </span>
-        <span class="switch-knob"></span>
-      </label>
-    </div>
-  </header>
+    <div class="container">
+        <div class="controls">
+            <select class="filter-select" onchange="filterPosts()">
+                <option value="all">All Entries</option>
+                <option value="frontend">Frontend</option>
+                <option value="backend">Backend</option>
+                <option value="fundamentals">Fundamentals</option>
+            </select>
+            <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>
+                </svg>
+            </button>
+        </div>
 
-  <div class="timeline">
-    <!-- Timeline Item 1 -->
-    <div class="timeline-item">
-      <div class="timeline-content">
-        <span class="timeline-date">January 2025</span>
-        <h3>Post Title One</h3>
-        <p>This is the content for the first blog post. It includes details about the topic along with interesting insights.</p>
-      </div>
-    </div>
-    <!-- Timeline Item 2 -->
-    <div class="timeline-item">
-      <div class="timeline-content">
-        <span class="timeline-date">February 2025</span>
-        <h3>Post Title Two</h3>
-        <p>This is the content for the second blog post. More engaging content is provided here with a neat timeline layout.</p>
-      </div>
-    </div>
-    <!-- Timeline Item 3 -->
-    <div class="timeline-item">
-      <div class="timeline-content">
-        <span class="timeline-date">March 2025</span>
-        <h3>Post Title Three</h3>
-        <p>Here is more content for another blog post, continuing the timeline theme and sharing useful information.</p>
-      </div>
-    </div>
-  </div>
+        <header class="header">
+            <h1 class="site-title">Yurie</h1>
+            <p class="site-description">A minimalist journal chronicling the evolution of ideas and experiences in development.</p>
+        </header>
+        
+        <div class="timeline">
+            <div class="timeline-post" data-category="backend">
+                <div class="timeline-content">
+                    <div class="timeline-date">January 2024</div>
+                    <h2 class="timeline-title">Server-Side Evolution</h2>
+                    <p>Venturing into backend development. Creating robust APIs and exploring the world of databases and server architecture.</p>
+                </div>
+            </div>
 
-  <!-- Chatbot Widget Scripts -->
-  <script src="https://cdn.botpress.cloud/webchat/v2.2/inject.js" defer></script>
-  <script src="https://files.bpcontent.cloud/2025/02/01/23/20250201230052-W386CTHX.js" defer></script>
-  
-  <!-- Dark/Light Mode JavaScript -->
-  <script>
-    // Dark/Light mode toggle handling
-    const modeSwitch = document.getElementById('modeSwitch');
-    const bodyElement = document.body;
-    
-    // Check for a saved theme in localStorage
-    if (localStorage.getItem('theme') === 'dark') {
-        bodyElement.classList.add('dark');
-        modeSwitch.checked = true;
-    }
-    
-    modeSwitch.addEventListener('change', () => {
-        if (modeSwitch.checked) {
-            bodyElement.classList.add('dark');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            bodyElement.classList.remove('dark');
-            localStorage.setItem('theme', 'light');
+            <div class="timeline-post" data-category="frontend">
+                <div class="timeline-content">
+                    <div class="timeline-date">September 2023</div>
+                    <h2 class="timeline-title">Framework Journey</h2>
+                    <p>Embracing modern frameworks. Building sophisticated applications with React and Vue, understanding component architecture.</p>
+                </div>
+            </div>
+
+            <div class="timeline-post" data-category="frontend">
+                <div class="timeline-content">
+                    <div class="timeline-date">June 2023</div>
+                    <h2 class="timeline-title">Exploring JavaScript</h2>
+                    <p>Diving into the world of JavaScript. Discovering the power of interactivity and dynamic content creation.</p>
+                </div>
+            </div>
+
+            <div class="timeline-post" data-category="fundamentals">
+                <div class="timeline-content">
+                    <div class="timeline-date">March 2023</div>
+                    <h2 class="timeline-title">The Beginning</h2>
+                    <p>First steps into web development. Learning the art of HTML and CSS, understanding the building blocks of modern websites.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load theme from localStorage or default to light
+        function loadTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            updateThemeIcon(savedTheme);
         }
-    });
-  </script>
+
+        function updateThemeIcon(theme) {
+            const svg = document.querySelector('.theme-toggle svg');
+            if (theme === 'dark') {
+                svg.innerHTML = `
+                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+                `;
+            } else {
+                svg.innerHTML = `
+                    <circle cx="12" cy="12" r="4"/>
+                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>
+                `;
+            }
+        }
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-theme');
+            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+            
+            // Save theme to localStorage
+            localStorage.setItem('theme', newTheme);
+            
+            // Update DOM
+            html.setAttribute('data-theme', newTheme);
+            updateThemeIcon(newTheme);
+        }
+
+        function filterPosts() {
+            const filter = document.querySelector('.filter-select').value;
+            const posts = document.querySelectorAll('.timeline-post');
+            
+            posts.forEach(post => {
+                post.classList.remove('show');
+                if (filter === 'all' || post.getAttribute('data-category') === filter) {
+                    requestAnimationFrame(() => {
+                        post.classList.add('show');
+                    });
+                }
+            });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTheme();
+            filterPosts();
+        });
+    </script>
 </body>
 </html>
