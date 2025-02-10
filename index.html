@@ -5,6 +5,17 @@
     <!-- Favicons -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2340E0D0'/><stop offset='100%' style='stop-color:%230000CD'/></linearGradient><filter id='glow'><feGaussianBlur stdDeviation='3' result='coloredBlur'/><feMerge><feMergeNode in='coloredBlur'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><rect width='100' height='100' rx='20' fill='url(%23bg)'/><path d='M50 25 L60 45 L40 45 Z M50 75 L60 55 L40 55 Z M25 50 L45 60 L45 40 Z M75 50 L55 60 L55 40 Z' fill='%2387CEEB' filter='url(%23glow)'/></svg>" type="image/svg+xml">
     <link rel="apple-touch-icon" sizes="180x180" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><defs><linearGradient id='bg' x1='0%' y1='0%' x2='100%' y2='100%'><stop offset='0%' style='stop-color:%2340E0D0'/><stop offset='100%' style='stop-color:%230000CD'/></linearGradient><filter id='glow'><feGaussianBlur stdDeviation='3' result='coloredBlur'/><feMerge><feMergeNode in='coloredBlur'/><feMergeNode in='SourceGraphic'/></feMerge></filter></defs><rect width='100' height='100' rx='20' fill='url(%23bg)'/><path d='M50 25 L60 45 L40 45 Z M50 75 L60 55 L40 55 Z M25 50 L45 60 L45 40 Z M75 50 L55 60 L55 40 Z' fill='%2387CEEB' filter='url(%23glow)'/></svg>">
+    <script>
+        (function() {
+            let savedTheme = localStorage.getItem('theme');
+            if (!savedTheme) {
+                // Use the system preference as fallback
+                savedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                localStorage.setItem('theme', savedTheme);
+            }
+            document.documentElement.setAttribute('data-theme', savedTheme);
+        })();
+    </script>
     <meta name="theme-color" content="#ffffff">
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -35,14 +46,14 @@
         }
 
         [data-theme="dark"] {
-            --primary: #f3f3f3;
-            --secondary: #a3a3a3;
+            --primary: #ffffff;
+            --secondary: #cfcfcf;
             --accent: #a78bfa;
             --accent-light: rgba(167, 139, 250, 0.15);
             --accent-glow: rgba(167, 139, 250, 0.25);
-            --bg: #000000;
-            --card: #0a0a0a;
-            --card-gradient: #0a0a0a;
+            --bg: #121212;
+            --card: #1e1e1e;
+            --card-gradient: #1e1e1e;
             --border: #222222;
             --shadow: rgba(0,0,0,0.15);
             --title-gradient: linear-gradient(135deg, var(--primary) 30%, var(--accent) 100%);
@@ -53,7 +64,7 @@
             font-family: 'DM Sans', sans-serif;
             line-height: 1.7;
             color: var(--primary);
-            transition: background-color 0.3s ease, color 0.3s ease;
+            transition: background-color 0.4s ease, color 0.4s ease;
             min-height: 100vh;
         }
 
@@ -75,8 +86,8 @@
             background: var(--card);
             border: 1px solid var(--border);
             color: var(--primary);
-            width: 40px;
-            height: 40px;
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             cursor: pointer;
             display: flex;
@@ -96,8 +107,8 @@
         }
 
         .theme-toggle svg {
-            width: 20px;
-            height: 20px;
+            width: 24px;
+            height: 24px;
             transition: transform 0.2s ease, opacity 0.2s ease;
             fill: none;
             stroke: currentColor;
@@ -110,10 +121,10 @@
             background: var(--card);
             border: 1px solid var(--border);
             color: var(--primary);
-            padding: 0.4rem 0.75rem;
-            border-radius: 8px;
+            padding: 0.6rem 1rem;
+            border-radius: 10px;
             font-family: inherit;
-            font-size: 0.75rem;
+            font-size: 0.85rem;
             font-weight: 500;
             letter-spacing: 0.02em;
             cursor: pointer;
@@ -136,8 +147,14 @@
             color: var(--accent);
         }
 
+        /* Focus styles for accessibility */
+        .theme-toggle:focus,
         .filter-select:focus {
-            outline: none;
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        .filter-select:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 3px var(--accent-light);
         }
@@ -187,7 +204,6 @@
             max-width: 600px;
             margin: 0 auto;
             transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
-            will-change: transform, opacity;
             cursor: pointer;
         }
 
@@ -213,7 +229,6 @@
             border-radius: 16px;
             position: relative;
             transition: transform 0.2s ease, border-color 0.2s ease;
-            will-change: transform;
             box-shadow: 0 2px 10px var(--shadow);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -223,7 +238,9 @@
         @media (hover: hover) {
             .timeline-content:hover {
                 border-color: var(--accent);
-                transform: translateY(-1px);
+                transform: translateY(-2px) scale(1.02);
+                transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+                box-shadow: 0 5px 20px var(--shadow);
             }
         }
 
@@ -263,7 +280,6 @@
             display: none;
             opacity: 0;
             transform: translateY(5px);
-            will-change: opacity, transform;
         }
 
         .timeline-post[data-category].show {
@@ -393,7 +409,7 @@
 <body>
     <div class="container">
         <div class="controls">
-            <select class="filter-select" onchange="filterPosts()">
+            <select class="filter-select" onchange="filterPosts()" aria-label="Filter journal entries">
                 <option value="all">All Entries</option>
                 <option value="frontend">Frontend</option>
                 <option value="backend">Backend</option>
@@ -436,6 +452,9 @@
                     <p>Diving into the world of JavaScript. Discovering the power of interactivity and dynamic content creation.</p>
                 </div>
             </div>
+        
+            <!-- No results message for filters yielding no entries -->
+            <div class="no-results">No entries found.</div>
 
             <div class="timeline-post" data-category="fundamentals">
                 <div class="timeline-content">
@@ -450,8 +469,13 @@
     <script>
         // Load theme from localStorage or default to light
         function updateMetaThemeColor(theme) {
-            const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-            metaThemeColor.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
+            let existingMeta = document.querySelector('meta[name="theme-color"]');
+            if (existingMeta) existingMeta.remove();
+
+            let newMeta = document.createElement('meta');
+            newMeta.name = "theme-color";
+            newMeta.content = theme === 'dark' ? '#000000' : '#ffffff';
+            document.head.appendChild(newMeta);
         }
 
         function loadTheme() {
@@ -463,44 +487,58 @@
 
         function updateThemeIcon(theme) {
             const svg = document.querySelector('.theme-toggle svg');
-            if (theme === 'dark') {
-                svg.innerHTML = `
-                    <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
-                `;
-            } else {
-                svg.innerHTML = `
-                    <circle cx="12" cy="12" r="4"/>
-                    <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>
-                `;
-            }
+            svg.style.transition = "transform 0.3s ease, opacity 0.3s ease";
+            svg.style.opacity = "0";
+
+            setTimeout(() => {
+                svg.innerHTML = theme === 'dark'
+                    ? `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`
+                    : `<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>`;
+
+                svg.style.opacity = "1";
+            }, 150);
         }
 
         function toggleTheme() {
             const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            
+            const toggleButton = document.querySelector(".theme-toggle");
+            const currentTheme = html.getAttribute("data-theme");
+            const newTheme = currentTheme === "light" ? "dark" : "light";
+
             // Save theme to localStorage
-            localStorage.setItem('theme', newTheme);
-            
-            // Update DOM and metadata
-            html.setAttribute('data-theme', newTheme);
+            localStorage.setItem("theme", newTheme);
+
+            // Apply new theme
+            html.setAttribute("data-theme", newTheme);
             updateThemeIcon(newTheme);
             updateMetaThemeColor(newTheme);
+
+            // Add rotation animation
+            toggleButton.style.transition = "transform 0.3s ease";
+            toggleButton.style.transform = "rotate(180deg)";
+
+            setTimeout(() => {
+                toggleButton.style.transform = "rotate(0deg)";
+            }, 300);
         }
 
         function filterPosts() {
             const filter = document.querySelector('.filter-select').value;
             const posts = document.querySelectorAll('.timeline-post');
+            let found = false;
             
             posts.forEach(post => {
                 post.classList.remove('show');
                 if (filter === 'all' || post.getAttribute('data-category') === filter) {
+                    found = true;
                     requestAnimationFrame(() => {
                         post.classList.add('show');
                     });
                 }
             });
+            
+            const noResults = document.querySelector('.no-results');
+            noResults.style.display = found ? 'none' : 'block';
         }
 
         // Initialize the page
