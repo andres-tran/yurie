@@ -20,7 +20,12 @@
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="Yurie">
+    <meta name="application-name" content="Yurie">
+    <meta name="format-detection" content="telephone=no">
     <title>Yurie</title>
     <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet"></noscript>
@@ -121,7 +126,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, transform 0.3s ease;
             box-shadow: 0 2px 10px var(--shadow);
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
@@ -279,11 +284,12 @@
             font-weight: 500;
             letter-spacing: 0.02em;
             display: inline-block;
-            padding: 0.35rem 1.25rem;
+            padding: 0.25rem 0.85rem;
             background-color: var(--accent-light);
             border-radius: 99px;
-            box-shadow: 0 0 15px var(--accent-glow);
+            box-shadow: 0 0 10px var(--accent-glow);
             border: 1px solid var(--accent);
+            font-size: 0.75rem;
         }
 
         .timeline-title {
@@ -303,6 +309,22 @@
             letter-spacing: 0.01em;
         }
 
+        .post-tags {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.75rem;
+            color: var(--accent);
+            background: var(--accent-light);
+            padding: 0.2rem 0.6rem;
+            border-radius: 99px;
+            border: 1px solid var(--accent);
+            letter-spacing: 0.02em;
+        }
 
         .timeline-post[data-category] {
             display: none;
@@ -322,9 +344,30 @@
             }
         }
 
-        @media screen and (max-width: 768px) {
+        @supports (-webkit-touch-callout: none) {
+    .container {
+        padding-left: env(safe-area-inset-left);
+        padding-right: env(safe-area-inset-right);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    .timeline-post:hover {
+        transform: none;
+    }
+    
+    .timeline-content:hover {
+        transform: none;
+        border-color: var(--border);
+        box-shadow: 0 2px 10px var(--shadow);
+    }
+}
+
+@media screen and (max-width: 768px) {
             .container {
                 padding: 1rem;
+                padding-top: 5rem;
             }
 
             .controls {
@@ -337,11 +380,11 @@
                 justify-content: space-between;
                 gap: 1rem;
                 margin: 0;
-                padding: 1rem;
+                padding: 0.75rem;
                 background: var(--bg);
-                backdrop-filter: blur(8px);
-                -webkit-backdrop-filter: blur(8px);
-                box-shadow: 0 2px 10px var(--shadow);
+                backdrop-filter: blur(12px);
+                -webkit-backdrop-filter: blur(12px);
+                box-shadow: 0 1px 8px var(--shadow);
                 border-bottom: 1px solid var(--border);
             }
 
@@ -387,8 +430,8 @@
 
             .timeline-date {
                 margin-bottom: 0.75rem;
-                padding: 0.5rem 1.5rem;
-                font-size: 0.9rem;
+                padding: 0.2rem 0.75rem;
+                font-size: 0.7rem;
             }
 
             .timeline-title {
@@ -398,6 +441,14 @@
             .timeline-post p {
                 font-size: 0.95rem;
                 line-height: 1.7;
+            }
+
+            .post-tags {
+                margin-top: 1rem;
+            }
+
+            .tag {
+                font-size: 0.7rem;
             }
         }
 
@@ -425,11 +476,22 @@
             }
 
             .timeline-post {
-                padding: 0.75rem;
+                padding: 0.5rem;
             }
 
             .timeline-post + .timeline-post {
-                margin-top: 0.5rem;
+                margin-top: 0.75rem;
+            }
+
+            .timeline-content {
+                padding: 1.5rem;
+                border-radius: 12px;
+            }
+
+            .timeline-date {
+                font-size: 0.65rem;
+                padding: 0.15rem 0.65rem;
+                margin-bottom: 0.85rem;
             }
         }
     </style>
@@ -437,11 +499,20 @@
 <body>
     <div class="container">
         <div class="controls">
-            <select class="filter-select" onchange="filterPosts()" aria-label="Filter journal entries">
-                <option value="all">All Entries</option>
-                <option value="frontend">Frontend</option>
-                <option value="backend">Backend</option>
-                <option value="fundamentals">Fundamentals</option>
+            <select class="filter-select" onchange="filterPosts()" aria-label="Filter by tag">
+                <option value="all">All Sections</option>
+                <option value="API">API</option>
+                <option value="Database">Database</option>
+                <option value="Architecture">Architecture</option>
+                <option value="React">React</option>
+                <option value="Vue">Vue</option>
+                <option value="Components">Components</option>
+                <option value="JavaScript">JavaScript</option>
+                <option value="Interactive">Interactive</option>
+                <option value="Dynamic">Dynamic</option>
+                <option value="HTML">HTML</option>
+                <option value="CSS">CSS</option>
+                <option value="Web">Web</option>
             </select>
             <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                 <svg class="sun" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
@@ -455,13 +526,18 @@
             <h1 class="site-title">Yurie</h1>
             <p class="site-description">A minimalist journal chronicling the evolution of ideas and experiences in development.</p>
         </header>
-        
+
         <div class="timeline" role="feed" aria-label="Journal entries">
-            <div class="timeline-post" role="article" aria-labelledby="post-title-1" data-category="backend">
+            <div class="timeline-post" role="article" aria-labelledby="post-title-1">
                 <div class="timeline-content">
                     <div class="timeline-date" aria-label="Posted in January 2024">January 2024</div>
                     <h2 class="timeline-title" id="post-title-1">Server-Side Evolution</h2>
                     <p>Venturing into backend development. Creating robust APIs and exploring the world of databases and server architecture.</p>
+                    <div class="post-tags">
+                        <span class="tag">API</span>
+                        <span class="tag">Database</span>
+                        <span class="tag">Architecture</span>
+                    </div>
                 </div>
             </div>
 
@@ -470,6 +546,11 @@
                     <div class="timeline-date" aria-label="Posted in September 2023">September 2023</div>
                     <h2 class="timeline-title" id="post-title-2">Framework Journey</h2>
                     <p>Embracing modern frameworks. Building sophisticated applications with React and Vue, understanding component architecture.</p>
+                    <div class="post-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">Vue</span>
+                        <span class="tag">Components</span>
+                    </div>
                 </div>
             </div>
 
@@ -478,9 +559,14 @@
                     <div class="timeline-date" aria-label="Posted in June 2023">June 2023</div>
                     <h2 class="timeline-title" id="post-title-3">Exploring JavaScript</h2>
                     <p>Diving into the world of JavaScript. Discovering the power of interactivity and dynamic content creation.</p>
+                    <div class="post-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Interactive</span>
+                        <span class="tag">Dynamic</span>
+                    </div>
                 </div>
             </div>
-        
+
             <!-- No results message for filters yielding no entries -->
             <div class="no-results">No entries found.</div>
 
@@ -489,23 +575,27 @@
                     <div class="timeline-date" aria-label="Posted in March 2023">March 2023</div>
                     <h2 class="timeline-title" id="post-title-4">The Beginning</h2>
                     <p>First steps into web development. Learning the art of HTML and CSS, understanding the building blocks of modern websites.</p>
+                    <div class="post-tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS</span>
+                        <span class="tag">Web</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // Load theme from localStorage or default to light
+        // Load theme from system preferences
         const ThemeManager = {
             init() {
-                this.loadTheme();
                 this.setupListeners();
+                this.syncWithSystem();
             },
 
-            loadTheme() {
-                const savedTheme = localStorage.getItem('theme') ||
-                    (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-                this.applyTheme(savedTheme);
+            syncWithSystem() {
+                const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                this.applyTheme(systemTheme);
             },
 
             applyTheme(theme) {
@@ -554,17 +644,17 @@
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             const toggleButton = document.querySelector(".theme-toggle");
-            
+
             // Add rotation animation
             toggleButton.style.transition = "transform 0.3s ease";
             toggleButton.style.transform = "rotate(180deg)";
-            
+
             requestAnimationFrame(() => {
                 setTimeout(() => {
                     toggleButton.style.transform = "rotate(0deg)";
                 }, 300);
             });
-            
+
             ThemeManager.applyTheme(newTheme);
         }
 
@@ -575,19 +665,56 @@
 
             requestAnimationFrame(() => {
                 posts.forEach(post => {
-                    const matches = filter === 'all' || post.getAttribute('data-category') === filter;
+                    const tags = Array.from(post.querySelectorAll('.tag')).map(tag => tag.textContent);
+                    const matches = filter === 'all' || tags.includes(filter);
                     post.classList.toggle('show', matches);
                     found ||= matches;
                 });
 
                 document.querySelector('.no-results').style.display = found ? 'none' : 'block';
             });
+
+            // Update URL with filter
+            const url = new URL(window.location);
+            if (filter === 'all') {
+                url.searchParams.delete('tag');
+            } else {
+                url.searchParams.set('tag', filter);
+            }
+            history.replaceState({}, '', url);
         }
+
+        // Check URL for initial filter
+        const urlParams = new URLSearchParams(window.location.search);
+        const initialFilter = urlParams.get('tag');
+        if (initialFilter) {
+            document.querySelector('.filter-select').value = initialFilter;
+        }
+
+        const select = document.querySelector('.filter-select');
+        select.style.pointerEvents = 'none';
+        select.style.opacity = '0.7';
+
+        setTimeout(() => {
+            filterPosts();
+            select.style.pointerEvents = '';
+            select.style.opacity = '';
+        }, 150);
+
+        // Add touch ripple effect
+        document.querySelectorAll('.timeline-content').forEach(content => {
+            content.addEventListener('touchstart', e => {
+                content.style.transform = 'scale(0.98)';
+            });
+
+            content.addEventListener('touchend', e => {
+                content.style.transform = '';
+            });
+        });
 
         // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             ThemeManager.init();
-            filterPosts();
         });
     </script>
     <script defer src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
