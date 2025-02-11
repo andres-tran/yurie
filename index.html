@@ -62,6 +62,8 @@
         }
 
         [data-theme="light"] {
+            --bg-rgb: 255, 255, 255;
+            --border-rgb: 0, 0, 0;
             --primary: #1a1a1a;
             --secondary: #666666;
             --accent: #7c3aed;
@@ -76,6 +78,8 @@
         }
 
         [data-theme="dark"] {
+            --bg-rgb: 0, 0, 0;
+            --border-rgb: 255, 255, 255;
             --primary: #ffffff;
             --secondary: #cfcfcf;
             --accent: #a78bfa;
@@ -232,18 +236,7 @@
             margin: 0 auto;
         }
 
-        
 
-        @keyframes titleAnimation {
-            0% {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
 
         .site-title {
             font-family: 'DM Sans', sans-serif;
@@ -256,8 +249,8 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            text-shadow: 0 1px 10px var(--shadow);
-            animation: titleAnimation 0.8s ease-out forwards;
+            text-shadow: 
+                0 0 3px var(--accent-glow);
         }
 
         .site-description {
@@ -284,11 +277,14 @@
         .timeline-post {
             position: relative;
             width: 100%;
+            will-change: transform, opacity;
             max-width: 600px;
             margin: 0 auto;
             padding: 0.15rem 0;
             transition: transform 0.2s ease, opacity 0.2s ease, border-color 0.2s ease;
             cursor: pointer;
+            transform: translateZ(0);
+            backface-visibility: hidden;
         }
 
         @media (hover: hover) {
@@ -421,9 +417,13 @@
             display: none;
         }
 
-        .theme-toggle.rotate {
+        .theme-toggle svg {
+            transform-origin: center;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .theme-toggle.rotate svg {
             transform: rotate(180deg);
-            transition: transform 0.3s ease;
         }
 
         .no-results {
@@ -434,11 +434,6 @@
             display: none;
         }
 
-        .theme-toggle.rotate {
-            transform: rotate(180deg);
-            transition: transform 0.3s ease;
-        }
-
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -447,42 +442,61 @@
         @media screen and (max-width: 768px) {
             .container {
                 padding: 0.5rem;
-                padding-top: 4rem;
+                padding-top: 5rem;
             }
 
             .controls {
                 position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
+                top: 0.75rem;
+                left: 50%;
+                transform: translateX(-50%);
                 z-index: 2100;
                 flex-direction: row;
                 justify-content: space-between;
-                gap: 0.5rem;
+                gap: 0.35rem;
                 margin: 0;
-                padding: calc(0.5rem + env(safe-area-inset-top)) env(safe-area-inset-right, 0.5rem) 0.5rem env(safe-area-inset-left, 0.5rem);
-                background: var(--bg);
-                backdrop-filter: blur(12px);
-                -webkit-backdrop-filter: blur(12px);
-                box-shadow: 0 1px 8px var(--shadow);
-                border-bottom: 1px solid var(--border);
+                padding: 0.5rem;
+                background: rgba(var(--bg-rgb, 255, 255, 255), 0.45);
+                backdrop-filter: blur(12px) saturate(180%);
+                -webkit-backdrop-filter: blur(12px) saturate(180%);
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+                border: 1px solid rgba(var(--border-rgb, 0, 0, 0), 0.06);
+                border-radius: 10px;
+                max-width: 700px;
+                width: calc(100% - 1rem);
+                transform: translateX(-50%);
+            }
+
+            @media screen and (min-width: 769px) {
+                .controls {
+                    width: 700px;
+                }
             }
 
             .theme-toggle {
-                width: 44px;
-                height: 44px;
+                width: 36px;
+                height: 36px;
             }
 
             .theme-toggle svg {
-                width: 22px;
-                height: 22px;
+                width: 18px;
+                height: 18px;
+            }
+
+            .search-container {
+                max-width: 200px;
+            }
+
+            .search-input {
+                font-size: 0.8rem;
+                padding: 0.4rem 0.6rem;
             }
 
             .filter-select {
                 flex: 1;
-                max-width: 120px;
-                font-size: 0.75rem;
-                padding: 0.35rem 1.25rem 0.35rem 0.75rem;
+                max-width: 100px;
+                font-size: 0.8rem;
+                padding: 0.4rem 1.25rem 0.4rem 0.6rem;
             }
 
             .header {
@@ -671,7 +685,7 @@
             </div>
 
             <!-- No results message for filters yielding no entries -->
-            <div class="no-results">No entries found.</div>
+            <div class="no-results" aria-live="polite">No entries found.</div>
 
             <div class="timeline-post" role="article" aria-labelledby="post-title-4" data-category="fundamentals">
                 <div class="timeline-content">
@@ -689,11 +703,17 @@
     </div>
 
     <script>
-        // Load theme from system preferences
+        let debounceTimeout;
         const ThemeManager = {
             init() {
+                const savedTheme = localStorage.getItem('theme');
+                if (savedTheme) {
+                    this.applyTheme(savedTheme);
+                } else {
+                    this.syncWithSystem();
+                }
                 this.setupListeners();
-                this.syncWithSystem();
+                this.initializeFilters();
             },
 
             syncWithSystem() {
@@ -703,9 +723,15 @@
 
             applyTheme(theme) {
                 document.documentElement.setAttribute('data-theme', theme);
-                localStorage.setItem('theme', theme);
+                try {
+                    localStorage.setItem('theme', theme);
+                } catch (e) {
+                    console.warn('LocalStorage unavailable:', e);
+                }
                 this.updateMetaThemeColor(theme);
                 this.updateThemeIcon(theme);
+                const toggleButton = document.querySelector(".theme-toggle");
+                toggleButton.setAttribute('aria-label', `${theme} mode`);
             },
 
             setupListeners() {
@@ -726,6 +752,7 @@
 
             updateThemeIcon(theme) {
                 const svg = document.querySelector('.theme-toggle svg');
+                if (!svg) return;
                 svg.style.transition = "transform 0.3s ease, opacity 0.3s ease";
                 svg.style.opacity = "0";
 
@@ -733,13 +760,27 @@
                     svg.innerHTML = theme === 'dark'
                         ? `<path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>`
                         : `<circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M4.93 19.07l1.41-1.41m11.32-11.32l1.41-1.41"/>`;
-
                     svg.style.opacity = "1";
                 }, 150);
+            },
+
+            initializeFilters() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const initialFilter = urlParams.get('tag') || 'all';
+                const select = document.querySelector('.filter-select');
+                if (select) {
+                    select.value = initialFilter;
+                    select.style.pointerEvents = 'none';
+                    select.style.opacity = '0.7';
+                    setTimeout(() => {
+                        filterPosts();
+                        select.style.pointerEvents = '';
+                        select.style.opacity = '';
+                    }, 150);
+                }
             }
         };
 
-        let debounceTimeout;
         function toggleTheme() {
             if (debounceTimeout) return;
             debounceTimeout = setTimeout(() => debounceTimeout = null, 300);
@@ -748,99 +789,96 @@
             const newTheme = currentTheme === 'light' ? 'dark' : 'light';
             const toggleButton = document.querySelector(".theme-toggle");
 
-            // Toggle class for rotation animation
             toggleButton.classList.add('rotate');
+            toggleButton.style.pointerEvents = 'none';
+            
+            ThemeManager.applyTheme(newTheme);
+            
             setTimeout(() => {
                 toggleButton.classList.remove('rotate');
+                toggleButton.style.pointerEvents = '';
             }, 300);
-
-            ThemeManager.applyTheme(newTheme);
         }
 
         function handleSearch() {
-            filterPosts();
+            const input = document.querySelector('.search-input');
+            if (!input) return;
+            input.value = input.value.substring(0, 100);
+            clearTimeout(debounceTimeout);
+            debounceTimeout = setTimeout(filterPosts, 300);
         }
 
         function filterPosts() {
-            const filter = document.querySelector('.filter-select').value;
-            const searchQuery = document.querySelector('.search-input').value.toLowerCase();
+            const filter = document.querySelector('.filter-select')?.value || 'all';
+            const searchQuery = document.querySelector('.search-input')?.value.toLowerCase() || '';
             const posts = document.querySelectorAll('.timeline-post');
+            const noResults = document.querySelector('.no-results');
             let found = false;
 
-            requestAnimationFrame(function() {
-                Array.prototype.forEach.call(posts, function(post) {
-                    const tags = Array.prototype.map.call(post.querySelectorAll('.tag'), function(tag) {
-                        return tag.textContent;
-                    });
-                    const title = post.querySelector('.timeline-title').textContent.toLowerCase();
-                    const content = post.querySelector('p').textContent.toLowerCase();
-                    
-                    const matchesTag = filter === 'all' || tags.indexOf(filter) !== -1;
+            requestAnimationFrame(() => {
+                posts.forEach(post => {
+                    const titleEl = post.querySelector('.timeline-title');
+                    const contentEl = post.querySelector('p');
+                    if (!titleEl || !contentEl) return;
+
+                    const tags = Array.from(post.querySelectorAll('.tag')).map(tag => tag.textContent);
+                    const title = titleEl.textContent.toLowerCase();
+                    const content = contentEl.textContent.toLowerCase();
+
+                    const matchesTag = filter === 'all' || tags.includes(filter);
                     const matchesSearch = !searchQuery || 
                         title.includes(searchQuery) || 
                         content.includes(searchQuery);
-                    
+
                     const matches = matchesTag && matchesSearch;
                     post.classList.toggle('show', matches);
                     found = found || matches;
                 });
 
-                document.querySelector('.no-results').style.display = found ? 'none' : 'block';
+                if (noResults) {
+                    noResults.style.display = found ? 'none' : 'block';
+                }
             });
 
-            // Update URL with filter
-            const url = new URL(window.location);
-            if (filter === 'all') {
-                url.searchParams.delete('tag');
-            } else {
-                url.searchParams.set('tag', filter);
+            try {
+                const url = new URL(window.location);
+                if (filter === 'all') {
+                    url.searchParams.delete('tag');
+                } else {
+                    url.searchParams.set('tag', filter);
+                }
+                history.replaceState({}, '', url);
+            } catch (e) {
+                console.warn('URL manipulation failed:', e);
             }
-            history.replaceState({}, '', url);
         }
 
-        // Check URL for initial filter
-        const urlParams = new URLSearchParams(window.location.search);
-        const initialFilter = urlParams.get('tag');
-        if (initialFilter) {
-            document.querySelector('.filter-select').value = initialFilter;
-        }
-
-        const select = document.querySelector('.filter-select');
-        select.style.pointerEvents = 'none';
-        select.style.opacity = '0.7';
-
-        setTimeout(() => {
-            filterPosts();
-            select.style.pointerEvents = '';
-            select.style.opacity = '';
-        }, 150);
-
-        // Add touch ripple effect
+        // Mobile touch handling
         document.querySelectorAll('.timeline-content').forEach(content => {
             let touchStartY;
+            
             content.addEventListener('touchstart', e => {
-                touchStartY = e.touches[0].clientY;
-                content.style.transform = 'scale(0.98)';
-                content.style.transition = 'transform 0.2s ease';
-            });
+                touchStartY = e.touches[0]?.clientY;
+            }, { passive: true });
 
             content.addEventListener('touchmove', e => {
-                const touchY = e.touches[0].clientY;
+                if (!touchStartY) return;
+                const touchY = e.touches[0]?.clientY;
                 const deltaY = touchY - touchStartY;
                 if (Math.abs(deltaY) > 5) {
                     content.style.transform = '';
                 }
-            });
+            }, { passive: true });
 
-            content.addEventListener('touchend', e => {
+            content.addEventListener('touchend', () => {
                 content.style.transform = '';
+                touchStartY = null;
                 setTimeout(() => {
                     content.style.transition = '';
                 }, 200);
-            });
+            }, { passive: true });
         });
 
-        // Initialize the page
         document.addEventListener('DOMContentLoaded', () => {
             ThemeManager.init();
         });
