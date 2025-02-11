@@ -381,13 +381,63 @@
 
         .timeline-post[data-category].show {
             display: block;
-            animation: fadeIn 0.3s ease-out forwards;
+            animation: slideIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
 
-        @keyframes fadeIn {
-            to {
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            100% {
                 opacity: 1;
-                transform: translateY(0);
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .timeline-content {
+            animation: fadeScale 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            will-change: transform, opacity;
+        }
+
+        @keyframes fadeScale {
+            0% {
+                opacity: 0;
+                transform: translateY(20px) scale(0.98);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .timeline-date {
+            animation: slideRight 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideRight {
+            0% {
+                opacity: 0;
+                transform: translateX(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .tag {
+            animation: popIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes popIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1);
             }
         }
 
@@ -627,6 +677,67 @@
             outline: none;
             border-color: var(--border);
         }
+
+        .back-to-top {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(var(--bg-rgb), 0.15);
+            backdrop-filter: blur(10px) saturate(180%);
+            -webkit-backdrop-filter: blur(10px) saturate(180%);
+            border: 1px solid rgba(var(--border-rgb), 0.08);
+            color: var(--secondary);
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(10px) scale(0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            z-index: 1000;
+        }
+
+        .back-to-top svg {
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .back-to-top.visible {
+            opacity: 0.92;
+            visibility: visible;
+            transform: translateY(0) scale(1);
+        }
+
+        .back-to-top:hover {
+            background: var(--accent-light);
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-3px) scale(1.05);
+            opacity: 1;
+            box-shadow: 0 8px 32px rgba(var(--border-rgb), 0.16);
+        }
+
+        .back-to-top:hover svg {
+            transform: translateY(-2px);
+        }
+
+        .back-to-top:active {
+            transform: translateY(-1px) scale(0.98);
+            transition-duration: 0.1s;
+        }
+
+        @media (max-width: 768px) {
+            .back-to-top {
+                bottom: 15px;
+                left: 15px;
+                width: 40px;
+                height: 40px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -666,37 +777,37 @@
         <div class="timeline" role="feed" aria-label="Journal entries" aria-live="polite">
             <div class="timeline-post" role="article" aria-labelledby="post-title-1">
                 <div class="timeline-content">
-                    <div class="timeline-date" aria-label="Posted in January 2024">January 2024</div>
-                    <h2 class="timeline-title" id="post-title-1">Server-Side Evolution</h2>
-                    <p>Venturing into backend development. Creating robust APIs and exploring the world of databases and server architecture.</p>
+                    <div class="timeline-date" aria-label="Posted in January 2025">January 2025</div>
+                    <h2 class="timeline-title" id="post-title-1">AI Integration in Web Apps</h2>
+                    <p>Implementing machine learning models in web applications. Exploring chatbots, recommendation systems, and natural language processing.</p>
                     <div class="post-tags">
                         <span class="tag">API</span>
-                        <span class="tag">Database</span>
-                        <span class="tag">Architecture</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="timeline-post" role="article" aria-labelledby="post-title-2" data-category="frontend">
-                <div class="timeline-content">
-                    <div class="timeline-date" aria-label="Posted in September 2023">September 2023</div>
-                    <h2 class="timeline-title" id="post-title-2">Framework Journey</h2>
-                    <p>Embracing modern frameworks. Building sophisticated applications with React and Vue, understanding component architecture.</p>
-                    <div class="post-tags">
-                        <span class="tag">React</span>
-                        <span class="tag">Vue</span>
-                        <span class="tag">Components</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="timeline-post" role="article" aria-labelledby="post-title-3" data-category="frontend">
-                <div class="timeline-content">
-                    <div class="timeline-date" aria-label="Posted in June 2023">June 2023</div>
-                    <h2 class="timeline-title" id="post-title-3">Exploring JavaScript</h2>
-                    <p>Diving into the world of JavaScript. Discovering the power of interactivity and dynamic content creation.</p>
-                    <div class="post-tags">
                         <span class="tag">JavaScript</span>
+                        <span class="tag">Interactive</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-post" role="article" aria-labelledby="post-title-2">
+                <div class="timeline-content">
+                    <div class="timeline-date" aria-label="Posted in December 2024">December 2024</div>
+                    <h2 class="timeline-title" id="post-title-2">Web3 Development</h2>
+                    <p>Exploring blockchain technology and decentralized applications. Building smart contracts and implementing Web3 authentication.</p>
+                    <div class="post-tags">
+                        <span class="tag">Web</span>
+                        <span class="tag">Architecture</span>
+                        <span class="tag">JavaScript</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-post" role="article" aria-labelledby="post-title-3">
+                <div class="timeline-content">
+                    <div class="timeline-date" aria-label="Posted in October 2024">October 2024</div>
+                    <h2 class="timeline-title" id="post-title-3">Real-time Data Processing</h2>
+                    <p>Implementing WebSocket connections and server-sent events. Building real-time dashboards and live data visualization.</p>
+                    <div class="post-tags">
+                        <span class="tag">Database</span>
                         <span class="tag">Interactive</span>
                         <span class="tag">Dynamic</span>
                     </div>
@@ -706,20 +817,78 @@
             <!-- No results message for filters yielding no entries -->
             <div class="no-results" aria-live="polite">No entries found.</div>
 
-            <div class="timeline-post" role="article" aria-labelledby="post-title-4" data-category="fundamentals">
+            <div class="timeline-post" role="article" aria-labelledby="post-title-4">
                 <div class="timeline-content">
-                    <div class="timeline-date" aria-label="Posted in March 2023">March 2023</div>
-                    <h2 class="timeline-title" id="post-title-4">The Beginning</h2>
-                    <p>First steps into web development. Learning the art of HTML and CSS, understanding the building blocks of modern websites.</p>
+                    <div class="timeline-date" aria-label="Posted in August 2024">August 2024</div>
+                    <h2 class="timeline-title" id="post-title-4">Microservices Architecture</h2>
+                    <p>Breaking down monolithic applications into microservices. Implementing service discovery and load balancing.</p>
                     <div class="post-tags">
-                        <span class="tag">HTML</span>
-                        <span class="tag">CSS</span>
+                        <span class="tag">Architecture</span>
+                        <span class="tag">API</span>
+                        <span class="tag">Database</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-post" role="article" aria-labelledby="post-title-5">
+                <div class="timeline-content">
+                    <div class="timeline-date" aria-label="Posted in June 2024">June 2024</div>
+                    <h2 class="timeline-title" id="post-title-5">Advanced React Patterns</h2>
+                    <p>Exploring compound components, render props, and custom hooks. Building scalable and maintainable React applications.</p>
+                    <div class="post-tags">
+                        <span class="tag">React</span>
+                        <span class="tag">Components</span>
+                        <span class="tag">JavaScript</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-post" role="article" aria-labelledby="post-title-6">
+                <div class="timeline-content">
+                    <div class="timeline-date" aria-label="Posted in April 2024">April 2024</div>
+                    <h2 class="timeline-title" id="post-title-6">GraphQL Implementation</h2>
+                    <p>Building efficient APIs with GraphQL. Implementing data fetching, mutations, and real-time subscriptions.</p>
+                    <div class="post-tags">
+                        <span class="tag">API</span>
+                        <span class="tag">Architecture</span>
+                        <span class="tag">Database</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-post" role="article" aria-labelledby="post-title-7">
+                <div class="timeline-content">
+                    <div class="timeline-date" aria-label="Posted in March 2024">March 2024</div>
+                    <h2 class="timeline-title" id="post-title-7">Progressive Web Apps</h2>
+                    <p>Creating installable web applications. Implementing service workers, offline functionality, and push notifications.</p>
+                    <div class="post-tags">
                         <span class="tag">Web</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Dynamic</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="timeline-post" role="article" aria-labelledby="post-title-8">
+                <div class="timeline-content">
+                    <div class="timeline-date" aria-label="Posted in January 2024">January 2024</div>
+                    <h2 class="timeline-title" id="post-title-8">Server-Side Evolution</h2>
+                    <p>Venturing into backend development. Creating robust APIs and exploring the world of databases and server architecture.</p>
+                    <div class="post-tags">
+                        <span class="tag">API</span>
+                        <span class="tag">Database</span>
+                        <span class="tag">Architecture</span>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <button id="backToTop" class="back-to-top" aria-label="Back to top">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 15l-6-6-6 6"/>
+        </svg>
+    </button>
 
     <script>
         let debounceTimeout;
@@ -907,6 +1076,23 @@
                     content.style.transition = '';
                 }, 200);
             }, { passive: true });
+        });
+
+        const backToTop = document.getElementById('backToTop');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+
+        backToTop.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
         });
 
         document.addEventListener('DOMContentLoaded', () => {
