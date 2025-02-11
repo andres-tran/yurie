@@ -4,16 +4,15 @@
     <meta charset="UTF-8">
     <script>
         (function() {
-            let savedTheme = localStorage.getItem('theme');
-            if (!savedTheme) {
-                // Use the system preference as fallback
-                savedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-                localStorage.setItem('theme', savedTheme);
-            }
+            let savedTheme = localStorage.getItem('theme') || 
+                (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
             document.documentElement.setAttribute('data-theme', savedTheme);
+            document.querySelector('meta[name="theme-color"]')?.setAttribute('content', savedTheme === 'dark' ? '#000000' : '#ffffff');
         })();
     </script>
     <meta name="theme-color" content="#ffffff">
+    <meta name="description" content="Yurie is a minimalist journal chronicling web development experiences and learning in API, database, JavaScript, and frontend technologies.">
+    <meta name="description" content="Yurie is a minimalist journal chronicling web development experiences and learning in API, database, JavaScript, and frontend technologies.">
     <meta name="msapplication-TileColor" content="#000000">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -24,7 +23,9 @@
     <meta name="application-name" content="Yurie">
     <meta name="format-detection" content="telephone=no">
     <title>Yurie</title>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Playfair+Display:wght@500;600&display=swap" rel="stylesheet"></noscript>
     <meta http-equiv="Cache-Control" content="max-age=31536000, must-revalidate">
     <style>
@@ -226,6 +227,7 @@
         .filter-select:focus {
             border-color: var(--accent);
             box-shadow: 0 0 0 3px var(--accent-light);
+            outline: none;
         }
 
         .header {
@@ -476,6 +478,7 @@
             .theme-toggle {
                 width: 36px;
                 height: 36px;
+                padding: 0.5rem;
             }
 
             .theme-toggle svg {
@@ -489,14 +492,16 @@
 
             .search-input {
                 font-size: 0.8rem;
-                padding: 0.4rem 0.6rem;
+                padding: 0.5rem 0.75rem;
+                height: 36px;
             }
 
             .filter-select {
                 flex: 1;
                 max-width: 100px;
                 font-size: 0.8rem;
-                padding: 0.4rem 1.25rem 0.4rem 0.6rem;
+                padding: 0.5rem 1.25rem 0.5rem 0.75rem;
+                height: 36px;
             }
 
             .header {
@@ -608,6 +613,20 @@
                 padding: 0.4rem 1.25rem 0.4rem 0.75rem;
             }
         }
+
+        .theme-toggle:focus {
+            outline: none;
+        }
+
+        .theme-toggle:focus-visible {
+            outline: 2px solid var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light);
+        }
+
+        .theme-toggle:focus:not(:focus-visible) {
+            outline: none;
+            border-color: var(--border);
+        }
     </style>
 </head>
 <body>
@@ -644,7 +663,7 @@
             <p class="site-description">A minimalist journal chronicling the evolution of ideas and experiences in development.</p>
         </header>
 
-        <div class="timeline" role="feed" aria-label="Journal entries">
+        <div class="timeline" role="feed" aria-label="Journal entries" aria-live="polite">
             <div class="timeline-post" role="article" aria-labelledby="post-title-1">
                 <div class="timeline-content">
                     <div class="timeline-date" aria-label="Posted in January 2024">January 2024</div>
@@ -746,8 +765,13 @@
             updateMetaThemeColor(theme) {
                 const metaTheme = document.querySelector('meta[name="theme-color"]');
                 if (metaTheme) {
-                    metaTheme.content = theme === 'dark' ? '#000000' : '#ffffff';
+                    metaTheme.setAttribute('content', theme === 'dark' ? '#000000' : '#ffffff');
                 }
+                requestAnimationFrame(() => {
+                    document.documentElement.style.display = 'none';
+                    document.documentElement.offsetHeight;
+                    document.documentElement.style.display = '';
+                });
             },
 
             updateThemeIcon(theme) {
@@ -791,13 +815,19 @@
 
             toggleButton.classList.add('rotate');
             toggleButton.style.pointerEvents = 'none';
-            
+
             ThemeManager.applyTheme(newTheme);
-            
+
+            requestAnimationFrame(() => {
+                setTimeout(() => {
+                    toggleButton.classList.remove('rotate');
+                    toggleButton.style.pointerEvents = '';
+                }, 300);
+            });
+
             setTimeout(() => {
-                toggleButton.classList.remove('rotate');
-                toggleButton.style.pointerEvents = '';
-            }, 300);
+                toggleButton.blur();
+            }, 350);
         }
 
         function handleSearch() {
@@ -810,8 +840,7 @@
 
         function filterPosts() {
             const filter = document.querySelector('.filter-select')?.value || 'all';
-            const searchQuery = document.querySelector('.search-input')?.value.toLowerCase() || '';
-            const posts = document.querySelectorAll('.timeline-post');
+            const searchQuery = document.querySelector('.search-input')?.value.toLowerCase() || '';            const posts = document.querySelectorAll('.timeline-post');
             const noResults = document.querySelector('.no-results');
             let found = false;
 
@@ -828,7 +857,8 @@
                     const matchesTag = filter === 'all' || tags.includes(filter);
                     const matchesSearch = !searchQuery || 
                         title.includes(searchQuery) || 
-                        content.includes(searchQuery);
+                        content.includes(searchQuery) ||
+                        tags.some(tag => tag.toLowerCase().includes(searchQuery));
 
                     const matches = matchesTag && matchesSearch;
                     post.classList.toggle('show', matches);
@@ -856,7 +886,7 @@
         // Mobile touch handling
         document.querySelectorAll('.timeline-content').forEach(content => {
             let touchStartY;
-            
+
             content.addEventListener('touchstart', e => {
                 touchStartY = e.touches[0]?.clientY;
             }, { passive: true });
@@ -880,7 +910,16 @@
         });
 
         document.addEventListener('DOMContentLoaded', () => {
-            ThemeManager.init();
+            const urlParams = new URLSearchParams(window.location.search);
+            const tagFilter = urlParams.get('tag') || 'all';
+            const filterSelect = document.querySelector('.filter-select');
+            if (filterSelect) {
+                filterSelect.value = tagFilter;
+                requestAnimationFrame(() => {
+                    filterPosts();
+                    ThemeManager.init();
+                });
+            }
         });
     </script>
     <script defer src="https://cdn.botpress.cloud/webchat/v2.2/inject.js"></script>
