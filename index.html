@@ -1,53 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Search</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Search Web Browser</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <div class="container">
-        <header>
-            <nav>
-                <div class="logo">AI Search</div>
-                <div class="theme-toggle">
-                    <i class="fas fa-moon"></i>
-                </div>
-            </nav>
-        </header>
+  <header>
+    <h1>Advanced Search</h1>
+  </header>
+  
+  <main>
+    <!-- Search Section -->
+    <section id="search-section">
+      <form id="search-form">
+        <input type="text" id="search-input" placeholder="Enter your search query..." required />
+        <button type="submit">Search</button>
+        <button type="button" id="toggle-advanced">Advanced Options</button>
+      </form>
 
-        <main>
-            <div class="search-container">
-                <div class="search-box">
-                    <input type="text" id="searchInput" placeholder="Ask anything...">
-                    <button id="searchButton">
-                        <i class="fas fa-search"></i>
-                    </button>
-                </div>
-                <div class="search-suggestions">
-                    <p>Try asking:</p>
-                    <div class="suggestion-chips">
-                        <span class="chip">What is quantum computing?</span>
-                        <span class="chip">Latest AI developments</span>
-                        <span class="chip">How does GPT work?</span>
-                    </div>
-                </div>
-            </div>
+      <!-- Advanced Options (initially hidden) -->
+      <div id="advanced-options" class="hidden">
+        <div class="option">
+          <label for="date-filter">Filter by Date:</label>
+          <input type="date" id="date-filter" />
+        </div>
+        <div class="option">
+          <label for="language-filter">Language:</label>
+          <select id="language-filter">
+            <option value="">Any</option>
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <!-- Add more language options as needed -->
+          </select>
+        </div>
+        <!-- Add more advanced options here -->
+      </div>
+    </section>
 
-            <div class="results-container" id="resultsContainer">
-                <!-- Results will be dynamically inserted here -->
-            </div>
-        </main>
-
-        <footer>
-            <p>© 2024 AI Search. All rights reserved.</p>
-        </footer>
-    </div>
-    <script src="script.js"></script>
+    <!-- Results Section -->
+    <section id="results-section">
+      <h2>Results</h2>
+      <div id="results">
+        <!-- Search results will be injected here -->
+      </div>
+    </section>
+  </main>
+  
+  <footer>
+    <p>© 2025 Advanced Search Web Browser</p>
+  </footer>
+  
+  <script src="main.js"></script>
 </body>
 </html>
