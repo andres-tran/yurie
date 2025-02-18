@@ -1,98 +1,63 @@
-/* 
-  Feel free to adjust the gradient colors, font sizes, 
-  and spacing to exactly match your design.
-*/
+:root {
+  --primary-color: #2b6cb0;
+  --secondary-color: #4299e1;
+}
 
-/* Reset default browser styles */
-* {
+body {
+  font-family: Arial, sans-serif;
+  background: #f7f7f7;
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
 }
 
-html, body {
-  height: 100%;
-  font-family: 'Helvetica Neue', Arial, sans-serif;
+.search-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
 }
 
-/* 
-  Full-screen gradient background 
-  (Adjust these color stops to match your exact design)
-*/
-body {
-  /* Example purple gradient from top to bottom */
-  background: linear-gradient(180deg, #4A148C 0%, #6A1B9A 100%);
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-}
-
-/* 
-  Container to hold the heading, subtitle, and search box 
-*/
-.container {
-  max-width: 600px;
-  padding: 2rem;
-}
-
-/* 
-  Main heading (AI Search)
-*/
-.main-heading {
-  font-size: 3rem;
-  margin-bottom: 0.5rem;
-}
-
-/* 
-  Subtitle (Search anything with AI-powered insights)
-*/
-.subtitle {
-  font-size: 1.2rem;
-  font-weight: 300;
-  margin-bottom: 2rem;
-  opacity: 0.9; /* Slightly lighter text */
-}
-
-/* 
-  Search box container 
-  - Slightly transparent background 
-  - Subtle border or box-shadow if needed
-*/
 .search-box {
-  background: rgba(255, 255, 255, 0.1);
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 0.8rem;
+  border: 2px solid var(--primary-color);
+  border-radius: 4px;
+  font-size: 1.1rem;
+}
+
+.result-card {
+  background: white;
+  padding: 1.5rem;
+  margin-bottom: 1rem;
   border-radius: 8px;
-  padding: 0.75rem 1rem;
-  display: inline-flex; /* Keep icon + input side by side */
-  align-items: center;
-  width: 100%;
-  max-width: 500px; /* Control how wide the search bar can get */
-  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2); /* Optional border effect */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-/* 
-  Optional search icon styling 
-*/
-.search-icon {
-  display: inline-flex;
-  margin-right: 0.75rem;
-  opacity: 0.8;
+.ai-answer {
+  border-left: 4px solid var(--secondary-color);
+  padding-left: 1rem;
+  margin: 1rem 0;
 }
 
-/* 
-  Search input 
-*/
-.search-input {
-  background: transparent;
-  border: none;
-  outline: none;
-  width: 100%;
-  font-size: 1rem;
-  color: #fff;
-  /* Adjust placeholder color if you like */
+.result-card a {
+  text-decoration: none;
+  color: var(--primary-color);
+  font-weight: bold;
 }
 
-.search-input::placeholder {
-  color: rgba(255, 255, 255, 0.7);
+.meta {
+  font-size: 0.9rem;
+  color: #555;
+  margin-top: 0.5rem;
+}
+
+.citations a {
+  font-size: 0.8rem;
+  color: var(--secondary-color);
+  margin-right: 0.5rem;
 }
