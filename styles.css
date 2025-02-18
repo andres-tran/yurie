@@ -1,0 +1,98 @@
+/* 
+  Feel free to adjust the gradient colors, font sizes, 
+  and spacing to exactly match your design.
+*/
+
+/* Reset default browser styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* 
+  Full-screen gradient background 
+  (Adjust these color stops to match your exact design)
+*/
+body {
+  /* Example purple gradient from top to bottom */
+  background: linear-gradient(180deg, #4A148C 0%, #6A1B9A 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+/* 
+  Container to hold the heading, subtitle, and search box 
+*/
+.container {
+  max-width: 600px;
+  padding: 2rem;
+}
+
+/* 
+  Main heading (AI Search)
+*/
+.main-heading {
+  font-size: 3rem;
+  margin-bottom: 0.5rem;
+}
+
+/* 
+  Subtitle (Search anything with AI-powered insights)
+*/
+.subtitle {
+  font-size: 1.2rem;
+  font-weight: 300;
+  margin-bottom: 2rem;
+  opacity: 0.9; /* Slightly lighter text */
+}
+
+/* 
+  Search box container 
+  - Slightly transparent background 
+  - Subtle border or box-shadow if needed
+*/
+.search-box {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  display: inline-flex; /* Keep icon + input side by side */
+  align-items: center;
+  width: 100%;
+  max-width: 500px; /* Control how wide the search bar can get */
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.2); /* Optional border effect */
+}
+
+/* 
+  Optional search icon styling 
+*/
+.search-icon {
+  display: inline-flex;
+  margin-right: 0.75rem;
+  opacity: 0.8;
+}
+
+/* 
+  Search input 
+*/
+.search-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  width: 100%;
+  font-size: 1rem;
+  color: #fff;
+  /* Adjust placeholder color if you like */
+}
+
+.search-input::placeholder {
+  color: rgba(255, 255, 255, 0.7);
+}
