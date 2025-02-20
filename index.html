@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Enhanced EXA Search Engine</title>
+  <title>Enhanced EXA Search Engine with Error Debugging</title>
   <style>
     /* Global Styles */
     body {
@@ -164,16 +164,13 @@
       const summary = document.getElementById("summary").checked;
       const resultsDiv = document.getElementById("results");
 
-      // Validate input
       if (!query) {
         resultsDiv.innerHTML = "<p class='loading'>Please enter a search query.</p>";
         return;
       }
       
-      // Show loading spinner and message
       resultsDiv.innerHTML = `<div class="spinner"></div><p class="loading">Searching for “${query}” …</p>`;
       
-      // Build the request payload based on selected options
       const payload = {
         query: query,
         type: searchType,       // auto, neural, or keyword
@@ -181,7 +178,6 @@
         useAutoprompt: true     // enable autoprompt as per docs
       };
 
-      // Add optional contents extraction options if requested
       if (highlights || summary) {
         payload.contents = {};
         if (highlights) payload.contents.highlights = true;
@@ -198,18 +194,22 @@
           body: JSON.stringify(payload)
         });
         
-        // Check if response is OK
+        // Check HTTP status code
         if (!response.ok) {
-          throw new Error(`Server responded with ${response.status}`);
+          throw new Error(`HTTP error: ${response.status}`);
         }
         
         const data = await response.json();
+        // Check if the API returned an error within the JSON payload
+        if (data.error) {
+          throw new Error(`EXA API Error: ${data.error}`);
+        }
+        
         resultsDiv.innerHTML = "";
         if (data.results && data.results.length > 0) {
           data.results.forEach(result => {
             const resultDiv = document.createElement("div");
             resultDiv.className = "result";
-            // Prioritize summary > highlights > truncated text
             const preview = result.summary || 
                             (result.highlights && result.highlights.join(" ")) || 
                             (result.text ? result.text.substring(0, 200) + "..." : "No preview available.");
@@ -224,7 +224,7 @@
         }
       } catch (error) {
         console.error("Search error:", error);
-        resultsDiv.innerHTML = `<p class="loading">Error: ${error.message}</p>`;
+        resultsDiv.innerHTML = `<p class="loading">Error occurred: ${error.message}</p>`;
       }
     }
 
