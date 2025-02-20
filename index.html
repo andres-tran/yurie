@@ -2,20 +2,125 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>AI Search Engine</title>
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>EXA Search Engine</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f3f3f3;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      background: #fff;
+      padding: 20px;
+      border-radius: 6px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+    form {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    input[type="text"] {
+      width: 70%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px 0 0 4px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #0078d4;
+      color: white;
+      font-size: 16px;
+      border-radius: 0 4px 4px 0;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #005a9e;
+    }
+    .result {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .result:last-child {
+      border-bottom: none;
+    }
+    .result h3 {
+      margin: 0;
+      font-size: 18px;
+    }
+    .result p {
+      margin: 5px 0 0;
+      color: #555;
+      font-size: 14px;
+    }
+    a {
+      color: #0078d4;
+      text-decoration: none;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
 </head>
 <body>
-  <div class="search-container">
-    <div class="search-box">
-      <input type="text" id="searchInput" placeholder="Ask anything..." />
-      <button onclick="executeSearch()">Search</button>
-    </div>
-    <div id="resultsContainer"></div>
+  <div class="container">
+    <h1>EXA Search Engine</h1>
+    <form id="searchForm">
+      <input type="text" id="query" placeholder="Enter search query" required />
+      <button type="submit">Search</button>
+    </form>
+    <div id="results"></div>
   </div>
 
-  <!-- Include your JavaScript file -->
-  <script src="script.js"></script>
+  <script>
+    document.getElementById("searchForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const query = document.getElementById("query").value.trim();
+      const resultsDiv = document.getElementById("results");
+      resultsDiv.innerHTML = "<p>Searching…</p>";
+
+      try {
+        const response = await fetch("https://api.exa.ai/search", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer YOUR_EXA_API_KEY"
+          },
+          body: JSON.stringify({
+            query: query,
+            text: true  // Set to true if you want the full text content in the results
+          })
+        });
+        const data = await response.json();
+        resultsDiv.innerHTML = "";
+        if(data.results && data.results.length > 0) {
+          data.results.forEach(result => {
+            const resultDiv = document.createElement("div");
+            resultDiv.className = "result";
+            resultDiv.innerHTML = `
+              <h3><a href="${result.url}" target="_blank">${result.title || "No title"}</a></h3>
+              <p>${result.text ? result.text.substring(0, 200) + "..." : "No preview available."}</p>
+            `;
+            resultsDiv.appendChild(resultDiv);
+          });
+        } else {
+          resultsDiv.innerHTML = "<p>No results found.</p>";
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        resultsDiv.innerHTML = "<p>Error occurred while searching.</p>";
+      }
+    });
+  </script>
 </body>
 </html>
