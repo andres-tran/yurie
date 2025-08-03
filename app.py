@@ -13,9 +13,11 @@ load_dotenv()
 # Get the absolute path to the directory containing this file
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+# Configure Flask with explicit static handling
 app = Flask(__name__, 
            static_folder=os.path.join(BASE_DIR, 'static'),
-           template_folder=os.path.join(BASE_DIR, 'templates'))
+           template_folder=os.path.join(BASE_DIR, 'templates'),
+           static_url_path='/static')
 CORS(app, supports_credentials=True)
 
 # Configure Flask session
@@ -234,6 +236,12 @@ def clear_history():
     session.permanent = True
     session.modified = True
     return {'status': 'success', 'message': 'Conversation history cleared'}
+
+# Add explicit static file serving for Vercel
+@app.route('/static/<path:path>')
+def serve_static(path):
+    """Explicitly serve static files for Vercel compatibility"""
+    return app.send_static_file(path)
 
 # Development server code removed for Vercel deployment
 # To run locally, use: flask run --debug
