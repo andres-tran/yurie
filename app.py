@@ -10,15 +10,22 @@ import uuid
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__)
+# Get the absolute path to the directory containing this file
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+app = Flask(__name__, 
+           static_folder=os.path.join(BASE_DIR, 'static'),
+           template_folder=os.path.join(BASE_DIR, 'templates'))
 CORS(app, supports_credentials=True)
 
 # Configure Flask session
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here-change-in-production')
-app.config['SESSION_TYPE'] = 'filesystem'
+# Use client-side sessions for Vercel compatibility
+app.config['SESSION_PERMANENT'] = True
 app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24 hours
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = True  # Enable for HTTPS
 
 # Initialize Replicate client
 replicate_client = replicate.Client(api_token=os.getenv('REPLICATE_API_TOKEN'))
@@ -228,5 +235,5 @@ def clear_history():
     session.modified = True
     return {'status': 'success', 'message': 'Conversation history cleared'}
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5001)
+# Development server code removed for Vercel deployment
+# To run locally, use: flask run --debug
