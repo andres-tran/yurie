@@ -36,7 +36,9 @@
                     </svg>
                 </button>
                 <button id="newChat" class="new-chat-btn" aria-label="Start new chat">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="t
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
                     <span class="btn-text">new chat</span>
                 </button>
             </nav>
@@ -80,10 +82,9 @@
         </footer>
     </div>
     
-    <!-- Markdown-it and Syntax Highlighting -->
+    <!-- External libraries -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
-    <!-- Load languages for syntax highlighting -->
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/python.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/java.min.js"></script>
@@ -95,19 +96,7 @@
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
     
-    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
-    
-    <!-- Initialize theme -->
-    <script>
-        // Set initial theme immediately to prevent flash
-        (function() {
-            const savedTheme = localStorage.getItem('theme');
-            // Default to dark theme for minimal design
-            const theme = savedTheme || 'dark';
-            document.documentElement.setAttribute('data-theme', theme);
-        })();
-    </script>
-    
-    <!-- Analytics removed for better compatibility -->
+    <!-- Main application script, deferred to run after DOM is parsed -->
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
 </body>
 </html>
