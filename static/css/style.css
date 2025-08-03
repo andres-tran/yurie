@@ -759,12 +759,13 @@ body {
     
     .header-controls {
         gap: 8px;
+        align-items: center;
     }
     
     .theme-toggle {
         width: 40px;
         height: 40px;
-        padding: 12px;
+        padding: 10px;
     }
     
     .theme-toggle svg {
@@ -773,10 +774,11 @@ body {
     }
     
     .model-selector {
-        padding: 10px 14px;
-        font-size: 13px;
+        padding: 8px 12px;
+        font-size: 12px;
         height: 40px;
-        min-width: auto;
+        min-width: 120px;
+        max-width: 120px;
     }
     
     .new-chat-btn {
@@ -948,9 +950,10 @@ body {
     
     .model-selector {
         max-width: 110px;
-        font-size: 12px;
-        padding: 8px 10px;
-        padding-right: 28px;
+        min-width: 110px;
+        font-size: 11px;
+        padding: 8px;
+        height: 40px;
     }
     
     .new-chat-btn {
