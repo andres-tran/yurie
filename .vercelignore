@@ -1,0 +1,13 @@
+.env
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.git
+.venv
+venv
+.pytest_cache
+.DS_Store
+*.log
+setup.bat
+setup.sh
