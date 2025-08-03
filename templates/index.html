@@ -36,9 +36,7 @@
                     </svg>
                 </button>
                 <button id="newChat" class="new-chat-btn" aria-label="Start new chat">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                        <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="t
                     <span class="btn-text">new chat</span>
                 </button>
             </nav>
@@ -97,7 +95,7 @@
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
     
-    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}" defer></script>
     
     <!-- Initialize theme -->
     <script>
