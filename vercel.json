@@ -6,21 +6,19 @@
     },
     {
       "source": "/static/(.*)",
-      "destination": "/api/static/$1"
+      "destination": "/static/$1"
     },
     {
       "source": "/(.*)",
-      "destination": "/api"
+      "destination": "/api/index"
     }
   ],
   "functions": {
     "api/index.py": {
-      "maxDuration": 30,
-      "runtime": "python3.9"
+      "maxDuration": 30
     },
     "api/health.py": {
-      "maxDuration": 10,
-      "runtime": "python3.9"
+      "maxDuration": 10
     }
   }
 }
