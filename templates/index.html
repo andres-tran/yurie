@@ -26,7 +26,7 @@
                     <option value="text">text model</option>
                     <option value="image">image model</option>
                 </select>
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">
                     <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <circle cx="12" cy="12" r="5" stroke-width="2"/>
                         <path d="M12 1v6m0 6v6m-9-9h6m6 0h6m-7.07-7.07l4.24 4.24M4.93 19.07l4.24-4.24m0-5.66l-4.24-4.24m14.14 14.14l-4.24-4.24" stroke-width="2" stroke-linecap="round"/>
@@ -35,7 +35,7 @@
                         <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
-                <button class="new-chat-btn" onclick="newChat()" aria-label="Start new chat">
+                <button id="newChat" class="new-chat-btn" aria-label="Start new chat">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>
                     </svg>
@@ -49,13 +49,13 @@
                 <h2>welcome to yurie</h2>
                 <p>select a model and start chatting. generate text or create images.</p>
                 <div class="suggestions" role="group" aria-label="Suggested prompts">
-                    <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
+                    <button class="suggestion">
                         explain quantum computing
                     </button>
-                    <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')" aria-label="Send suggestion: Generate cyberpunk cityscape">
+                    <button class="suggestion">
                         generate cyberpunk cityscape
                     </button>
-                    <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')" aria-label="Send suggestion: Write an AI haiku">
+                    <button class="suggestion">
                         write an ai haiku
                     </button>
                 </div>
@@ -63,13 +63,12 @@
         </main>
         
         <footer class="input-container" role="contentinfo">
-            <form class="input-wrapper" onsubmit="sendMessage(event)" role="form" aria-label="Message input form">
+            <form id="chatForm" class="input-wrapper" role="form" aria-label="Message input form">
                 <div class="input-field-container">
                     <textarea 
                         id="messageInput" 
                         placeholder="Type your message here..."
                         rows="3"
-                        onkeydown="handleKeyPress(event)"
                         aria-label="Message input"
                         aria-required="true"
                     ></textarea>
