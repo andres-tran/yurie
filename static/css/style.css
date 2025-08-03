@@ -780,9 +780,16 @@ body {
     }
     
     .new-chat-btn {
-        padding: 10px 12px;
+        padding: 10px;
         font-size: 13px;
         height: 40px;
+        width: 40px;
+        min-width: 40px;
+    }
+    
+    .new-chat-btn svg {
+        width: 16px;
+        height: 16px;
     }
     
     .btn-text {
@@ -947,7 +954,10 @@ body {
     }
     
     .new-chat-btn {
-        padding: 8px 10px;
+        padding: 8px;
+        width: 40px;
+        height: 40px;
+        min-width: 40px;
     }
     
     .welcome-message h2 {
