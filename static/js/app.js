@@ -206,6 +206,11 @@ function setupInputHandlers() {
     
     // Also trigger auto-resize on load in case there's existing text
     autoResizeTextarea(input);
+
+    // Add event listener for the send button
+    sendButton.addEventListener('click', () => {
+        sendMessage();
+    });
 }
 
 // Auto-resize textarea
