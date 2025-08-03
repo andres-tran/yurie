@@ -4,12 +4,31 @@ let markdownIt = null;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
-    setupTheme();
-    setupMarkdownRenderer();
-    setupModelSelector();
-    setupInputHandlers();
-    setupMobileOptimizations();
-    setupNativeInteractions();
+    try {
+        setupTheme();
+        setupMarkdownRenderer();
+        setupModelSelector();
+        setupInputHandlers();
+        setupMobileOptimizations();
+        setupNativeInteractions();
+        console.log('App initialized successfully');
+    } catch (error) {
+        console.error('Error initializing app:', error);
+        // Retry initialization after a short delay
+        setTimeout(() => {
+            window.location.reload();
+        }, 1000);
+    }
+});
+
+// Also initialize on window load as fallback
+window.addEventListener('load', () => {
+    // Check if app is already initialized
+    const sendButton = document.getElementById('sendButton');
+    if (sendButton && !sendButton.hasAttribute('data-initialized')) {
+        setupInputHandlers();
+        sendButton.setAttribute('data-initialized', 'true');
+    }
 });
 
 // Setup native macOS/iOS interactions
@@ -147,6 +166,13 @@ function updateSyntaxHighlightingTheme(theme) {
 
 // Setup markdown renderer
 function setupMarkdownRenderer() {
+    // Check if markdown-it is loaded
+    if (typeof window.markdownit === 'undefined') {
+        console.warn('Markdown-it not loaded yet, retrying...');
+        setTimeout(setupMarkdownRenderer, 100);
+        return;
+    }
+    
     // Initialize markdown-it with options
     markdownIt = window.markdownit({
         html: true,
@@ -154,7 +180,7 @@ function setupMarkdownRenderer() {
         typographer: true,
         breaks: true,
         highlight: function(str, lang) {
-            if (lang && hljs.getLanguage(lang)) {
+            if (typeof hljs !== 'undefined' && lang && hljs.getLanguage(lang)) {
                 try {
                     return '<pre class="hljs"><code>' +
                            hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
@@ -165,11 +191,13 @@ function setupMarkdownRenderer() {
         }
     });
     
-    // Register highlight.js aliases
-    hljs.registerAliases(['js'], { languageName: 'javascript' });
-    hljs.registerAliases(['py'], { languageName: 'python' });
-    hljs.registerAliases(['ts'], { languageName: 'typescript' });
-    hljs.registerAliases(['sh', 'shell'], { languageName: 'bash' });
+    // Register highlight.js aliases if available
+    if (typeof hljs !== 'undefined') {
+        hljs.registerAliases(['js'], { languageName: 'javascript' });
+        hljs.registerAliases(['py'], { languageName: 'python' });
+        hljs.registerAliases(['ts'], { languageName: 'typescript' });
+        hljs.registerAliases(['sh', 'shell'], { languageName: 'bash' });
+    }
 }
 
 // Model selector setup
@@ -185,10 +213,24 @@ function setupModelSelector() {
 function setupInputHandlers() {
     const input = document.getElementById('messageInput');
     const sendButton = document.getElementById('sendButton');
+    const form = document.querySelector('.input-wrapper');
     
+    // Input change handler
     input.addEventListener('input', () => {
         sendButton.disabled = input.value.trim() === '' || isGenerating;
         autoResizeTextarea(input);
+    });
+    
+    // Form submit handler
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        sendMessage();
+    });
+    
+    // Send button click handler
+    sendButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        sendMessage();
     });
     
     // Enable send button on load if there's text
@@ -226,7 +268,15 @@ function handleKeyPress(event) {
 
 // Send message
 async function sendMessage() {
+    // Ensure elements exist
     const input = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    
+    if (!input || !sendButton) {
+        console.error('Required elements not found');
+        return;
+    }
+    
     const message = input.value.trim();
     
     if (!message || isGenerating) return;
@@ -450,11 +500,17 @@ function createTypingIndicator() {
 // Send suggestion
 function sendSuggestion(text) {
     const input = document.getElementById('messageInput');
+    const sendButton = document.getElementById('sendButton');
+    
     input.value = text;
     autoResizeTextarea(input);
+    sendButton.disabled = false;
     
-    // Update model based on suggestion
-    if (text.toLowerCase().includes('generate') || text.toLowerCase().includes('image')) {
+    // Update model based on suggestion - more comprehensive check
+    const imageKeywords = ['generate', 'create', 'draw', 'image', 'picture', 'photo', 'illustration', 'design', 'art'];
+    const shouldUseImageModel = imageKeywords.some(keyword => text.toLowerCase().includes(keyword));
+    
+    if (shouldUseImageModel) {
         currentModel = 'image';
         document.getElementById('modelSelector').value = 'image';
     } else {
