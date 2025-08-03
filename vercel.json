@@ -4,28 +4,12 @@
     {
       "src": "api/index.py",
       "use": "@vercel/python"
-    },
-    {
-      "src": "static/**",
-      "use": "@vercel/static"
     }
   ],
   "routes": [
     {
       "src": "/static/(.*)",
       "dest": "/static/$1"
-    },
-    {
-      "src": "/css/(.*)",
-      "dest": "/static/css/$1"
-    },
-    {
-      "src": "/js/(.*)",
-      "dest": "/static/js/$1"
-    },
-    {
-      "src": "/icons/(.*)",
-      "dest": "/static/icons/$1"
     },
     {
       "src": "/(.*)",
