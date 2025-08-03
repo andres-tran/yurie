@@ -4,8 +4,8 @@ A minimal AI chatbot application built with Flask and Replicate API, featuring t
 
 ## Features
 
-- **Text Generation**: Powered by Meta's Llama 2 70B Chat model
-- **Image Generation**: Powered by Stability AI's SDXL model
+- **Text Generation**: Powered by openai/gpt-4.1 model
+- **Image Generation**: Powered by bytedance/seedream-3 model
 - **Minimal UI**: Clean, dark-themed interface optimized for desktop and mobile
 - **Real-time Streaming**: Stream responses as they're generated
 - **Theme Toggle**: Switch between dark and light themes
@@ -100,8 +100,8 @@ yurie/
 
 ## Models Used
 
-- **Text Generation**: Meta Llama 2 70B Chat
-- **Image Generation**: Stability AI SDXL
+- **Text Generation**: openai/gpt-4.1
+- **Image Generation**: bytedance/seedream-3
 
 ## Troubleshooting
 
