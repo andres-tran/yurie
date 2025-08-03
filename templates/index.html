@@ -8,7 +8,7 @@
     <meta name="theme-color" content="#000000">
     <meta name="description" content="Yurie - AI Chat Assistant">
     <title>Yurie - AI Chat Assistant</title>
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Preconnect to improve performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -98,7 +98,7 @@
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
     
-    <script src="/js/app.js"></script>
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     
     <!-- Initialize theme -->
     <script>
