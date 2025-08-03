@@ -1,12 +1,81 @@
 let currentModel = 'text';
 let isGenerating = false;
+let markdownIt = null;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', () => {
+    setupTheme();
+    setupMarkdownRenderer();
     setupModelSelector();
     setupInputHandlers();
     setupMobileOptimizations();
 });
+
+// Setup theme management
+function setupTheme() {
+    // Check for saved theme preference or default to system preference
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme) {
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    } else {
+        // Default to system preference
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
+    }
+}
+
+// Toggle theme
+function toggleTheme() {
+    const currentTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('theme', newTheme);
+    
+    // Update syntax highlighting theme
+    updateSyntaxHighlightingTheme(newTheme);
+}
+
+// Update syntax highlighting theme
+function updateSyntaxHighlightingTheme(theme) {
+    const lightTheme = document.querySelector('link[href*="github.min.css"]');
+    const darkTheme = document.querySelector('link[href*="github-dark.min.css"]');
+    
+    if (theme === 'dark') {
+        if (lightTheme) lightTheme.disabled = true;
+        if (darkTheme) darkTheme.disabled = false;
+    } else {
+        if (lightTheme) lightTheme.disabled = false;
+        if (darkTheme) darkTheme.disabled = true;
+    }
+}
+
+// Setup markdown renderer
+function setupMarkdownRenderer() {
+    // Initialize markdown-it with options
+    markdownIt = window.markdownit({
+        html: true,
+        linkify: true,
+        typographer: true,
+        breaks: true,
+        highlight: function(str, lang) {
+            if (lang && hljs.getLanguage(lang)) {
+                try {
+                    return '<pre class="hljs"><code>' +
+                           hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
+                           '</code></pre>';
+                } catch (__) {}
+            }
+            return '<pre class="hljs"><code>' + markdownIt.utils.escapeHtml(str) + '</code></pre>';
+        }
+    });
+    
+    // Register highlight.js aliases
+    hljs.registerAliases(['js'], { languageName: 'javascript' });
+    hljs.registerAliases(['py'], { languageName: 'python' });
+    hljs.registerAliases(['ts'], { languageName: 'typescript' });
+    hljs.registerAliases(['sh', 'shell'], { languageName: 'bash' });
+}
 
 // Model selector setup
 function setupModelSelector() {
@@ -74,6 +143,9 @@ async function sendMessage() {
     // Add button animation
     sendButton.classList.add('sending');
     
+    // Haptic feedback on mobile
+    triggerHapticFeedback('light');
+    
     // Clear input
     input.value = '';
     autoResizeTextarea(input);
@@ -131,7 +203,7 @@ async function sendMessage() {
                             updateMessage(assistantMessageId, createTypingIndicator());
                         } else if (data.type === 'content') {
                             assistantMessage += data.content;
-                            updateMessage(assistantMessageId, assistantMessage);
+                            updateMessage(assistantMessageId, assistantMessage, true);
                         } else if (data.type === 'image') {
                             const imageHtml = `<img src="${data.content}" alt="Generated image" />`;
                             updateMessage(assistantMessageId, imageHtml);
@@ -166,21 +238,103 @@ function addMessage(content, sender, id) {
     
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
-    contentDiv.innerHTML = sender === 'assistant' && !content ? createTypingIndicator() : content;
+    
+    if (sender === 'user') {
+        // For user messages, escape HTML to prevent injection
+        contentDiv.textContent = content;
+    } else {
+        contentDiv.innerHTML = sender === 'assistant' && !content ? createTypingIndicator() : content;
+    }
     
     messageDiv.appendChild(contentDiv);
     container.appendChild(messageDiv);
-    container.scrollTop = container.scrollHeight;
+    
+    // Smooth scroll to bottom
+    smoothScrollToBottom(container);
+}
+
+// Smooth scroll to bottom
+function smoothScrollToBottom(container) {
+    const scrollHeight = container.scrollHeight;
+    const height = container.clientHeight;
+    const maxScrollTop = scrollHeight - height;
+    const duration = 300;
+    
+    const startScrollTop = container.scrollTop;
+    const distance = maxScrollTop - startScrollTop;
+    let startTime = null;
+    
+    function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / duration, 1);
+        
+        container.scrollTop = startScrollTop + (distance * easeOutCubic(progress));
+        
+        if (timeElapsed < duration) {
+            requestAnimationFrame(animation);
+        }
+    }
+    
+    function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
+    
+    requestAnimationFrame(animation);
 }
 
 // Update message content
-function updateMessage(id, content) {
+function updateMessage(id, content, isMarkdown = false) {
     const message = document.getElementById(id);
     if (message) {
         const contentDiv = message.querySelector('.message-content');
-        contentDiv.innerHTML = content;
+        
+        if (isMarkdown && markdownIt) {
+            // Render markdown content
+            contentDiv.innerHTML = markdownIt.render(content);
+            
+            // Apply copy button to code blocks
+            addCopyButtons(contentDiv);
+        } else {
+            contentDiv.innerHTML = content;
+        }
+        
         const container = document.getElementById('messagesContainer');
-        container.scrollTop = container.scrollHeight;
+        smoothScrollToBottom(container);
+    }
+}
+
+// Add copy buttons to code blocks
+function addCopyButtons(container) {
+    const codeBlocks = container.querySelectorAll('pre code');
+    codeBlocks.forEach(block => {
+        const pre = block.parentElement;
+        const wrapper = document.createElement('div');
+        wrapper.className = 'code-block-wrapper';
+        pre.parentNode.insertBefore(wrapper, pre);
+        wrapper.appendChild(pre);
+        
+        const copyBtn = document.createElement('button');
+        copyBtn.className = 'copy-btn';
+        copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10"></path></svg>';
+        copyBtn.title = 'Copy code';
+        copyBtn.onclick = () => copyToClipboard(block.textContent, copyBtn);
+        wrapper.appendChild(copyBtn);
+    });
+}
+
+// Copy to clipboard function
+async function copyToClipboard(text, button) {
+    try {
+        await navigator.clipboard.writeText(text);
+        button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"></path></svg>';
+        button.classList.add('copied');
+        setTimeout(() => {
+            button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10"></path></svg>';
+            button.classList.remove('copied');
+        }, 2000);
+    } catch (err) {
+        console.error('Failed to copy:', err);
     }
 }
 
@@ -216,6 +370,9 @@ function sendSuggestion(text) {
 // New chat
 async function newChat() {
     if (isGenerating) return;
+    
+    // Haptic feedback
+    triggerHapticFeedback('medium');
     
     const container = document.getElementById('messagesContainer');
     
@@ -300,5 +457,62 @@ function setupMobileOptimizations() {
         messageInput.addEventListener('touchstart', (e) => {
             e.target.focus();
         });
+        
+        // Add swipe gesture support for new chat
+        let touchStartX = 0;
+        let touchEndX = 0;
+        
+        document.addEventListener('touchstart', (e) => {
+            touchStartX = e.changedTouches[0].screenX;
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipeGesture();
+        });
+        
+        function handleSwipeGesture() {
+            const swipeThreshold = 100;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            // Swipe right to clear chat
+            if (swipeDistance > swipeThreshold && touchStartX < 50) {
+                newChat();
+            }
+        }
+        
+        // Improve scrolling performance
+        const messagesContainer = document.getElementById('messagesContainer');
+        let ticking = false;
+        
+        function updateScrollPerformance() {
+            if (!ticking) {
+                requestAnimationFrame(() => {
+                    // Add momentum scrolling on iOS
+                    messagesContainer.style.webkitOverflowScrolling = 'touch';
+                    ticking = false;
+                });
+                ticking = true;
+            }
+        }
+        
+        messagesContainer.addEventListener('scroll', updateScrollPerformance, { passive: true });
+    }
+}
+
+// Add haptic feedback for mobile (if supported)
+function triggerHapticFeedback(style = 'light') {
+    if ('vibrate' in navigator) {
+        switch(style) {
+            case 'light':
+                navigator.vibrate(10);
+                break;
+            case 'medium':
+                navigator.vibrate(20);
+                break;
+            case 'heavy':
+                navigator.vibrate(30);
+                break;
+        }
     }
 }
