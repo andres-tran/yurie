@@ -161,7 +161,7 @@ body {
 }
 
 .new-chat-btn {
-    padding: 8px 12px;
+    padding: 10px 16px;
     background: transparent;
     color: var(--text-primary);
     border: var(--hairline-width) solid var(--border);
@@ -175,7 +175,7 @@ body {
     gap: 8px;
     transition: var(--transition);
     white-space: nowrap;
-    height: 36px;
+    height: 40px;
 }
 
 .new-chat-btn:hover {
@@ -780,9 +780,9 @@ body {
     }
     
     .new-chat-btn {
-        padding: 8px 10px;
+        padding: 10px 12px;
         font-size: 13px;
-        height: 36px;
+        height: 40px;
     }
     
     .btn-text {
@@ -946,8 +946,7 @@ body {
     }
     
     .new-chat-btn {
-        padding: 6px 8px;
-        height: 32px;
+        padding: 8px 10px;
     }
     
     .theme-toggle {

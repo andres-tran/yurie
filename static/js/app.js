@@ -142,10 +142,13 @@ function setupButtonAnimations() {
         }
     });
     
-    document.addEventListener('mouseleave', (e) => {
-        const button = e.target.closest('button, .suggestion');
-        if (button) {
-            button.style.transform = 'scale(1)';
+    // Use event delegation with mouseout instead of mouseleave
+    document.addEventListener('mouseout', (e) => {
+        if (e.target && e.target.closest) {
+            const button = e.target.closest('button, .suggestion');
+            if (button && !button.contains(e.relatedTarget)) {
+                button.style.transform = 'scale(1)';
+            }
         }
     });
 }
