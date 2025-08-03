@@ -18,13 +18,13 @@ app = Flask(__name__,
 CORS(app, supports_credentials=True)
 
 # Configure Flask session for serverless
-app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here-change-in-production')
+app.secret_key = 'yurie-chat-secret-key-2024'  # Static key for serverless environment
 app.config['SESSION_TYPE'] = 'filesystem'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = os.environ.get('ENVIRONMENT') == 'production'
+app.config['SESSION_COOKIE_SECURE'] = True  # Always use secure cookies on Vercel
 
 # Initialize Replicate client
 replicate_client = replicate.Client(api_token=os.getenv('REPLICATE_API_TOKEN'))
