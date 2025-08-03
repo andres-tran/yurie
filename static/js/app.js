@@ -9,19 +9,122 @@ document.addEventListener('DOMContentLoaded', () => {
     setupModelSelector();
     setupInputHandlers();
     setupMobileOptimizations();
+    setupNativeInteractions();
 });
+
+// Setup native macOS/iOS interactions
+function setupNativeInteractions() {
+    // Add context menu support
+    setupContextMenus();
+    
+    // Add scale animations to buttons
+    setupButtonAnimations();
+    
+    // Prevent unwanted text selection
+    document.addEventListener('selectstart', (e) => {
+        const isTextInput = e.target.matches('input, textarea, .message-content, .message-content *');
+        if (!isTextInput) {
+            e.preventDefault();
+        }
+    });
+}
+
+// Setup context menus
+function setupContextMenus() {
+    // Message context menu
+    document.addEventListener('contextmenu', (e) => {
+        const messageContent = e.target.closest('.message-content');
+        if (messageContent) {
+            e.preventDefault();
+            showMessageContextMenu(e, messageContent);
+        }
+    });
+}
+
+// Show message context menu
+function showMessageContextMenu(e, messageContent) {
+    // Remove any existing context menu
+    const existingMenu = document.querySelector('.context-menu');
+    if (existingMenu) {
+        existingMenu.remove();
+    }
+    
+    // Create context menu
+    const menu = document.createElement('div');
+    menu.className = 'context-menu';
+    menu.style.left = `${e.pageX}px`;
+    menu.style.top = `${e.pageY}px`;
+    
+    const menuItems = [
+        { label: 'Copy', action: () => copyMessageContent(messageContent) },
+        { label: 'Select All', action: () => selectAllContent(messageContent) }
+    ];
+    
+    menuItems.forEach(item => {
+        const menuItem = document.createElement('div');
+        menuItem.className = 'context-menu-item';
+        menuItem.textContent = item.label;
+        menuItem.onclick = () => {
+            item.action();
+            menu.remove();
+        };
+        menu.appendChild(menuItem);
+    });
+    
+    document.body.appendChild(menu);
+    
+    // Remove menu on click outside
+    setTimeout(() => {
+        document.addEventListener('click', function removeMenu() {
+            menu.remove();
+            document.removeEventListener('click', removeMenu);
+        });
+    }, 0);
+}
+
+// Copy message content
+function copyMessageContent(messageContent) {
+    const text = messageContent.textContent;
+    navigator.clipboard.writeText(text);
+}
+
+// Select all content
+function selectAllContent(messageContent) {
+    const range = document.createRange();
+    range.selectNodeContents(messageContent);
+    const selection = window.getSelection();
+    selection.removeAllRanges();
+    selection.addRange(range);
+}
+
+// Setup button animations
+function setupButtonAnimations() {
+    // Add scale animation to all buttons
+    const buttons = document.querySelectorAll('button, .suggestion');
+    buttons.forEach(button => {
+        button.addEventListener('mousedown', () => {
+            button.style.transform = 'scale(0.96)';
+        });
+        
+        button.addEventListener('mouseup', () => {
+            button.style.transform = 'scale(1)';
+        });
+        
+        button.addEventListener('mouseleave', () => {
+            button.style.transform = 'scale(1)';
+        });
+    });
+}
 
 // Setup theme management
 function setupTheme() {
-    // Check for saved theme preference or default to system preference
+    // Check for saved theme preference or default to dark for minimal design
     const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-        document.documentElement.setAttribute('data-theme', savedTheme);
-    } else {
-        // Default to system preference
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        document.documentElement.setAttribute('data-theme', prefersDark ? 'dark' : 'light');
-    }
+    const theme = savedTheme || 'dark';
+    document.documentElement.setAttribute('data-theme', theme);
+    
+    // Update syntax highlighting theme
+    updateSyntaxHighlightingTheme(theme);
 }
 
 // Toggle theme
@@ -38,16 +141,8 @@ function toggleTheme() {
 
 // Update syntax highlighting theme
 function updateSyntaxHighlightingTheme(theme) {
-    const lightTheme = document.querySelector('link[href*="github.min.css"]');
-    const darkTheme = document.querySelector('link[href*="github-dark.min.css"]');
-    
-    if (theme === 'dark') {
-        if (lightTheme) lightTheme.disabled = true;
-        if (darkTheme) darkTheme.disabled = false;
-    } else {
-        if (lightTheme) lightTheme.disabled = false;
-        if (darkTheme) darkTheme.disabled = true;
-    }
+    // Minimal design uses a single dark theme for syntax highlighting
+    // No need to switch themes
 }
 
 // Setup markdown renderer
@@ -145,6 +240,9 @@ async function sendMessage() {
     
     // Haptic feedback on mobile
     triggerHapticFeedback('light');
+    
+    // Scale animation for send button
+    animateButtonPress(sendButton);
     
     // Clear input
     input.value = '';
@@ -374,6 +472,12 @@ async function newChat() {
     // Haptic feedback
     triggerHapticFeedback('medium');
     
+    // Animate button
+    const newChatBtn = document.querySelector('.new-chat-btn');
+    if (newChatBtn) {
+        animateButtonPress(newChatBtn);
+    }
+    
     const container = document.getElementById('messagesContainer');
     
     // Fade out existing messages
@@ -396,17 +500,17 @@ async function newChat() {
     setTimeout(() => {
         container.innerHTML = `
             <div class="welcome-message">
-                <h2>Welcome to Yurie</h2>
-                <p>Select a model and start chatting. You can generate text responses or create images based on your prompts.</p>
+                <h2>welcome to yurie</h2>
+                <p>select a model and start chatting. generate text or create images.</p>
                 <div class="suggestions" role="group" aria-label="Suggested prompts">
                     <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
-                        <span aria-hidden="true">💡</span> Explain quantum computing
+                        explain quantum computing
                     </button>
                     <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')" aria-label="Send suggestion: Generate cyberpunk cityscape">
-                        <span aria-hidden="true">🎨</span> Generate cyberpunk cityscape
+                        generate cyberpunk cityscape
                     </button>
                     <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')" aria-label="Send suggestion: Write an AI haiku">
-                        <span aria-hidden="true">✍️</span> Write an AI haiku
+                        write an ai haiku
                     </button>
                 </div>
             </div>
@@ -515,4 +619,12 @@ function triggerHapticFeedback(style = 'light') {
                 break;
         }
     }
+}
+
+// Animate button press
+function animateButtonPress(button) {
+    button.style.transform = 'scale(0.96)';
+    setTimeout(() => {
+        button.style.transform = 'scale(1)';
+    }, 150);
 }

@@ -5,27 +5,26 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="theme-color" content="#5046e4">
+    <meta name="theme-color" content="#000000">
     <meta name="description" content="Yurie - AI Chat Assistant">
     <title>Yurie - AI Chat Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Preconnect to improve performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <!-- Markdown and Syntax Highlighting -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github-dark.min.css" media="(prefers-color-scheme: dark)">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/github.min.css" media="(prefers-color-scheme: light)">
+    <!-- Syntax Highlighting for minimal theme -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/styles/atom-one-dark.min.css">
     <!-- Inter font for better typography -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="container">
         <header class="chat-header" role="banner">
-            <h1>Yurie</h1>
+            <h1>yurie</h1>
             <nav class="header-controls" role="navigation" aria-label="Chat controls">
                 <select id="modelSelector" class="model-selector" aria-label="Select AI model">
-                    <option value="text">GPT-4.1 (Text)</option>
-                    <option value="image">SeeDream-3 (Image)</option>
+                    <option value="text">text model</option>
+                    <option value="image">image model</option>
                 </select>
                 <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
                     <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -40,24 +39,24 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>
                     </svg>
-                    <span class="btn-text">New Chat</span>
+                    <span class="btn-text">new chat</span>
                 </button>
             </nav>
         </header>
         
         <main class="messages-container" id="messagesContainer" role="main" aria-label="Chat messages">
             <div class="welcome-message">
-                <h2>Welcome to Yurie</h2>
-                <p>Select a model and start chatting. You can generate text responses or create images based on your prompts.</p>
+                <h2>welcome to yurie</h2>
+                <p>select a model and start chatting. generate text or create images.</p>
                 <div class="suggestions" role="group" aria-label="Suggested prompts">
                     <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
-                        <span aria-hidden="true">💡</span> Explain quantum computing
+                        explain quantum computing
                     </button>
                     <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')" aria-label="Send suggestion: Generate cyberpunk cityscape">
-                        <span aria-hidden="true">🎨</span> Generate cyberpunk cityscape
+                        generate cyberpunk cityscape
                     </button>
                     <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')" aria-label="Send suggestion: Write an AI haiku">
-                        <span aria-hidden="true">✍️</span> Write an AI haiku
+                        write an ai haiku
                     </button>
                 </div>
             </div>
@@ -75,7 +74,7 @@
                         aria-required="true"
                     ></textarea>
                     <button id="sendButton" type="submit" onclick="sendMessage()" disabled aria-label="Send message">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
@@ -100,6 +99,17 @@
     <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
     
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    
+    <!-- Initialize theme -->
+    <script>
+        // Set initial theme immediately to prevent flash
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            // Default to dark theme for minimal design
+            const theme = savedTheme || 'dark';
+            document.documentElement.setAttribute('data-theme', theme);
+        })();
+    </script>
     
     <!-- Vercel Speed Insights -->
     <script>
