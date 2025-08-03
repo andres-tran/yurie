@@ -764,7 +764,7 @@ body {
     .theme-toggle {
         width: 40px;
         height: 40px;
-        padding: 12px;
+        padding: 10px;
     }
     
     .theme-toggle svg {
@@ -948,6 +948,10 @@ body {
     
     .new-chat-btn {
         padding: 8px 10px;
+    }
+    
+    .theme-toggle {
+        padding: 8px;
     }
     
     .welcome-message h2 {
