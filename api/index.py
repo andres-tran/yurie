@@ -6,15 +6,15 @@ import replicate
 from dotenv import load_dotenv
 import time
 import uuid
+from pathlib import Path
 
 # Load environment variables
 load_dotenv()
 
-# Configure Flask with explicit paths
-app = Flask(__name__, 
-           template_folder='../templates',
-           static_folder='../static',
-           static_url_path='/static')
+# Configure Flask with explicit paths for Vercel
+app = Flask(__name__,
+            template_folder=str(Path(__file__).parent.parent / 'templates'),
+            static_folder=str(Path(__file__).parent.parent / 'static'))
 CORS(app, supports_credentials=True)
 
 # Configure Flask session for serverless
@@ -205,23 +205,3 @@ def clear_history():
 def health():
     """Health check endpoint"""
     return {'status': 'healthy', 'timestamp': time.time()}
-
-# Serve static files explicitly for Vercel
-@app.route('/css/<path:filename>')
-def serve_css(filename):
-    """Serve CSS files"""
-    return app.send_static_file(f'css/{filename}')
-
-@app.route('/js/<path:filename>')
-def serve_js(filename):
-    """Serve JavaScript files"""
-    return app.send_static_file(f'js/{filename}')
-
-@app.route('/icons/<path:filename>')
-def serve_icons(filename):
-    """Serve icon files"""
-    return app.send_static_file(f'icons/{filename}')
-
-# This is the important part for Vercel
-# Export the Flask app instance
-app = app
