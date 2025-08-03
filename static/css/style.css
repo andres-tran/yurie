@@ -340,28 +340,33 @@ body {
 }
 
 .input-wrapper {
-    display: flex;
-    gap: 12px;
-    align-items: flex-end;
     max-width: 800px;
     margin: 0 auto;
     width: 100%;
 }
 
+.input-field-container {
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+}
+
 #messageInput {
-    flex: 1;
+    width: 100%;
     background: var(--bg-tertiary);
     border: 1px solid var(--border);
     color: var(--text-primary);
-    padding: 14px 18px;
+    padding: 16px 60px 16px 20px; /* More padding on the right for the button */
     border-radius: var(--border-radius);
     font-size: 15px;
     resize: none;
     outline: none;
     transition: var(--transition);
-    max-height: 120px;
+    min-height: 80px; /* Increased from single line */
+    max-height: 180px;
     line-height: 1.6;
     font-family: inherit;
+    overflow-y: auto;
 }
 
 #messageInput::placeholder {
@@ -375,12 +380,15 @@ body {
 }
 
 #sendButton {
-    width: 48px;
-    height: 48px;
-    min-width: 48px;
+    position: absolute;
+    right: 8px;
+    bottom: 8px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
     background: var(--accent);
     border: none;
-    border-radius: var(--border-radius);
+    border-radius: var(--border-radius-sm);
     color: white;
     cursor: pointer;
     display: flex;
@@ -529,13 +537,22 @@ body {
     
     #messageInput {
         font-size: 16px; /* Prevent zoom on iOS */
-        padding: 12px 16px;
+        padding: 14px 50px 14px 16px; /* Adjust padding for mobile */
+        min-height: 70px;
+        max-height: 150px;
     }
     
     #sendButton {
-        width: 44px;
-        height: 44px;
-        min-width: 44px;
+        width: 36px;
+        height: 36px;
+        min-width: 36px;
+        right: 7px;
+        bottom: 7px;
+    }
+    
+    #sendButton svg {
+        width: 18px;
+        height: 18px;
     }
 }
 

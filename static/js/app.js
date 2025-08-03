@@ -38,8 +38,10 @@ function autoResizeTextarea(textarea) {
     // Reset height to calculate new scrollHeight
     textarea.style.height = 'auto';
     
-    // Set new height with max limit
-    const newHeight = Math.min(textarea.scrollHeight, 120);
+    // Set new height with min and max limits
+    const minHeight = 80; // Match CSS min-height
+    const maxHeight = 180; // Match CSS max-height
+    const newHeight = Math.max(minHeight, Math.min(textarea.scrollHeight, maxHeight));
     textarea.style.height = newHeight + 'px';
     
     // Restore scroll position
