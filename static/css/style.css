@@ -759,13 +759,12 @@ body {
     
     .header-controls {
         gap: 8px;
-        align-items: center;
     }
     
     .theme-toggle {
         width: 40px;
         height: 40px;
-        padding: 10px;
+        padding: 12px;
     }
     
     .theme-toggle svg {
@@ -774,24 +773,16 @@ body {
     }
     
     .model-selector {
-        padding: 8px 12px;
-        font-size: 12px;
+        padding: 10px 14px;
+        font-size: 13px;
         height: 40px;
-        min-width: 120px;
-        max-width: 120px;
+        min-width: auto;
     }
     
     .new-chat-btn {
-        padding: 10px;
+        padding: 10px 12px;
         font-size: 13px;
         height: 40px;
-        width: 40px;
-        min-width: 40px;
-    }
-    
-    .new-chat-btn svg {
-        width: 16px;
-        height: 16px;
     }
     
     .btn-text {
@@ -950,17 +941,13 @@ body {
     
     .model-selector {
         max-width: 110px;
-        min-width: 110px;
-        font-size: 11px;
-        padding: 8px;
-        height: 40px;
+        font-size: 12px;
+        padding: 8px 10px;
+        padding-right: 28px;
     }
     
     .new-chat-btn {
-        padding: 8px;
-        width: 40px;
-        height: 40px;
-        min-width: 40px;
+        padding: 8px 10px;
     }
     
     .welcome-message h2 {
