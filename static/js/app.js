@@ -5,6 +5,7 @@ let isGenerating = false;
 document.addEventListener('DOMContentLoaded', () => {
     setupModelSelector();
     setupInputHandlers();
+    setupMobileOptimizations();
 });
 
 // Model selector setup
@@ -38,9 +39,12 @@ function autoResizeTextarea(textarea) {
     // Reset height to calculate new scrollHeight
     textarea.style.height = 'auto';
     
+    // Detect if mobile
+    const isMobile = window.innerWidth <= 768;
+    
     // Set new height with min and max limits
-    const minHeight = 80; // Match CSS min-height
-    const maxHeight = 180; // Match CSS max-height
+    const minHeight = isMobile ? 44 : 80; // Different min height for mobile
+    const maxHeight = isMobile ? 100 : 180; // Different max height for mobile
     const newHeight = Math.max(minHeight, Math.min(textarea.scrollHeight, maxHeight));
     textarea.style.height = newHeight + 'px';
     
@@ -252,4 +256,49 @@ async function newChat() {
         `;
         container.style.opacity = '1';
     }, 200);
+}
+
+// Setup mobile optimizations
+function setupMobileOptimizations() {
+    // Check if on mobile device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    
+    if (isMobile) {
+        // Handle viewport height changes (keyboard open/close)
+        let viewportHeight = window.innerHeight;
+        
+        window.addEventListener('resize', () => {
+            const currentHeight = window.innerHeight;
+            const input = document.getElementById('messageInput');
+            
+            // Keyboard is likely open if height decreased significantly
+            if (currentHeight < viewportHeight * 0.75) {
+                document.body.classList.add('keyboard-open');
+                // Scroll to bottom to keep input visible
+                setTimeout(() => {
+                    input.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                }, 100);
+            } else {
+                document.body.classList.remove('keyboard-open');
+            }
+            
+            viewportHeight = currentHeight;
+        });
+        
+        // Prevent double-tap zoom on buttons
+        let lastTouchEnd = 0;
+        document.addEventListener('touchend', (event) => {
+            const now = Date.now();
+            if (now - lastTouchEnd <= 300) {
+                event.preventDefault();
+            }
+            lastTouchEnd = now;
+        }, false);
+        
+        // Fix iOS input focus issues
+        const messageInput = document.getElementById('messageInput');
+        messageInput.addEventListener('touchstart', (e) => {
+            e.target.focus();
+        });
+    }
 }
