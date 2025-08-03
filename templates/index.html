@@ -22,19 +22,21 @@
         <header class="chat-header" role="banner">
             <h1>yurie</h1>
             <nav class="header-controls" role="navigation" aria-label="Chat controls">
+                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
+                    <svg class="theme-toggle-icon" width="20" height="20" viewBox="0 0 32 32" fill="currentColor" aria-hidden="true">
+                        <clipPath id="theme-toggle-cutout">
+                            <path d="M0-11h25a1 1 0 0017 13v30H0Z" />
+                        </clipPath>
+                        <g clip-path="url(#theme-toggle-cutout)">
+                            <circle cx="16" cy="16" r="8.4" />
+                            <path d="M18.3 3.2c0 1.3-1 2.3-2.3 2.3s-2.3-1-2.3-2.3S14.7.9 16 .9s2.3 1 2.3 2.3zm-4.6 25.6c0-1.3 1-2.3 2.3-2.3s2.3 1 2.3 2.3-1 2.3-2.3 2.3-2.3-1-2.3-2.3zm15.1-10.5c-1.3 0-2.3-1-2.3-2.3s1-2.3 2.3-2.3 2.3 1 2.3 2.3-1 2.3-2.3 2.3zM3.2 13.7c1.3 0 2.3 1 2.3 2.3s-1 2.3-2.3 2.3S.9 17.3.9 16s1-2.3 2.3-2.3zm5.8-7C9 7.9 7.9 9 6.7 9S4.4 8 4.4 6.7s1-2.3 2.3-2.3S9 5.4 9 6.7zm16.3 21c-1.3 0-2.3-1-2.3-2.3s1-2.3 2.3-2.3 2.3 1 2.3 2.3-1 2.3-2.3 2.3zm2.4-21c0 1.3-1 2.3-2.3 2.3S23 7.9 23 6.7s1-2.3 2.3-2.3 2.4 1 2.4 2.3zM6.7 23C8 23 9 24 9 25.3s-1 2.3-2.3 2.3-2.3-1-2.3-2.3 1-2.3 2.3-2.3z" />
+                        </g>
+                    </svg>
+                </button>
                 <select id="modelSelector" class="model-selector" aria-label="Select AI model">
                     <option value="text">text model</option>
                     <option value="image">image model</option>
                 </select>
-                <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme">
-                    <svg class="sun-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                        <circle cx="12" cy="12" r="5" stroke-width="2"/>
-                        <path d="M12 1v6m0 6v6m-9-9h6m6 0h6m-7.07-7.07l4.24 4.24M4.93 19.07l4.24-4.24m0-5.66l-4.24-4.24m14.14 14.14l-4.24-4.24" stroke-width="2" stroke-linecap="round"/>
-                    </svg>
-                    <svg class="moon-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </button>
                 <button class="new-chat-btn" onclick="newChat()" aria-label="Start new chat">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>

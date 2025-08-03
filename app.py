@@ -13,8 +13,8 @@ load_dotenv()
 
 # Configure Flask with explicit paths for Vercel
 app = Flask(__name__,
-            template_folder=str(Path(__file__).parent.parent / 'templates'),
-            static_folder=str(Path(__file__).parent.parent / 'static'))
+            template_folder=str(Path(__file__).parent / 'templates'),
+            static_folder=str(Path(__file__).parent / 'static'))
 CORS(app, supports_credentials=True)
 
 # Configure Flask session for serverless
