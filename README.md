@@ -131,6 +131,25 @@ By default, the app runs on port 5001. To change this, modify the last line in `
 app.run(debug=True, host='0.0.0.0', port=5001)
 ```
 
+## 🚀 Deployment
+
+### Deploying to Vercel
+
+1. Fork or clone this repository
+2. Connect your GitHub repository to Vercel
+3. Deploy with one click - Vercel will automatically detect the configuration
+
+The app includes all necessary Vercel configuration files:
+- `vercel.json` - Routing and build configuration
+- `api/index.py` - Serverless function entry point
+- Static files are automatically served
+
+### Environment Variables on Vercel
+
+In your Vercel project settings, add these environment variables:
+- `REPLICATE_API_TOKEN` - Your Replicate API token
+- `SECRET_KEY` - A secure secret key for production
+
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit a Pull Request.
