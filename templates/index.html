@@ -2,65 +2,84 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <title>Yurie</title>
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="theme-color" content="#5046e4">
+    <meta name="description" content="Yurie - AI Chat Assistant">
+    <title>Yurie - AI Chat Assistant</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- Preconnect to improve performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 </head>
 <body>
     <div class="container">
-        <div class="chat-header">
+        <header class="chat-header" role="banner">
             <h1>Yurie</h1>
-            <div class="header-controls">
-                <select id="modelSelector" class="model-selector">
+            <nav class="header-controls" role="navigation" aria-label="Chat controls">
+                <select id="modelSelector" class="model-selector" aria-label="Select AI model">
                     <option value="text">GPT-4.1 (Text)</option>
                     <option value="image">SeeDream-3 (Image)</option>
                 </select>
-                <button class="new-chat-btn" onclick="newChat()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <button class="new-chat-btn" onclick="newChat()" aria-label="Start new chat">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M12 5v14M5 12h14" stroke-width="2" stroke-linecap="round"/>
                     </svg>
                     <span class="btn-text">New Chat</span>
                 </button>
-            </div>
-        </div>
+            </nav>
+        </header>
         
-        <div class="messages-container" id="messagesContainer">
+        <main class="messages-container" id="messagesContainer" role="main" aria-label="Chat messages">
             <div class="welcome-message">
                 <h2>Welcome to Yurie</h2>
                 <p>Select a model and start chatting. You can generate text responses or create images based on your prompts.</p>
-                <div class="suggestions">
-                    <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')">
-                        💡 Explain quantum computing
+                <div class="suggestions" role="group" aria-label="Suggested prompts">
+                    <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
+                        <span aria-hidden="true">💡</span> Explain quantum computing
                     </button>
-                    <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')">
-                        🎨 Generate cyberpunk cityscape
+                    <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')" aria-label="Send suggestion: Generate cyberpunk cityscape">
+                        <span aria-hidden="true">🎨</span> Generate cyberpunk cityscape
                     </button>
-                    <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')">
-                        ✍️ Write an AI haiku
+                    <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')" aria-label="Send suggestion: Write an AI haiku">
+                        <span aria-hidden="true">✍️</span> Write an AI haiku
                     </button>
                 </div>
             </div>
-        </div>
+        </main>
         
-        <div class="input-container">
-            <div class="input-wrapper">
+        <footer class="input-container" role="contentinfo">
+            <form class="input-wrapper" onsubmit="sendMessage(); return false;" role="form" aria-label="Message input form">
                 <textarea 
                     id="messageInput" 
                     placeholder="Type your message here..."
                     rows="1"
                     onkeydown="handleKeyPress(event)"
+                    aria-label="Message input"
+                    aria-required="true"
                 ></textarea>
-                <button id="sendButton" onclick="sendMessage()" disabled>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                <button id="sendButton" type="submit" onclick="sendMessage()" disabled aria-label="Send message">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                         <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                 </button>
-            </div>
-        </div>
+            </form>
+        </footer>
     </div>
     
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    
+    <!-- Vercel Speed Insights -->
+    <script>
+        window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/insights/script.js"></script>
+    
+    <!-- Vercel Web Analytics -->
+    <script>
+        window.si = window.si || function () { (window.siq = window.siq || []).push(arguments); };
+    </script>
+    <script defer src="/_vercel/speed-insights/script.js"></script>
 </body>
 </html>

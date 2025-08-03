@@ -65,14 +65,19 @@ async function sendMessage() {
     const sendButton = document.getElementById('sendButton');
     sendButton.disabled = true;
     
+    // Add button animation
+    sendButton.classList.add('sending');
+    
     // Clear input
     input.value = '';
     autoResizeTextarea(input);
     
-    // Remove welcome message
+    // Remove welcome message with fade animation
     const welcomeMessage = document.querySelector('.welcome-message');
     if (welcomeMessage) {
-        welcomeMessage.remove();
+        welcomeMessage.style.opacity = '0';
+        welcomeMessage.style.transform = 'translateY(-20px)';
+        setTimeout(() => welcomeMessage.remove(), 300);
     }
     
     // Add user message
@@ -142,6 +147,7 @@ async function sendMessage() {
     } finally {
         isGenerating = false;
         sendButton.disabled = false;
+        sendButton.classList.remove('sending');
     }
 }
 
@@ -205,6 +211,11 @@ function sendSuggestion(text) {
 async function newChat() {
     if (isGenerating) return;
     
+    const container = document.getElementById('messagesContainer');
+    
+    // Fade out existing messages
+    container.style.opacity = '0';
+    
     // Clear conversation history on server
     try {
         await fetch('/clear-history', {
@@ -218,22 +229,25 @@ async function newChat() {
         console.error('Error clearing history:', error);
     }
     
-    const container = document.getElementById('messagesContainer');
-    container.innerHTML = `
-        <div class="welcome-message">
-            <h2>Welcome to Yurie</h2>
-            <p>Select a model and start chatting. You can generate text responses or create images based on your prompts.</p>
-            <div class="suggestions">
-                <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')">
-                    💡 Explain quantum computing
-                </button>
-                <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')">
-                    🎨 Generate cyberpunk cityscape
-                </button>
-                <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')">
-                    ✍️ Write an AI haiku
-                </button>
+    // After fade animation, replace content
+    setTimeout(() => {
+        container.innerHTML = `
+            <div class="welcome-message">
+                <h2>Welcome to Yurie</h2>
+                <p>Select a model and start chatting. You can generate text responses or create images based on your prompts.</p>
+                <div class="suggestions" role="group" aria-label="Suggested prompts">
+                    <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
+                        <span aria-hidden="true">💡</span> Explain quantum computing
+                    </button>
+                    <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')" aria-label="Send suggestion: Generate cyberpunk cityscape">
+                        <span aria-hidden="true">🎨</span> Generate cyberpunk cityscape
+                    </button>
+                    <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')" aria-label="Send suggestion: Write an AI haiku">
+                        <span aria-hidden="true">✍️</span> Write an AI haiku
+                    </button>
+                </div>
             </div>
-        </div>
-    `;
+        `;
+        container.style.opacity = '1';
+    }, 200);
 }
