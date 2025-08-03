@@ -3,14 +3,24 @@ let isGenerating = false;
 let markdownIt = null;
 
 // Initialize app
-document.addEventListener('DOMContentLoaded', () => {
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // DOM is already loaded (in case script loads after DOM)
+    initializeApp();
+}
+
+function initializeApp() {
+    console.log('Initializing app...');
+    console.log('DOM ready state:', document.readyState);
     setupTheme();
     setupMarkdownRenderer();
     setupModelSelector();
     setupInputHandlers();
     setupMobileOptimizations();
     setupNativeInteractions();
-});
+    console.log('App initialization complete');
+}
 
 // Setup native macOS/iOS interactions
 function setupNativeInteractions() {
@@ -52,8 +62,26 @@ function showMessageContextMenu(e, messageContent) {
     // Create context menu
     const menu = document.createElement('div');
     menu.className = 'context-menu';
-    menu.style.left = `${e.pageX}px`;
-    menu.style.top = `${e.pageY}px`;
+    
+    // Position menu to avoid going off-screen
+    const menuWidth = 150; // Approximate width
+    const menuHeight = 80; // Approximate height
+    
+    let x = e.pageX;
+    let y = e.pageY;
+    
+    // Check if menu would go off right edge
+    if (x + menuWidth > window.innerWidth) {
+        x = window.innerWidth - menuWidth - 10;
+    }
+    
+    // Check if menu would go off bottom edge
+    if (y + menuHeight > window.innerHeight) {
+        y = window.innerHeight - menuHeight - 10;
+    }
+    
+    menu.style.left = `${x}px`;
+    menu.style.top = `${y}px`;
     
     const menuItems = [
         { label: 'Copy', action: () => copyMessageContent(messageContent) },
@@ -99,20 +127,26 @@ function selectAllContent(messageContent) {
 
 // Setup button animations
 function setupButtonAnimations() {
-    // Add scale animation to all buttons
-    const buttons = document.querySelectorAll('button, .suggestion');
-    buttons.forEach(button => {
-        button.addEventListener('mousedown', () => {
+    // Use event delegation for better performance and dynamic buttons
+    document.addEventListener('mousedown', (e) => {
+        const button = e.target.closest('button, .suggestion');
+        if (button) {
             button.style.transform = 'scale(0.96)';
-        });
-        
-        button.addEventListener('mouseup', () => {
+        }
+    });
+    
+    document.addEventListener('mouseup', (e) => {
+        const button = e.target.closest('button, .suggestion');
+        if (button) {
             button.style.transform = 'scale(1)';
-        });
-        
-        button.addEventListener('mouseleave', () => {
+        }
+    });
+    
+    document.addEventListener('mouseleave', (e) => {
+        const button = e.target.closest('button, .suggestion');
+        if (button) {
             button.style.transform = 'scale(1)';
-        });
+        }
     });
 }
 
@@ -165,11 +199,7 @@ function setupMarkdownRenderer() {
         }
     });
     
-    // Register highlight.js aliases
-    hljs.registerAliases(['js'], { languageName: 'javascript' });
-    hljs.registerAliases(['py'], { languageName: 'python' });
-    hljs.registerAliases(['ts'], { languageName: 'typescript' });
-    hljs.registerAliases(['sh', 'shell'], { languageName: 'bash' });
+    // Note: Common languages are already included in the highlight.js bundle
 }
 
 // Model selector setup
@@ -192,17 +222,60 @@ function setupModelSelector() {
 // Input handlers
 function setupInputHandlers() {
     const input = document.getElementById('messageInput');
-    const sendButton = document.getElementById('sendButton');
+    const form = document.querySelector('.input-wrapper');
+    const sendButton = document.querySelector('.send-btn');
     
+    // Debug log to check if elements exist
+    console.log('Setting up input handlers:');
+    console.log('  - Input element:', input);
+    console.log('  - Form element:', form);
+    console.log('  - Send button:', sendButton);
+    console.log('  - All elements found:', !!input && !!form && !!sendButton);
+    
+    if (!input || !form || !sendButton) {
+        console.error('Missing required elements for input handlers');
+        console.error('  - messageInput missing:', !input);
+        console.error('  - input-wrapper missing:', !form);
+        console.error('  - send-btn missing:', !sendButton);
+        
+        // Try to find elements with different selectors
+        console.log('Attempting alternative selectors:');
+        console.log('  - Button by ID sendButton:', !!document.getElementById('sendButton'));
+        console.log('  - All buttons:', document.querySelectorAll('button'));
+        return;
+    }
+
+    // Set initial send button state based on input content
+    sendButton.disabled = input.value.trim() === '';
+    console.log('Initial send button disabled state:', sendButton.disabled);
+    
+    // Handle input changes
     input.addEventListener('input', () => {
-        sendButton.disabled = input.value.trim() === '' || isGenerating;
         autoResizeTextarea(input);
+        sendButton.disabled = input.value.trim() === '';
+        console.log('Input changed, button disabled:', sendButton.disabled);
     });
     
-    // Check and enable send button on page load if there's text
-    if (input.value.trim() !== '') {
-        sendButton.disabled = false;
-    }
+    // Handle key press events
+    input.addEventListener('keydown', handleKeyPress);
+    
+    // Handle form submission (for accessibility/Enter key)
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        console.log('Form submitted'); // Debug log
+        sendMessage();
+        return false;
+    });
+    
+    // Handle send button click
+    sendButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log('Send button clicked'); // Debug log
+        sendMessage();
+    });
+    
+    console.log('Event listeners attached successfully');
     
     // Also trigger auto-resize on load in case there's existing text
     autoResizeTextarea(input);
@@ -239,27 +312,28 @@ function handleKeyPress(event) {
 
 // Send message
 async function sendMessage() {
+    console.log('sendMessage called'); // Debug log
     const input = document.getElementById('messageInput');
     const message = input.value.trim();
+    
+    console.log('Message:', message, 'isGenerating:', isGenerating); // Debug log
     
     if (!message || isGenerating) return;
     
     isGenerating = true;
-    const sendButton = document.getElementById('sendButton');
-    sendButton.disabled = true;
-    
-    // Add button animation
-    sendButton.classList.add('sending');
     
     // Haptic feedback on mobile
     triggerHapticFeedback('light');
     
-    // Scale animation for send button
-    animateButtonPress(sendButton);
-    
     // Clear input
     input.value = '';
     autoResizeTextarea(input);
+    
+    // Disable send button after clearing input
+    const sendButton = document.querySelector('.send-btn');
+    if (sendButton) {
+        sendButton.disabled = true;
+    }
     
     // Remove welcome message with fade animation
     const welcomeMessage = document.querySelector('.welcome-message');
@@ -293,7 +367,8 @@ async function sendMessage() {
         });
         
         if (!response.ok) {
-            throw new Error('Failed to get response');
+            const errorText = await response.text();
+            throw new Error(`Server error (${response.status}): ${errorText || 'Failed to get response'}`);
         }
         
         // Handle streaming response
@@ -335,11 +410,24 @@ async function sendMessage() {
         
     } catch (error) {
         console.error('Error:', error);
-        updateMessage(assistantMessageId, 'Sorry, an error occurred while generating the response.');
+        let errorMessage = 'Sorry, an error occurred while generating the response.';
+        
+        if (error.message.includes('NetworkError') || error.message.includes('Failed to fetch')) {
+            errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (error.message.includes('Server error')) {
+            errorMessage = error.message;
+        }
+        
+        updateMessage(assistantMessageId, errorMessage);
     } finally {
         isGenerating = false;
-        sendButton.disabled = false;
-        sendButton.classList.remove('sending');
+        
+        // Re-enable send button if there's text in the input
+        const input = document.getElementById('messageInput');
+        const sendButton = document.querySelector('.send-btn');
+        if (sendButton && input) {
+            sendButton.disabled = input.value.trim() === '';
+        }
     }
 }
 

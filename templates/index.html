@@ -63,19 +63,19 @@
         </main>
         
         <footer class="input-container" role="contentinfo">
-            <form class="input-wrapper" onsubmit="sendMessage(); return false;" role="form" aria-label="Message input form">
+            <form class="input-wrapper" role="form" aria-label="Message input form" onsubmit="return false;">
                 <div class="input-field-container">
                     <textarea 
                         id="messageInput" 
                         placeholder="Type your message here..."
                         rows="3"
-                        onkeydown="handleKeyPress(event)"
                         aria-label="Message input"
                         aria-required="true"
                     ></textarea>
-                    <button id="sendButton" type="submit" onclick="sendMessage()" disabled aria-label="Send message">
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-                            <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <button type="button" class="send-btn" aria-label="Send message">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+                            <path d="M22 2L11 13" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M22 2L15 22L11 13L2 9L22 2z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
                 </div>
@@ -85,18 +85,8 @@
     
     <!-- Markdown-it and Syntax Highlighting -->
     <script src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/core.min.js"></script>
-    <!-- Load languages for syntax highlighting -->
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/javascript.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/python.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/java.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/cpp.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/css.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/html.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/json.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/typescript.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/bash.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/highlight.js@11.9.0/lib/languages/sql.min.js"></script>
+    <!-- Use the browser-ready highlight.js bundle with common languages -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
     
@@ -109,6 +99,17 @@
             const theme = savedTheme || 'dark';
             document.documentElement.setAttribute('data-theme', theme);
         })();
+        
+        // Debug: Test send button immediately
+        window.addEventListener('load', function() {
+            console.log('[INLINE DEBUG] Window loaded');
+            const sendBtn = document.querySelector('.send-btn');
+            console.log('[INLINE DEBUG] Send button found:', !!sendBtn);
+            if (sendBtn) {
+                console.log('[INLINE DEBUG] Send button HTML:', sendBtn.outerHTML);
+                console.log('[INLINE DEBUG] Send button parent:', sendBtn.parentElement);
+            }
+        });
     </script>
     
     <!-- Analytics removed for better compatibility -->

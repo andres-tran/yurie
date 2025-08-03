@@ -631,7 +631,7 @@ body {
     background: transparent;
     border: none;
     color: var(--text-primary);
-    padding: 14px 44px 14px 20px;
+    padding: 14px 20px;
     border-radius: var(--border-radius-sm);
     font-size: 14px;
     resize: none;
@@ -655,52 +655,31 @@ body {
     outline: none;
 }
 
-#sendButton {
-    position: absolute;
-    right: 8px;
-    bottom: 8px;
-    width: 32px;
-    height: 32px;
-    min-width: 32px;
+.send-btn {
+    padding: 10px;
     background: transparent;
     border: none;
-    border-radius: var(--border-radius-xs);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: var(--transition);
+    height: 48px;
+    margin-right: 8px;
     flex-shrink: 0;
-    padding: 0;
 }
 
-#sendButton:hover:not(:disabled) {
-    background: var(--accent-light);
-    transform: scale(1.1);
+.send-btn:hover {
+    color: var(--text-primary);
 }
 
-#sendButton:active:not(:disabled) {
-    transform: scale(0.95);
-}
-
-#sendButton:disabled {
-    opacity: 0.3;
+.send-btn:disabled {
+    opacity: 0.5;
     cursor: not-allowed;
 }
 
-#sendButton.sending {
-    animation: sendingPulse 0.6s ease-in-out infinite;
-}
 
-@keyframes sendingPulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.6;
-    }
-}
 
 /* Minimal scrollbar */
 ::-webkit-scrollbar {
@@ -1078,8 +1057,7 @@ body {
 .chat-header,
 .new-chat-btn,
 .model-selector,
-.suggestion,
-#sendButton {
+.suggestion {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
@@ -1135,8 +1113,7 @@ a {
 /* Improved touch targets for mobile */
 @media (hover: none) and (pointer: coarse) {
     .new-chat-btn,
-    .suggestion,
-    #sendButton {
+    .suggestion {
         min-height: 44px;
         min-width: 44px;
     }
