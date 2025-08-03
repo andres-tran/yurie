@@ -206,6 +206,22 @@ def health():
     """Health check endpoint"""
     return {'status': 'healthy', 'timestamp': time.time()}
 
+# Serve static files explicitly for Vercel
+@app.route('/css/<path:filename>')
+def serve_css(filename):
+    """Serve CSS files"""
+    return app.send_static_file(f'css/{filename}')
+
+@app.route('/js/<path:filename>')
+def serve_js(filename):
+    """Serve JavaScript files"""
+    return app.send_static_file(f'js/{filename}')
+
+@app.route('/icons/<path:filename>')
+def serve_icons(filename):
+    """Serve icon files"""
+    return app.send_static_file(f'icons/{filename}')
+
 # This is the important part for Vercel
 # Export the Flask app instance
 app = app
