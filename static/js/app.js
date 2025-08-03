@@ -206,11 +206,6 @@ function setupInputHandlers() {
     
     // Also trigger auto-resize on load in case there's existing text
     autoResizeTextarea(input);
-
-    // Add event listener for the send button
-    sendButton.addEventListener('click', () => {
-        sendMessage();
-    });
 }
 
 // Auto-resize textarea
@@ -238,12 +233,16 @@ function autoResizeTextarea(textarea) {
 function handleKeyPress(event) {
     if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
-        sendMessage();
+        sendMessage(event);
     }
 }
 
 // Send message
-async function sendMessage() {
+async function sendMessage(event) {
+    if (event) {
+        event.preventDefault();
+    }
+
     const input = document.getElementById('messageInput');
     const message = input.value.trim();
     

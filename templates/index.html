@@ -63,7 +63,7 @@
         </main>
         
         <footer class="input-container" role="contentinfo">
-            <form class="input-wrapper" onsubmit="sendMessage(); return false;" role="form" aria-label="Message input form">
+            <form class="input-wrapper" onsubmit="sendMessage(event)" role="form" aria-label="Message input form">
                 <div class="input-field-container">
                     <textarea 
                         id="messageInput" 
@@ -73,7 +73,7 @@
                         aria-label="Message input"
                         aria-required="true"
                     ></textarea>
-                    <button id="sendButton" type="submit" onclick="sendMessage()" disabled aria-label="Send message">
+                    <button id="sendButton" type="submit" disabled aria-label="Send message">
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
                             <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
