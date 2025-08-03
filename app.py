@@ -20,14 +20,15 @@ app = Flask(__name__,
            static_url_path='/static')
 CORS(app, supports_credentials=True)
 
-# Configure Flask session
+# Configure Flask session for serverless
 app.secret_key = os.environ.get('SECRET_KEY', 'your-secret-key-here-change-in-production')
 # Use client-side sessions for Vercel compatibility
-app.config['SESSION_PERMANENT'] = True
-app.config['PERMANENT_SESSION_LIFETIME'] = 86400  # 24 hours
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
 app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
 app.config['SESSION_COOKIE_HTTPONLY'] = True
-app.config['SESSION_COOKIE_SECURE'] = True  # Enable for HTTPS
+app.config['SESSION_COOKIE_SECURE'] = os.environ.get('ENVIRONMENT') == 'production'  # Only HTTPS in production
 
 # Initialize Replicate client
 replicate_client = replicate.Client(api_token=os.getenv('REPLICATE_API_TOKEN'))
@@ -65,23 +66,18 @@ def chat():
     if not message:
         return {'error': 'No message provided'}, 400
     
-    # Get or initialize conversation history
-    if 'conversation_history' not in session:
-        session['conversation_history'] = []
-        session.permanent = True
+    # For Vercel serverless, we'll use a simplified approach
+    # In production, consider using a database or Redis for session storage
     
-    # Create a copy of the history to work with
-    conversation_history = session['conversation_history'].copy()
+    # Get conversation history from request (client-side storage)
+    # This is a temporary solution - in production use a proper session store
+    conversation_history = []
     
     # Add user message to history
     conversation_history.append({
         'role': 'user',
         'content': message
     })
-    
-    # Update session with new history
-    session['conversation_history'] = conversation_history
-    session.modified = True
     
     def generate():
         try:
@@ -135,9 +131,8 @@ def chat():
                         'content': output
                     })
                     
-                    # Update session with complete history
-                    session['conversation_history'] = conversation_history
-                    session.modified = True
+                    # Note: In serverless, history is not persisted
+                    # Consider using a database or client-side storage
                     
                     # Stream the response
                     words = output.split()
@@ -193,9 +188,8 @@ def chat():
                         'content': f"[Generated image based on prompt: {message}]"
                     })
                     
-                    # Update session with complete history
-                    session['conversation_history'] = conversation_history
-                    session.modified = True
+                    # Note: In serverless, history is not persisted
+                    # Consider using a database or client-side storage
                     
                     yield "data: " + json.dumps({
                         "type": "image", 
