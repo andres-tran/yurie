@@ -31,9 +31,9 @@ else:
 # Model configurations
 MODELS = {
     "text": {
-        "name": "openai/gpt-4.1",
-        "version": "gpt-4.1",
-        "display_name": "GPT-4.1 (Text)"
+        "name": "openai/gpt-4.1-nano",
+        "version": "gpt-4.1-nano",
+        "display_name": "GPT-4.1 Nano (Text)"
     },
     "image": {
         "name": "bytedance/seedream-3", 
@@ -102,7 +102,7 @@ def chat():
                 
                 try:
                     prediction = replicate_client.predictions.create(
-                        "openai/gpt-4.1",
+                        "openai/gpt-4.1-nano",
                         input={
                             "prompt": conversation_prompt,
                             "max_new_tokens": 512,
