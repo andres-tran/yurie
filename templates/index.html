@@ -6,8 +6,8 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="default">
     <meta name="theme-color" content="#000000">
-    <meta name="description" content="Yurie - AI Chat Assistant">
-    <title>Yurie - AI Chat Assistant</title>
+    <meta name="description" content="Yurie">
+    <title>Yurie</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Preconnect to improve performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -49,7 +49,8 @@
         <main class="messages-container" id="messagesContainer" role="main" aria-label="Chat messages">
             <div class="welcome-message">
                 <h2>welcome to yurie</h2>
-                <p>select a model and start chatting. generate text or create images.</p>
+                <p>select a model and start chatting.
+                    generate text or create images.</p>
                 <div class="suggestions" role="group" aria-label="Suggested prompts">
                     <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
                         explain quantum computing
