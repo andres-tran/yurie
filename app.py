@@ -87,6 +87,9 @@ def chat():
     model_type = data.get('model_type', 'text')
     model_id = data.get('model_id', None)
     
+    # Get conversation history from client (for serverless compatibility)
+    conversation_history = data.get('conversation_history', [])
+    
     # Get the selected model
     if model_type in MODELS:
         if model_id:
@@ -102,9 +105,6 @@ def chat():
     
     if not message:
         return {'error': 'No message provided'}, 400
-    
-    # For Vercel serverless, we'll use a simplified approach
-    conversation_history = []
     
     # Add user message to history
     conversation_history.append({

@@ -2,6 +2,7 @@ let currentModel = 'text';
 let currentModelId = 'gpt-4.1';
 let isGenerating = false;
 let markdownIt = null;
+let conversationHistory = []; // Store conversation history client-side
 
 // Model-specific suggestions
 const modelSuggestions = {
@@ -388,6 +389,12 @@ async function sendMessage() {
     // Add user message
     addMessage(message, 'user');
     
+    // Add user message to conversation history
+    conversationHistory.push({
+        role: 'user',
+        content: message
+    });
+    
     // Add assistant placeholder
     const assistantMessageId = 'msg-' + Date.now();
     addMessage('', 'assistant', assistantMessageId);
@@ -395,6 +402,7 @@ async function sendMessage() {
     try {
         // Debug log to check model type
         console.log('Sending request with model:', currentModel);
+        console.log('Conversation history length:', conversationHistory.length);
         
         const response = await fetch('/chat', {
             method: 'POST',
@@ -405,7 +413,8 @@ async function sendMessage() {
             body: JSON.stringify({
                 message: message,
                 model_type: currentModel,
-                model_id: currentModelId
+                model_id: currentModelId,
+                conversation_history: conversationHistory  // Send conversation history
             })
         });
         
@@ -439,6 +448,8 @@ async function sendMessage() {
                         } else if (data.type === 'image') {
                             const imageHtml = `<img src="${data.content}" alt="Generated image" />`;
                             updateMessage(assistantMessageId, imageHtml);
+                            // Store image generation in history
+                            assistantMessage = `[Generated image: ${message}]`;
                         } else if (data.type === 'error') {
                             updateMessage(assistantMessageId, `Error: ${data.error}`);
                         } else if (data.type === 'progress') {
@@ -449,6 +460,15 @@ async function sendMessage() {
                     }
                 }
             }
+        }
+        
+        // Add assistant's response to conversation history
+        if (assistantMessage) {
+            conversationHistory.push({
+                role: 'assistant',
+                content: assistantMessage
+            });
+            console.log('Added assistant response to history. Total messages:', conversationHistory.length);
         }
         
     } catch (error) {
@@ -638,7 +658,11 @@ async function newChat() {
     // Fade out existing messages
     container.style.opacity = '0';
     
-    // Clear conversation history on server
+    // Clear conversation history
+    conversationHistory = [];
+    console.log('Conversation history cleared');
+    
+    // Clear conversation history on server (kept for compatibility)
     try {
         await fetch('/clear-history', {
             method: 'POST',
