@@ -34,8 +34,14 @@
                     </svg>
                 </button>
                 <select id="modelSelector" class="model-selector" aria-label="Select AI model">
-                    <option value="text">text model</option>
-                    <option value="image">image model</option>
+                    <optgroup label="Text Models">
+                        <option value="text:gpt-4.1">GPT-4.1</option>
+                        <option value="text:claude-4-sonnet">Claude 4 Sonnet</option>
+                    </optgroup>
+                    <optgroup label="Image Models">
+                        <option value="image:seedream-3">SeeDream-3</option>
+                        <option value="image:imagen-4-ultra">Imagen 4 Ultra</option>
+                    </optgroup>
                 </select>
                 <button class="new-chat-btn" onclick="newChat()" aria-label="Start new chat">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
@@ -54,11 +60,11 @@
                     <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
                         explain quantum computing
                     </button>
-                    <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')" aria-label="Send suggestion: Generate cyberpunk cityscape">
-                        generate cyberpunk cityscape
+                    <button class="suggestion" onclick="sendSuggestion('Write a Python function to calculate fibonacci numbers')" aria-label="Send suggestion: Write Python function">
+                        write a python function
                     </button>
-                    <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')" aria-label="Send suggestion: Write an AI haiku">
-                        write an ai haiku
+                    <button class="suggestion" onclick="sendSuggestion('Summarize the key principles of AI ethics')" aria-label="Send suggestion: Summarize AI ethics">
+                        summarize ai ethics
                     </button>
                 </div>
             </div>

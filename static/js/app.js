@@ -1,6 +1,31 @@
 let currentModel = 'text';
+let currentModelId = 'gpt-4.1';
 let isGenerating = false;
 let markdownIt = null;
+
+// Model-specific suggestions
+const modelSuggestions = {
+    'text:gpt-4.1': [
+        { text: 'explain quantum computing', full: 'Explain quantum computing in simple terms' },
+        { text: 'write a python function', full: 'Write a Python function to calculate fibonacci numbers' },
+        { text: 'summarize ai ethics', full: 'Summarize the key principles of AI ethics' }
+    ],
+    'text:claude-4-sonnet': [
+        { text: 'analyze a paradox', full: 'Analyze the grandfather paradox in time travel' },
+        { text: 'write a haiku', full: 'Write a haiku about artificial intelligence' },
+        { text: 'creative story opening', full: 'Write a creative opening for a sci-fi story' }
+    ],
+    'image:seedream-3': [
+        { text: 'cyberpunk cityscape', full: 'Generate a cyberpunk cityscape at night' },
+        { text: 'fantasy creature', full: 'Create a mystical fantasy creature in a forest' },
+        { text: 'abstract art', full: 'Generate abstract art with vibrant colors' }
+    ],
+    'image:imagen-4-ultra': [
+        { text: 'photorealistic portrait', full: 'Create a photorealistic portrait of a futuristic astronaut' },
+        { text: 'nature landscape', full: 'Generate a stunning mountain landscape at golden hour' },
+        { text: 'architectural marvel', full: 'Design a modern architectural building with glass facades' }
+    ]
+};
 
 // Initialize app
 if (document.readyState === 'loading') {
@@ -19,6 +44,7 @@ function initializeApp() {
     setupInputHandlers();
     setupMobileOptimizations();
     setupNativeInteractions();
+    updateSuggestions(); // Update suggestions based on initial model
     console.log('App initialization complete');
 }
 
@@ -210,15 +236,28 @@ function setupModelSelector() {
     const modelSelector = document.getElementById('modelSelector');
     
     // Load saved model preference
-    const savedModel = localStorage.getItem('selectedModel') || 'text';
-    currentModel = savedModel;
-    modelSelector.value = savedModel;
+    const savedSelection = localStorage.getItem('selectedModel') || 'text:gpt-4.1';
+    
+    // Parse the saved selection
+    const [type, id] = savedSelection.split(':');
+    currentModel = type;
+    currentModelId = id || (type === 'text' ? 'gpt-4.1' : 'seedream-3');
+    
+    // Set the selector value
+    modelSelector.value = savedSelection;
     
     modelSelector.addEventListener('change', (e) => {
         if (isGenerating) return;
-        currentModel = e.target.value;
+        
+        const [type, id] = e.target.value.split(':');
+        currentModel = type;
+        currentModelId = id;
+        
         // Save model preference
-        localStorage.setItem('selectedModel', currentModel);
+        localStorage.setItem('selectedModel', e.target.value);
+        
+        // Update suggestions for the new model
+        updateSuggestions();
     });
 }
 
@@ -365,7 +404,8 @@ async function sendMessage() {
             credentials: 'same-origin',  // Include cookies in the request
             body: JSON.stringify({
                 message: message,
-                model_type: currentModel
+                model_type: currentModel,
+                model_id: currentModelId
             })
         });
         
@@ -554,27 +594,29 @@ function createTypingIndicator() {
     `;
 }
 
+// Update suggestions based on current model
+function updateSuggestions() {
+    const suggestionContainers = document.querySelectorAll('.suggestions');
+    const modelKey = `${currentModel}:${currentModelId}`;
+    const suggestions = modelSuggestions[modelKey] || modelSuggestions['text:gpt-4.1'];
+    
+    suggestionContainers.forEach(container => {
+        container.innerHTML = suggestions.map((suggestion, index) => `
+            <button class="suggestion" onclick="sendSuggestion('${suggestion.full}')" aria-label="Send suggestion: ${suggestion.text}">
+                ${suggestion.text}
+            </button>
+        `).join('');
+    });
+}
+
 // Send suggestion
 function sendSuggestion(text) {
     const input = document.getElementById('messageInput');
-    const modelSelector = document.getElementById('modelSelector');
     
     input.value = text;
     autoResizeTextarea(input);
     
-    // Update model based on suggestion
-    if (text.toLowerCase().includes('generate') || text.toLowerCase().includes('cityscape')) {
-        currentModel = 'image';
-        modelSelector.value = 'image';
-        // Save model preference
-        localStorage.setItem('selectedModel', 'image');
-    } else {
-        currentModel = 'text';
-        modelSelector.value = 'text';
-        // Save model preference
-        localStorage.setItem('selectedModel', 'text');
-    }
-    
+    // Just send the message with the current model
     sendMessage();
 }
 
@@ -611,20 +653,19 @@ async function newChat() {
     
     // After fade animation, replace content
     setTimeout(() => {
+        const modelKey = `${currentModel}:${currentModelId}`;
+        const suggestions = modelSuggestions[modelKey] || modelSuggestions['text:gpt-4.1'];
+        
         container.innerHTML = `
             <div class="welcome-message">
                 <h2>welcome to yurie</h2>
                 <p>select a model and start chatting. generate text or create images.</p>
                 <div class="suggestions" role="group" aria-label="Suggested prompts">
-                    <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
-                        explain quantum computing
-                    </button>
-                    <button class="suggestion" onclick="sendSuggestion('Generate a cyberpunk cityscape at night')" aria-label="Send suggestion: Generate cyberpunk cityscape">
-                        generate cyberpunk cityscape
-                    </button>
-                    <button class="suggestion" onclick="sendSuggestion('Write a haiku about artificial intelligence')" aria-label="Send suggestion: Write an AI haiku">
-                        write an ai haiku
-                    </button>
+                    ${suggestions.map(suggestion => `
+                        <button class="suggestion" onclick="sendSuggestion('${suggestion.full}')" aria-label="Send suggestion: ${suggestion.text}">
+                            ${suggestion.text}
+                        </button>
+                    `).join('')}
                 </div>
             </div>
         `;

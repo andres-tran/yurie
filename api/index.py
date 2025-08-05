@@ -1,6 +1,6 @@
 import os
 import json
-from flask import Flask, render_template, request, Response, stream_with_context
+from flask import Flask, render_template, request, Response, stream_with_context, session
 from flask_cors import CORS
 import replicate
 from dotenv import load_dotenv
@@ -13,12 +13,18 @@ load_dotenv()
 
 # Configure Flask with explicit paths for Vercel
 app = Flask(__name__,
-            template_folder=str(Path(__file__).parent / 'templates'),
-            static_folder=str(Path(__file__).parent / 'static'))
+            template_folder=str(Path(__file__).parent.parent / 'templates'),
+            static_folder=str(Path(__file__).parent.parent / 'static'))
 CORS(app, supports_credentials=True)
 
 # Configure Flask session for serverless
 app.secret_key = os.getenv('FLASK_SECRET_KEY', 'dev-yurie-chat-secret-key-2024')
+app.config['SESSION_TYPE'] = 'filesystem'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SECURE'] = os.getenv('VERCEL_ENV') is not None  # Only use secure cookies on Vercel
 
 # Initialize Replicate client
 api_token = os.getenv('REPLICATE_API_TOKEN')
@@ -30,45 +36,22 @@ else:
 
 # Model configurations
 MODELS = {
-    "text": [
-        {
-            "id": "gpt-4.1",
-            "name": "openai/gpt-4.1",
-            "display_name": "GPT-4.1"
-        },
-        {
-            "id": "claude-4-sonnet",
-            "name": "anthropic/claude-4-sonnet",
-            "display_name": "Claude 4 Sonnet"
-        }
-    ],
-    "image": [
-        {
-            "id": "seedream-3",
-            "name": "bytedance/seedream-3",
-            "display_name": "SeeDream-3"
-        },
-        {
-            "id": "imagen-4-ultra",
-            "name": "google/imagen-4-ultra",
-            "display_name": "Imagen 4 Ultra"
-        }
-    ]
+    "text": {
+        "name": "openai/gpt-4.1",
+        "version": "gpt-4.1",
+        "display_name": "GPT-4.1 (Text)"
+    },
+    "image": {
+        "name": "bytedance/seedream-3", 
+        "version": "seedream-3",
+        "display_name": "SeeDream-3 (Image)"
+    }
 }
 
 @app.route('/')
 def index():
     """Render the main chat interface"""
     return render_template('index.html')
-
-@app.route('/models', methods=['GET'])
-def get_models():
-    """Return available models"""
-    return {
-        'status': 'success',
-        'models': MODELS
-    }
-
 
 @app.route('/start-session', methods=['POST'])
 def start_session():
@@ -85,20 +68,6 @@ def chat():
     data = request.json
     message = data.get('message', '')
     model_type = data.get('model_type', 'text')
-    model_id = data.get('model_id', None)
-    
-    # Get the selected model
-    if model_type in MODELS:
-        if model_id:
-            selected_model = next((m for m in MODELS[model_type] if m['id'] == model_id), None)
-        else:
-            # Default to first model in the category
-            selected_model = MODELS[model_type][0] if MODELS[model_type] else None
-    else:
-        selected_model = None
-    
-    if not selected_model:
-        return {'error': 'Invalid model selection'}, 400
     
     if not message:
         return {'error': 'No message provided'}, 400
@@ -161,38 +130,17 @@ Always structure your responses with clear sections and proper formatting. Never
                 
                 conversation_prompt += "Assistant: "
                 
-                try:
-                    # Use different input parameters based on model
-                    if selected_model['id'] == 'claude-4-sonnet':
-                        # Claude models typically use different parameter names
-                        input_params = {
-                            "prompt": conversation_prompt,
-                            "max_tokens": 64000,
-                            "temperature": 0.7,
-                            "top_p": 0.9
-                        }
-                    else:
-                        # Default GPT-style parameters
-                        input_params = {
-                            "prompt": conversation_prompt,
-                            "max_new_tokens": 64000,
-                            "temperature": 0.7,
-                            "top_p": 0.9,
-                            "top_k": 50,
-                            "stop_sequences": "<|end_of_text|>,<|eot_id|>"
-                        }
-                    
-                    prediction = replicate_client.predictions.create(
-                        selected_model['name'],
-                        input=input_params
-                    )
-                except Exception as e:
-                    print(f"Error creating prediction: {str(e)}")
-                    yield "data: " + json.dumps({
-                        "type": "error", 
-                        "error": f"Model error: {str(e)}"
-                    }) + "\n\n"
-                    return
+                prediction = replicate_client.predictions.create(
+                    "openai/gpt-4.1",
+                    input={
+                        "prompt": conversation_prompt,
+                        "max_new_tokens": 512,
+                        "temperature": 0.7,
+                        "top_p": 0.9,
+                        "top_k": 50,
+                        "stop_sequences": "<|end_of_text|>,<|eot_id|>"
+                    }
+                )
                 
                 while prediction.status not in ["succeeded", "failed", "canceled"]:
                     prediction.reload()
@@ -229,40 +177,17 @@ Always structure your responses with clear sections and proper formatting. Never
             elif model_type == 'image':
                 yield "data: " + json.dumps({"type": "start", "message": "Generating image..."}) + "\n\n"
                 
-                try:
-                    # Use different input parameters based on model
-                    if selected_model['id'] == 'imagen-4-ultra':
-                        # Imagen models might use different parameter names
-                        input_params = {
-                            "prompt": message,
-                            "negative_prompt": "worst quality, low quality",
-                            "width": 1024,
-                            "height": 1024,
-                            "num_inference_steps": 40,
-                            "guidance_scale": 8.0
-                        }
-                    else:
-                        # Default SeeDream parameters
-                        input_params = {
-                            "prompt": message,
-                            "negative_prompt": "worst quality, low quality",
-                            "width": 1024,
-                            "height": 1024,
-                            "num_inference_steps": 30,
-                            "guidance_scale": 7.5
-                        }
-                    
-                    prediction = replicate_client.predictions.create(
-                        selected_model['name'],
-                        input=input_params
-                    )
-                except Exception as e:
-                    print(f"Error creating image prediction: {str(e)}")
-                    yield "data: " + json.dumps({
-                        "type": "error", 
-                        "error": f"Model error: {str(e)}"
-                    }) + "\n\n"
-                    return
+                prediction = replicate_client.predictions.create(
+                    "bytedance/seedream-3",
+                    input={
+                        "prompt": message,
+                        "negative_prompt": "worst quality, low quality",
+                        "width": 1024,
+                        "height": 1024,
+                        "num_inference_steps": 30,
+                        "guidance_scale": 7.5
+                    }
+                )
                 
                 while prediction.status not in ["succeeded", "failed", "canceled"]:
                     prediction.reload()
