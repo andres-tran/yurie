@@ -319,3 +319,17 @@ def clear_history():
 def health():
     """Health check endpoint"""
     return {'status': 'healthy', 'timestamp': time.time()}
+
+# PWA routes
+@app.route('/manifest.json')
+def manifest():
+    """Serve the web app manifest"""
+    return app.send_static_file('manifest.json')
+
+@app.route('/sw.js')
+def service_worker():
+    """Serve the service worker with correct MIME type"""
+    response = app.send_static_file('sw.js')
+    response.headers['Content-Type'] = 'application/javascript'
+    response.headers['Service-Worker-Allowed'] = '/'
+    return response

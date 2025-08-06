@@ -2,12 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+    
+    <!-- PWA Meta Tags -->
+    <meta name="application-name" content="Yurie">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-title" content="Yurie">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#000000">
-    <meta name="description" content="Yurie">
-    <title>Yurie</title>
+    <meta name="description" content="A minimal AI chat assistant supporting text and image generation">
+    <meta name="keywords" content="AI, chat, assistant, GPT, Claude, image generation">
+    <meta name="author" content="Yurie">
+    
+    <!-- Microsoft Tiles -->
+    <meta name="msapplication-TileColor" content="#000000">
+    <meta name="msapplication-TileImage" content="{{ url_for('static', filename='icons/icon-144.png') }}">
+    <meta name="msapplication-config" content="none">
+    
+    <title>Yurie - AI Chat Assistant</title>
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    
+    <!-- Icons for various devices -->
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/icon.svg') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-180.png') }}">
+    
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Preconnect to improve performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -121,5 +144,112 @@
     </script>
     
     <!-- Analytics removed for better compatibility -->
+    
+    <!-- PWA Install Prompt -->
+    <div id="installPrompt" class="install-prompt" style="display: none;">
+        <div class="install-prompt-content">
+            <h3>Install Yurie</h3>
+            <p>Install this app on your device for the best experience.</p>
+            <div class="install-prompt-buttons">
+                <button id="installDismiss" class="install-dismiss">Not now</button>
+                <button id="installButton" class="install-button">Install</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        // Register service worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('{{ url_for('static', filename='sw.js') }}')
+                    .then(registration => {
+                        console.log('ServiceWorker registered:', registration);
+                        
+                        // Check for updates periodically
+                        setInterval(() => {
+                            registration.update();
+                        }, 60 * 60 * 1000); // Check every hour
+                        
+                        // Handle updates
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    // New update available
+                                    console.log('New update available');
+                                    // You can show a notification to the user here
+                                }
+                            });
+                        });
+                    })
+                    .catch(error => {
+                        console.error('ServiceWorker registration failed:', error);
+                    });
+            });
+        }
+        
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installPrompt = document.getElementById('installPrompt');
+        const installButton = document.getElementById('installButton');
+        const installDismiss = document.getElementById('installDismiss');
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent the mini-infobar from appearing on mobile
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            
+            // Check if already installed or dismissed
+            const dismissed = localStorage.getItem('pwa-install-dismissed');
+            const installed = localStorage.getItem('pwa-installed');
+            
+            if (!dismissed && !installed && !window.matchMedia('(display-mode: standalone)').matches) {
+                // Wait a bit before showing the prompt
+                setTimeout(() => {
+                    installPrompt.style.display = 'block';
+                }, 2000);
+            }
+        });
+        
+        installButton.addEventListener('click', async () => {
+            if (!deferredPrompt) return;
+            
+            // Show the install prompt
+            deferredPrompt.prompt();
+            
+            // Wait for the user to respond to the prompt
+            const { outcome } = await deferredPrompt.userChoice;
+            
+            if (outcome === 'accepted') {
+                console.log('User accepted the install prompt');
+                localStorage.setItem('pwa-installed', 'true');
+            } else {
+                console.log('User dismissed the install prompt');
+            }
+            
+            // Clear the deferred prompt
+            deferredPrompt = null;
+            installPrompt.style.display = 'none';
+        });
+        
+        installDismiss.addEventListener('click', () => {
+            localStorage.setItem('pwa-install-dismissed', 'true');
+            installPrompt.style.display = 'none';
+        });
+        
+        // Detect if app was launched in standalone mode
+        window.addEventListener('appinstalled', () => {
+            console.log('PWA was installed');
+            localStorage.setItem('pwa-installed', 'true');
+        });
+        
+        // iOS install instructions
+        if (navigator.standalone === false && /iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            // Show iOS-specific install instructions if not installed
+            // This could be a custom prompt explaining how to add to home screen
+        }
+    </script>
 </body>
 </html>

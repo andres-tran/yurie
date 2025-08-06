@@ -28,6 +28,17 @@ const modelSuggestions = {
     ]
 };
 
+// PWA Detection
+let isPWA = false;
+let isOnline = navigator.onLine;
+
+// Check if running as PWA
+if (window.matchMedia('(display-mode: standalone)').matches || 
+    window.navigator.standalone === true) {
+    isPWA = true;
+    document.body.classList.add('pwa-mode');
+}
+
 // Initialize app
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initializeApp);
@@ -39,13 +50,19 @@ if (document.readyState === 'loading') {
 function initializeApp() {
     console.log('Initializing app...');
     console.log('DOM ready state:', document.readyState);
+    console.log('Running as PWA:', isPWA);
+    console.log('Online status:', isOnline);
+    
     setupTheme();
     setupMarkdownRenderer();
     setupModelSelector();
     setupInputHandlers();
     setupMobileOptimizations();
     setupNativeInteractions();
+    setupOfflineHandling();
+    setupUpdateNotifications();
     updateSuggestions(); // Update suggestions based on initial model
+    
     console.log('App initialization complete');
 }
 
@@ -805,4 +822,116 @@ function animateButtonPress(button) {
     setTimeout(() => {
         button.style.transform = 'scale(1)';
     }, 150);
+}
+
+// Setup offline handling
+function setupOfflineHandling() {
+    // Monitor online/offline status
+    window.addEventListener('online', () => {
+        isOnline = true;
+        console.log('App is online');
+        showNotification('Back online', 'success');
+        
+        // Remove offline indicator
+        document.body.classList.remove('offline');
+        
+        // Re-enable send button if there's text
+        const input = document.getElementById('messageInput');
+        const sendButton = document.querySelector('.send-btn');
+        if (sendButton && input && input.value.trim()) {
+            sendButton.disabled = false;
+        }
+    });
+    
+    window.addEventListener('offline', () => {
+        isOnline = false;
+        console.log('App is offline');
+        showNotification('You are offline. Some features may be limited.', 'warning');
+        
+        // Add offline indicator
+        document.body.classList.add('offline');
+        
+        // Disable send button
+        const sendButton = document.querySelector('.send-btn');
+        if (sendButton) {
+            sendButton.disabled = true;
+        }
+    });
+    
+    // Check initial connection status
+    if (!isOnline) {
+        document.body.classList.add('offline');
+        showNotification('You are offline. Some features may be limited.', 'warning');
+    }
+}
+
+// Setup update notifications
+function setupUpdateNotifications() {
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+            // A new service worker has taken control
+            showNotification('App updated! Refresh to see the latest version.', 'info', {
+                action: 'Refresh',
+                callback: () => window.location.reload()
+            });
+        });
+    }
+}
+
+// Show notification
+function showNotification(message, type = 'info', options = {}) {
+    // Remove any existing notifications
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+        existingNotification.remove();
+    }
+    
+    // Create notification element
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.innerHTML = `
+        <span class="notification-message">${message}</span>
+        ${options.action ? `<button class="notification-action">${options.action}</button>` : ''}
+        <button class="notification-close" aria-label="Close notification">×</button>
+    `;
+    
+    // Add to body
+    document.body.appendChild(notification);
+    
+    // Animate in
+    requestAnimationFrame(() => {
+        notification.classList.add('notification-show');
+    });
+    
+    // Handle action button
+    if (options.action && options.callback) {
+        const actionBtn = notification.querySelector('.notification-action');
+        actionBtn.addEventListener('click', () => {
+            options.callback();
+            removeNotification(notification);
+        });
+    }
+    
+    // Handle close button
+    const closeBtn = notification.querySelector('.notification-close');
+    closeBtn.addEventListener('click', () => {
+        removeNotification(notification);
+    });
+    
+    // Auto-remove after 5 seconds (unless it has an action)
+    if (!options.action) {
+        setTimeout(() => {
+            removeNotification(notification);
+        }, 5000);
+    }
+}
+
+// Remove notification with animation
+function removeNotification(notification) {
+    if (!notification) return;
+    
+    notification.classList.remove('notification-show');
+    notification.addEventListener('transitionend', () => {
+        notification.remove();
+    });
 }
