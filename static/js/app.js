@@ -602,24 +602,35 @@ function ensureMessageVisible(message, container) {
     const isMobile = window.innerWidth <= 768;
     
     if (isMobile) {
-        // Get the input container height
+        // Get the input container height with better fallback
         const inputContainer = document.querySelector('.input-container');
-        const inputHeight = inputContainer ? inputContainer.offsetHeight : 100;
+        const computedStyle = inputContainer ? window.getComputedStyle(inputContainer) : null;
+        const inputHeight = inputContainer ? 
+            inputContainer.offsetHeight + 
+            parseFloat(computedStyle.marginTop || 0) + 
+            parseFloat(computedStyle.marginBottom || 0) : 
+            120; // Better fallback height for mobile
         
-        // Scroll to show the message with extra padding
+        // Add extra padding for AI messages
+        const isAiMessage = message.classList.contains('ai-message');
+        const extraPadding = isAiMessage ? 30 : 20;
+        
+        // Scroll to show the message with appropriate padding
         const messageBottom = message.offsetTop + message.offsetHeight;
         const containerHeight = container.clientHeight;
         const currentScroll = container.scrollTop;
         const visibleBottom = currentScroll + containerHeight;
         
-        // If message extends beyond visible area, scroll to show it
-        if (messageBottom > visibleBottom - inputHeight - 20) {
-            const targetScroll = messageBottom - containerHeight + inputHeight + 40;
+        // Always ensure the full message is visible
+        const targetScroll = messageBottom - containerHeight + inputHeight + extraPadding;
+        
+        // Use requestAnimationFrame for smoother scrolling
+        requestAnimationFrame(() => {
             container.scrollTo({
-                top: targetScroll,
+                top: Math.max(0, targetScroll),
                 behavior: 'smooth'
             });
-        }
+        });
     } else {
         // For desktop, use the standard smooth scroll
         smoothScrollToBottom(container);
