@@ -235,14 +235,20 @@ function setupMarkdownRenderer() {
         typographer: true,
         breaks: true,
         highlight: function(str, lang) {
+            // Get the highlighted code
+            let highlightedCode;
             if (lang && hljs.getLanguage(lang)) {
                 try {
-                    return '<pre class="hljs"><code>' +
-                           hljs.highlight(str, { language: lang, ignoreIllegals: true }).value +
-                           '</code></pre>';
-                } catch (__) {}
+                    highlightedCode = hljs.highlight(str, { language: lang, ignoreIllegals: true }).value;
+                } catch (__) {
+                    highlightedCode = markdownIt.utils.escapeHtml(str);
+                }
+            } else {
+                highlightedCode = markdownIt.utils.escapeHtml(str);
             }
-            return '<pre class="hljs"><code>' + markdownIt.utils.escapeHtml(str) + '</code></pre>';
+            
+            // Return properly structured code block with language info
+            return `<pre class="hljs"><code class="language-${lang || 'plaintext'}">${highlightedCode}</code></pre>`;
         }
     });
     
@@ -622,23 +628,35 @@ function ensureMessageVisible(message, container) {
 
 // Add copy buttons to code blocks
 function addCopyButtons(container) {
-    const codeBlocks = container.querySelectorAll('pre code');
-    codeBlocks.forEach(block => {
-        const pre = block.parentElement;
-        
+    const codeBlocks = container.querySelectorAll('pre');
+    codeBlocks.forEach(pre => {
         // Check if already wrapped
         if (pre.parentElement && pre.parentElement.classList.contains('code-block-wrapper')) {
             return;
         }
         
+        // Get the code element
+        const code = pre.querySelector('code');
+        if (!code) return;
+        
+        // Extract language from class (if available)
+        const langMatch = code.className.match(/language-(\w+)/);
+        const language = langMatch ? langMatch[1] : '';
+        
         const wrapper = document.createElement('div');
         wrapper.className = 'code-block-wrapper';
+        if (language) {
+            wrapper.setAttribute('data-language', language);
+        }
+        
+        // Insert wrapper
         pre.parentNode.insertBefore(wrapper, pre);
         wrapper.appendChild(pre);
         
+        // Create copy button
         const copyBtn = document.createElement('button');
         copyBtn.className = 'copy-btn';
-        copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10"></path></svg>';
+        copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10"></path></svg>';
         copyBtn.setAttribute('aria-label', 'Copy code');
         copyBtn.title = 'Copy code';
         
@@ -649,10 +667,18 @@ function addCopyButtons(container) {
         
         copyBtn.onclick = (e) => {
             e.stopPropagation();
-            copyToClipboard(block.textContent, copyBtn);
+            copyToClipboard(code.textContent, copyBtn);
         };
         
         wrapper.appendChild(copyBtn);
+        
+        // Add language label if available
+        if (language && language !== 'plaintext') {
+            const langLabel = document.createElement('div');
+            langLabel.className = 'code-language';
+            langLabel.textContent = language;
+            wrapper.appendChild(langLabel);
+        }
     });
 }
 
