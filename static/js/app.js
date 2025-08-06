@@ -531,8 +531,8 @@ function addMessage(content, sender, id) {
     messageDiv.appendChild(contentDiv);
     container.appendChild(messageDiv);
     
-    // Smooth scroll to bottom
-    smoothScrollToBottom(container);
+    // Ensure message is visible, accounting for mobile input
+    ensureMessageVisible(messageDiv, container);
 }
 
 // Smooth scroll to bottom
@@ -582,6 +582,40 @@ function updateMessage(id, content, isMarkdown = false) {
         }
         
         const container = document.getElementById('messagesContainer');
+        
+        // Force a reflow to ensure the DOM is updated
+        message.offsetHeight;
+        
+        // Ensure the message is visible on mobile
+        ensureMessageVisible(message, container);
+    }
+}
+
+// Ensure message is visible above input area
+function ensureMessageVisible(message, container) {
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // Get the input container height
+        const inputContainer = document.querySelector('.input-container');
+        const inputHeight = inputContainer ? inputContainer.offsetHeight : 100;
+        
+        // Scroll to show the message with extra padding
+        const messageBottom = message.offsetTop + message.offsetHeight;
+        const containerHeight = container.clientHeight;
+        const currentScroll = container.scrollTop;
+        const visibleBottom = currentScroll + containerHeight;
+        
+        // If message extends beyond visible area, scroll to show it
+        if (messageBottom > visibleBottom - inputHeight - 20) {
+            const targetScroll = messageBottom - containerHeight + inputHeight + 40;
+            container.scrollTo({
+                top: targetScroll,
+                behavior: 'smooth'
+            });
+        }
+    } else {
+        // For desktop, use the standard smooth scroll
         smoothScrollToBottom(container);
     }
 }
@@ -723,23 +757,47 @@ function setupMobileOptimizations() {
         // Handle viewport height changes (keyboard open/close)
         let viewportHeight = window.innerHeight;
         
-        window.addEventListener('resize', () => {
-            const currentHeight = window.innerHeight;
-            const input = document.getElementById('messageInput');
-            
-            // Keyboard is likely open if height decreased significantly
-            if (currentHeight < viewportHeight * 0.75) {
-                document.body.classList.add('keyboard-open');
-                // Scroll to bottom to keep input visible
-                setTimeout(() => {
-                    input.scrollIntoView({ behavior: 'smooth', block: 'end' });
-                }, 100);
-            } else {
-                document.body.classList.remove('keyboard-open');
-            }
-            
-            viewportHeight = currentHeight;
-        });
+        // Use Visual Viewport API if available
+        if ('visualViewport' in window) {
+            window.visualViewport.addEventListener('resize', () => {
+                const currentHeight = window.visualViewport.height;
+                const input = document.getElementById('messageInput');
+                const container = document.getElementById('messagesContainer');
+                
+                // Keyboard is likely open if height decreased significantly
+                if (currentHeight < viewportHeight * 0.75) {
+                    document.body.classList.add('keyboard-open');
+                    // Ensure last message is visible
+                    const lastMessage = container.querySelector('.message:last-child');
+                    if (lastMessage) {
+                        ensureMessageVisible(lastMessage, container);
+                    }
+                } else {
+                    document.body.classList.remove('keyboard-open');
+                }
+                
+                viewportHeight = currentHeight;
+            });
+        } else {
+            // Fallback for browsers without Visual Viewport API
+            window.addEventListener('resize', () => {
+                const currentHeight = window.innerHeight;
+                const input = document.getElementById('messageInput');
+                
+                // Keyboard is likely open if height decreased significantly
+                if (currentHeight < viewportHeight * 0.75) {
+                    document.body.classList.add('keyboard-open');
+                    // Scroll to bottom to keep input visible
+                    setTimeout(() => {
+                        input.scrollIntoView({ behavior: 'smooth', block: 'end' });
+                    }, 100);
+                } else {
+                    document.body.classList.remove('keyboard-open');
+                }
+                
+                viewportHeight = currentHeight;
+            });
+        }
         
         // Prevent double-tap zoom on buttons
         let lastTouchEnd = 0;

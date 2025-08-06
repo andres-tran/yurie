@@ -248,6 +248,7 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 24px;
+    padding-bottom: 100px; /* Add padding to prevent content hiding behind input */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     background: var(--bg-primary);
@@ -430,8 +431,10 @@ body {
 
 .message-content pre {
     margin: 16px 0;
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
     border-radius: var(--border-radius-sm);
+    max-width: 100%;
 }
 
 .message-content pre code {
@@ -439,16 +442,20 @@ body {
     padding: 16px;
     background: var(--bg-secondary);
     color: var(--text-primary);
-    overflow-x: auto;
+    overflow-x: visible;
     font-size: 0.875em;
     line-height: 1.6;
     border: var(--hairline-width) solid var(--border);
+    white-space: pre;
+    word-wrap: normal;
 }
 
 /* Minimal code block wrapper with copy button */
 .code-block-wrapper {
     position: relative;
     margin: 16px 0;
+    max-width: 100%;
+    overflow-x: auto;
 }
 
 .copy-btn {
@@ -713,6 +720,8 @@ body {
     .copy-btn {
         opacity: 1;
         padding: 8px;
+        position: sticky;
+        right: 8px;
     }
 }
 
@@ -734,6 +743,8 @@ body {
     .container {
         height: 100vh;
         height: 100dvh; /* Dynamic viewport height for mobile */
+        display: flex;
+        flex-direction: column;
     }
     
     .chat-header {
@@ -775,10 +786,11 @@ body {
     
     .messages-container {
         padding: 12px;
-        padding-bottom: 20px;
-        /* Adjust height for mobile viewport and keyboard */
-        height: calc(100vh - var(--header-height) - 88px);
-        height: calc(100dvh - var(--header-height) - 88px);
+        padding-bottom: 120px; /* Increased padding for mobile to ensure content is visible above input */
+        /* Remove fixed height to allow flex to work properly */
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .welcome-message {
@@ -816,6 +828,8 @@ body {
         font-size: 15px;
         padding: 12px 16px;
         border-radius: var(--border-radius-sm);
+        overflow-x: hidden;
+        word-wrap: break-word;
     }
     
     /* Mobile markdown adjustments */
@@ -824,17 +838,26 @@ body {
     .message-content h3 { font-size: 1.125em; }
     
     .message-content pre {
-        margin: 12px -14px;
-        border-radius: 0;
+        margin: 12px 0;
+        border-radius: var(--border-radius-sm);
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .message-content pre code {
         padding: 12px 14px;
         font-size: 0.8125em;
+        min-width: 0;
+        white-space: pre;
+        word-wrap: normal;
     }
     
     .code-block-wrapper {
-        margin: 12px -14px;
+        margin: 12px 0;
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .message-content table {
@@ -855,6 +878,8 @@ body {
         background: var(--bg-primary);
         z-index: 15;
         border-top: var(--hairline-width) solid var(--border);
+        /* Add shadow for better visibility */
+        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
     }
     
     .input-wrapper {
@@ -960,9 +985,11 @@ body {
     
     .messages-container {
         padding: 10px;
-        /* Smaller height for small screens */
-        height: calc(100vh - var(--header-height) - 80px);
-        height: calc(100dvh - var(--header-height) - 80px);
+        padding-bottom: 100px; /* Ensure content is visible above input on small screens */
+        /* Use flex instead of fixed height */
+        flex: 1;
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
     }
     
     .input-container {
@@ -1120,6 +1147,11 @@ body.keyboard-open .messages-container {
 
 body.keyboard-open .input-container {
     transition: none;
+}
+
+/* Ensure last message is visible above input */
+.messages-container .message:last-child {
+    margin-bottom: 20px;
 }
 
 /* iOS specific fixes */
