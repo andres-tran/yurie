@@ -1,4 +1,4 @@
-// Service Worker for Yurie PWA
+// Service Worker for yurie PWA
 const CACHE_NAME = 'yurie-v1.0.0';
 const STATIC_CACHE_NAME = 'yurie-static-v1.0.0';
 const DYNAMIC_CACHE_NAME = 'yurie-dynamic-v1.0.0';
@@ -202,7 +202,7 @@ self.addEventListener('push', event => {
     };
     
     event.waitUntil(
-      self.registration.showNotification('Yurie', options)
+                              self.registration.showNotification('yurie', options)
     );
   }
 });

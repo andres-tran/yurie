@@ -1,6 +1,6 @@
 {
-  "name": "Yurie - AI Chat Assistant",
-  "short_name": "Yurie",
+      "name": "yurie",
+    "short_name": "yurie",
   "description": "A minimal AI chat assistant supporting text and image generation",
   "start_url": "/",
   "display": "standalone",
