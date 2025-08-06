@@ -455,7 +455,14 @@ body {
     position: relative;
     margin: 16px 0;
     max-width: 100%;
-    overflow-x: auto;
+    overflow: visible;
+}
+
+/* Ensure pre elements have proper spacing for copy button */
+.code-block-wrapper pre {
+    position: relative;
+    margin: 0;
+    padding-top: 42px !important; /* Make room for copy button */
 }
 
 .copy-btn {
@@ -463,22 +470,27 @@ body {
     top: 8px;
     right: 8px;
     padding: 6px 10px;
-    background: var(--bg-secondary);
+    background: var(--bg-tertiary);
     border: var(--hairline-width) solid var(--border);
     border-radius: var(--border-radius-xs);
-    color: var(--text-primary);
+    color: var(--text-secondary);
     cursor: pointer;
     opacity: 0;
-    transition: var(--transition);
+    transition: all 0.2s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 12px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    min-width: 32px;
+    height: 32px;
 }
 
 [data-theme="light"] .copy-btn {
     background: var(--bg-secondary);
-    color: var(--text-primary);
+    color: var(--text-secondary);
 }
 
 .code-block-wrapper:hover .copy-btn {
@@ -496,8 +508,16 @@ body {
 }
 
 .copy-btn.copied {
-    color: var(--success);
+    background: var(--accent);
+    color: var(--bg-primary);
+    border-color: var(--accent);
     opacity: 1;
+}
+
+.copy-btn svg {
+    width: 16px;
+    height: 16px;
+    stroke-width: 2.5;
 }
 
 /* Syntax highlighting theme adjustments */
@@ -705,7 +725,7 @@ body {
 }
 
 /* Mobile Responsive Design - Optimized for touch */
-/* Mobile touch enhancements */
+/* Desktop hover behavior */
 @media (hover: hover) and (pointer: fine) {
     .copy-btn {
         opacity: 0;
@@ -716,12 +736,22 @@ body {
     }
 }
 
+/* Mobile touch behavior - always show copy button */
 @media (hover: none) and (pointer: coarse) {
     .copy-btn {
+        opacity: 0.9;
+        background: var(--bg-secondary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    [data-theme="light"] .copy-btn {
+        background: var(--bg-primary);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+    
+    .copy-btn:active {
         opacity: 1;
-        padding: 8px;
-        position: sticky;
-        right: 8px;
+        transform: scale(0.95);
     }
 }
 
@@ -856,8 +886,23 @@ body {
     .code-block-wrapper {
         margin: 12px 0;
         max-width: 100%;
+        overflow: visible;
+    }
+    
+    .code-block-wrapper pre {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
+        padding-top: 48px !important; /* Slightly more space on mobile */
+        padding-right: 16px !important; /* Ensure code doesn't go under button */
+    }
+    
+    .copy-btn {
+        top: 6px;
+        right: 6px;
+        padding: 8px;
+        min-width: 36px;
+        height: 36px;
+        font-size: 11px;
     }
     
     .message-content table {

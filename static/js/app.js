@@ -625,6 +625,12 @@ function addCopyButtons(container) {
     const codeBlocks = container.querySelectorAll('pre code');
     codeBlocks.forEach(block => {
         const pre = block.parentElement;
+        
+        // Check if already wrapped
+        if (pre.parentElement && pre.parentElement.classList.contains('code-block-wrapper')) {
+            return;
+        }
+        
         const wrapper = document.createElement('div');
         wrapper.className = 'code-block-wrapper';
         pre.parentNode.insertBefore(wrapper, pre);
@@ -632,9 +638,20 @@ function addCopyButtons(container) {
         
         const copyBtn = document.createElement('button');
         copyBtn.className = 'copy-btn';
-        copyBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10"></path></svg>';
+        copyBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10"></path></svg>';
+        copyBtn.setAttribute('aria-label', 'Copy code');
         copyBtn.title = 'Copy code';
-        copyBtn.onclick = () => copyToClipboard(block.textContent, copyBtn);
+        
+        // Prevent button from interfering with text selection
+        copyBtn.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+        });
+        
+        copyBtn.onclick = (e) => {
+            e.stopPropagation();
+            copyToClipboard(block.textContent, copyBtn);
+        };
+        
         wrapper.appendChild(copyBtn);
     });
 }
@@ -643,14 +660,36 @@ function addCopyButtons(container) {
 async function copyToClipboard(text, button) {
     try {
         await navigator.clipboard.writeText(text);
-        button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 13l4 4L19 7"></path></svg>';
+        
+        // Visual feedback
+        const originalContent = button.innerHTML;
+        button.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"></path></svg>';
         button.classList.add('copied');
+        
+        // Haptic feedback on mobile
+        triggerHapticFeedback('light');
+        
         setTimeout(() => {
-            button.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10"></path></svg>';
+            button.innerHTML = originalContent;
             button.classList.remove('copied');
         }, 2000);
     } catch (err) {
         console.error('Failed to copy:', err);
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'absolute';
+        textarea.style.left = '-9999px';
+        document.body.appendChild(textarea);
+        textarea.select();
+        try {
+            document.execCommand('copy');
+            button.classList.add('copied');
+            setTimeout(() => button.classList.remove('copied'), 2000);
+        } catch (fallbackErr) {
+            console.error('Fallback copy failed:', fallbackErr);
+        }
+        document.body.removeChild(textarea);
     }
 }
 
