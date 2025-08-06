@@ -377,6 +377,82 @@ body {
     border: var(--hairline-width) solid var(--border);
 }
 
+/* Image wrapper with download button */
+.image-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-top: 16px;
+}
+
+.image-wrapper img {
+    margin-top: 0;
+}
+
+.download-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    padding: 8px;
+    background: rgba(0, 0, 0, 0.7);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    color: #ffffff;
+    cursor: pointer;
+    opacity: 0;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    width: 36px;
+    height: 36px;
+}
+
+[data-theme="light"] .download-btn {
+    background: rgba(255, 255, 255, 0.9);
+    color: #000000;
+    border-color: rgba(0, 0, 0, 0.2);
+}
+
+.image-wrapper:hover .download-btn {
+    opacity: 1;
+}
+
+.download-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+    transform: scale(1.05);
+}
+
+[data-theme="light"] .download-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.download-btn:active {
+    transform: scale(0.95);
+}
+
+.download-btn.downloading {
+    opacity: 1;
+    cursor: not-allowed;
+}
+
+.download-btn.downloaded {
+    background: #4caf50;
+    color: #ffffff;
+    border-color: #4caf50;
+    opacity: 1;
+}
+
+.download-btn svg {
+    width: 18px;
+    height: 18px;
+    stroke-width: 2;
+}
+
 /* Markdown content styling */
 .message-content h1,
 .message-content h2,
@@ -841,6 +917,23 @@ body {
     }
     
     .copy-btn:active {
+        opacity: 1;
+        transform: scale(0.95);
+    }
+    
+    /* Always show download button on touch devices */
+    .download-btn {
+        opacity: 0.9;
+        background: rgba(0, 0, 0, 0.8);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+    }
+    
+    [data-theme="light"] .download-btn {
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+    
+    .download-btn:active {
         opacity: 1;
         transform: scale(0.95);
     }

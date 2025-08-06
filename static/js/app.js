@@ -469,7 +469,7 @@ async function sendMessage() {
                             assistantMessage += data.content;
                             updateMessage(assistantMessageId, assistantMessage, true);
                         } else if (data.type === 'image') {
-                            const imageHtml = `<img src="${data.content}" alt="Generated image" />`;
+                            const imageHtml = createImageWithDownload(data.content, message);
                             updateMessage(assistantMessageId, imageHtml);
                             // Store image generation in history
                             assistantMessage = `[Generated image: ${message}]`;
@@ -728,6 +728,94 @@ function createTypingIndicator() {
             <span></span>
         </div>
     `;
+}
+
+// Create image with download button
+function createImageWithDownload(imageUrl, prompt) {
+    const timestamp = new Date().toISOString().replace(/[:.-]/g, '').slice(0, 15);
+    const filename = `yurie-${timestamp}.png`;
+    
+    return `
+        <div class="image-wrapper">
+            <img src="${imageUrl}" alt="Generated image" />
+            <button class="download-btn" onclick="downloadImage('${imageUrl}', '${filename}')" aria-label="Download image" title="Download image">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            </button>
+        </div>
+    `;
+}
+
+// Download image function
+async function downloadImage(imageUrl, filename) {
+    try {
+        // Haptic feedback on mobile
+        triggerHapticFeedback('light');
+        
+        // Show downloading state
+        const downloadBtn = event.target.closest('.download-btn');
+        if (downloadBtn) {
+            downloadBtn.classList.add('downloading');
+            downloadBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10" stroke-dasharray="60" stroke-dashoffset="60"><animate attributeName="stroke-dashoffset" dur="1s" repeatCount="indefinite" from="60" to="0"/></circle></svg>';
+        }
+        
+        // Fetch the image
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        
+        // Create a temporary URL for the blob
+        const blobUrl = URL.createObjectURL(blob);
+        
+        // Create a temporary anchor element and trigger download
+        const a = document.createElement('a');
+        a.href = blobUrl;
+        a.download = filename;
+        a.style.display = 'none';
+        document.body.appendChild(a);
+        a.click();
+        
+        // Clean up
+        document.body.removeChild(a);
+        URL.revokeObjectURL(blobUrl);
+        
+        // Show success state
+        if (downloadBtn) {
+            downloadBtn.classList.remove('downloading');
+            downloadBtn.classList.add('downloaded');
+            downloadBtn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M5 13l4 4L19 7"></path></svg>';
+            
+            // Reset button after 2 seconds
+            setTimeout(() => {
+                downloadBtn.classList.remove('downloaded');
+                downloadBtn.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                `;
+            }, 2000);
+        }
+    } catch (error) {
+        console.error('Error downloading image:', error);
+        alert('Failed to download image. Please try again.');
+        
+        // Reset button on error
+        const downloadBtn = event.target.closest('.download-btn');
+        if (downloadBtn) {
+            downloadBtn.classList.remove('downloading');
+            downloadBtn.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                    <polyline points="7 10 12 15 17 10"></polyline>
+                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                </svg>
+            `;
+        }
+    }
 }
 
 // Update suggestions based on current model
