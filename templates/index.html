@@ -26,9 +26,11 @@
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
     
     <!-- Icons for various devices -->
-    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='icons/icon.svg') }}">
-    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192.png') }}">
-    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-180.png') }}">
+    <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='icons/favicon.ico') }}?v=3">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='icons/icon-32.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ url_for('static', filename='icons/icon-16.png') }}?v=3">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ url_for('static', filename='icons/icon-192.png') }}?v=3">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-180.png') }}?v=3">
     
 
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
