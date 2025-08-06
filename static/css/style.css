@@ -248,7 +248,7 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 24px;
-    padding-bottom: 100px; /* Add padding to prevent content hiding behind input */
+    padding-bottom: 60px; /* Reduced padding for desktop */
     scroll-behavior: smooth;
     -webkit-overflow-scrolling: touch;
     background: var(--bg-primary);
@@ -1295,7 +1295,7 @@ body.keyboard-open .input-container {
 
 /* Ensure last message is visible above input */
 .messages-container .message:last-child {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 /* iOS specific fixes */
