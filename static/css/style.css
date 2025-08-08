@@ -126,7 +126,7 @@ body {
 }
 
 .model-selector {
-    padding: 10px 16px;
+    padding: 10px 12px;
     background: transparent;
     border: var(--hairline-width) solid var(--border);
     border-radius: var(--border-radius-xs);
@@ -140,7 +140,12 @@ body {
     position: relative;
     appearance: none;
     height: 40px;
-    min-width: 120px;
+    width: max-content;
+    min-width: 80px;
+    max-width: 150px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .model-selector:hover {
@@ -159,6 +164,20 @@ body {
     outline: none;
     border-color: var(--accent);
 }
+
+/* Ensure dropdown options have enough width */
+.model-selector option {
+    padding: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.model-selector optgroup {
+    font-weight: 600;
+}
+
+
 
 .new-chat-btn {
     padding: 10px 16px;
@@ -335,6 +354,142 @@ body {
 
 .message.assistant {
     justify-content: flex-start;
+}
+
+/* Reasoning Section Styles */
+.reasoning-section {
+    margin-bottom: 16px;
+    border: var(--hairline-width) solid var(--border);
+    border-radius: var(--border-radius-sm);
+    background: var(--bg-secondary);
+    overflow: hidden;
+    transition: all 0.3s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.reasoning-section.is-streaming {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent-light), 0 2px 6px rgba(0, 0, 0, 0.1);
+    animation: reasoningPulse 2s ease-in-out infinite;
+}
+
+@keyframes reasoningPulse {
+    0%, 100% {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px var(--accent-light), 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+    50% {
+        border-color: var(--accent-hover);
+        box-shadow: 0 0 0 2px var(--accent-light), 0 3px 8px rgba(0, 0, 0, 0.15);
+    }
+}
+
+.reasoning-toggle {
+    width: 100%;
+    padding: 12px 16px;
+    background: transparent;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+    text-align: left;
+}
+
+.reasoning-toggle:hover {
+    background: var(--accent-light);
+    color: var(--text-primary);
+}
+
+.reasoning-toggle:active {
+    transform: none;
+    background: var(--accent-light);
+}
+
+.reasoning-icon {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    transition: transform 0.2s ease;
+}
+
+.reasoning-label {
+    font-size: 13px;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.reasoning-status {
+    font-size: 12px;
+    color: var(--accent);
+    font-weight: normal;
+    text-transform: none;
+    letter-spacing: normal;
+    animation: fadeInOut 1.5s ease-in-out infinite;
+}
+
+@keyframes fadeInOut {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 1; }
+}
+
+.reasoning-content {
+    border-top: var(--hairline-width) solid var(--border);
+    background: var(--bg-tertiary);
+    animation: expandReasoning 0.2s ease;
+}
+
+.reasoning-content[hidden] {
+    display: none;
+}
+
+@keyframes expandReasoning {
+    from {
+        opacity: 0;
+        max-height: 0;
+    }
+    to {
+        opacity: 1;
+        max-height: 500px;
+    }
+}
+
+.reasoning-text {
+    padding: 16px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.reasoning-text p {
+    margin-bottom: 12px;
+}
+
+.reasoning-text p:last-child {
+    margin-bottom: 0;
+}
+
+.reasoning-text strong {
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+/* Light theme adjustments for reasoning */
+[data-theme="light"] .reasoning-section {
+    background: var(--bg-secondary);
+}
+
+[data-theme="light"] .reasoning-content {
+    background: var(--bg-tertiary);
+}
+
+[data-theme="light"] .reasoning-toggle:hover {
+    background: var(--accent-light);
 }
 
 .message-content {
@@ -982,10 +1137,11 @@ body {
     }
     
     .model-selector {
-        padding: 10px 12px;
+        padding: 8px 10px;
         font-size: 13px;
         height: 40px;
-        min-width: auto;
+        min-width: 70px;
+        max-width: 130px;
     }
     
     .new-chat-btn {
@@ -1044,6 +1200,30 @@ body {
         border-radius: var(--border-radius-sm);
         overflow-x: hidden;
         word-wrap: break-word;
+    }
+    
+    /* Mobile reasoning section adjustments */
+    .reasoning-section {
+        margin-bottom: 12px;
+    }
+    
+    .reasoning-toggle {
+        padding: 10px 14px;
+        font-size: 12px;
+    }
+    
+    .reasoning-icon {
+        width: 14px;
+        height: 14px;
+    }
+    
+    .reasoning-label {
+        font-size: 11px;
+    }
+    
+    .reasoning-text {
+        padding: 12px 14px;
+        font-size: 12px;
     }
     
     /* Mobile markdown adjustments */
@@ -1188,9 +1368,10 @@ body {
     }
     
     .model-selector {
-        max-width: 110px;
         font-size: 12px;
-        padding: 8px 10px;
+        padding: 6px 8px;
+        min-width: 60px;
+        max-width: 110px;
     }
     
     .new-chat-btn {

@@ -1,11 +1,26 @@
 let currentModel = 'text';
-let currentModelId = 'gpt-4.1';
+let currentModelId = 'gpt-5-2025-08-07';
 let isGenerating = false;
 let markdownIt = null;
 let conversationHistory = []; // Store conversation history client-side
 
 // Model-specific suggestions
 const modelSuggestions = {
+    'text:gpt-5-2025-08-07': [
+        { text: 'complex reasoning problem', full: 'Solve this complex reasoning problem: If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly?' },
+        { text: 'multi-step analysis', full: 'Perform a multi-step analysis of the economic impacts of renewable energy adoption' },
+        { text: 'advanced code generation', full: 'Generate a complete React component with TypeScript that implements a sortable, filterable data table' }
+    ],
+    'text:gpt-5-mini-2025-08-07': [
+        { text: 'efficient reasoning task', full: 'Analyze the logical structure of this argument and identify any fallacies: "All successful people wake up early. John wakes up early. Therefore, John will be successful."' },
+        { text: 'streamlined code review', full: 'Review this code snippet and suggest improvements for performance and readability: function fibonacci(n) { if (n <= 1) return n; return fibonacci(n-1) + fibonacci(n-2); }' },
+        { text: 'concise explanation', full: 'Explain the difference between machine learning and deep learning in under 100 words' }
+    ],
+    'text:gpt-5-nano-2025-08-07': [
+        { text: 'quick analysis', full: 'What are the main pros and cons of electric vehicles?' },
+        { text: 'simple coding task', full: 'Write a Python function that checks if a string is a palindrome' },
+        { text: 'brief summary', full: 'Summarize the key features of cloud computing in bullet points' }
+    ],
     'text:gpt-4.1': [
         { text: 'explain quantum computing', full: 'Explain quantum computing in simple terms' },
         { text: 'write a python function', full: 'Write a Python function to calculate fibonacci numbers' },
@@ -47,7 +62,7 @@ if (document.readyState === 'loading') {
     initializeApp();
 }
 
-function initializeApp() {
+async function initializeApp() {
     console.log('Initializing app...');
     console.log('DOM ready state:', document.readyState);
     console.log('Running as PWA:', isPWA);
@@ -55,7 +70,7 @@ function initializeApp() {
     
     setupTheme();
     setupMarkdownRenderer();
-    setupModelSelector();
+    await setupModelSelector(); // Now async to fetch models from backend
     setupInputHandlers();
     setupMobileOptimizations();
     setupNativeInteractions();
@@ -255,17 +270,70 @@ function setupMarkdownRenderer() {
     // Note: Common languages are already included in the highlight.js bundle
 }
 
+// Fetch models from backend
+async function fetchModels() {
+    try {
+        const response = await fetch('/models');
+        const data = await response.json();
+        
+        if (data.status === 'success' && data.models) {
+            return data.models;
+        }
+    } catch (error) {
+        console.error('Error fetching models:', error);
+    }
+    return null;
+}
+
 // Model selector setup
-function setupModelSelector() {
+async function setupModelSelector() {
     const modelSelector = document.getElementById('modelSelector');
     
+    // Try to fetch models from backend
+    const models = await fetchModels();
+    
+    if (models) {
+        // Clear existing options
+        modelSelector.innerHTML = '';
+        
+        // Add text models
+        if (models.text && models.text.length > 0) {
+            const textGroup = document.createElement('optgroup');
+            textGroup.label = 'Text Models';
+            
+            models.text.forEach(model => {
+                const option = document.createElement('option');
+                option.value = `text:${model.id}`;
+                option.textContent = model.display_name;
+                textGroup.appendChild(option);
+            });
+            
+            modelSelector.appendChild(textGroup);
+        }
+        
+        // Add image models
+        if (models.image && models.image.length > 0) {
+            const imageGroup = document.createElement('optgroup');
+            imageGroup.label = 'Image Models';
+            
+            models.image.forEach(model => {
+                const option = document.createElement('option');
+                option.value = `image:${model.id}`;
+                option.textContent = model.display_name;
+                imageGroup.appendChild(option);
+            });
+            
+            modelSelector.appendChild(imageGroup);
+        }
+    }
+    
     // Load saved model preference
-    const savedSelection = localStorage.getItem('selectedModel') || 'text:gpt-4.1';
+    const savedSelection = localStorage.getItem('selectedModel') || 'text:gpt-5-2025-08-07';
     
     // Parse the saved selection
     const [type, id] = savedSelection.split(':');
     currentModel = type;
-    currentModelId = id || (type === 'text' ? 'gpt-4.1' : 'seedream-3');
+    currentModelId = id || (type === 'text' ? 'gpt-5-2025-08-07' : 'seedream-3');
     
     // Set the selector value
     modelSelector.value = savedSelection;
@@ -422,6 +490,10 @@ async function sendMessage() {
     const assistantMessageId = 'msg-' + Date.now();
     addMessage('', 'assistant', assistantMessageId);
     
+    // Variables to track reasoning and content for this message
+    let messageReasoning = null;
+    let messageContent = '';
+    
     try {
         // Debug log to check model type
         console.log('Sending request with model:', currentModel);
@@ -465,9 +537,29 @@ async function sendMessage() {
                         
                         if (data.type === 'start') {
                             updateMessage(assistantMessageId, createTypingIndicator());
+                        } else if (data.type === 'reasoning') {
+                            // Store reasoning content
+                            messageReasoning = data.content;
+                            // Show typing indicator while waiting for main content
+                            updateMessage(assistantMessageId, createTypingIndicator());
                         } else if (data.type === 'content') {
                             assistantMessage += data.content;
-                            updateMessage(assistantMessageId, assistantMessage, true);
+                            messageContent += data.content;
+                            // Update message with reasoning (if available) and content
+                            updateMessageWithReasoning(assistantMessageId, messageReasoning, messageContent, true, true);
+                        } else if (data.type === 'done') {
+                            // Remove streaming state when generation is complete
+                            const messageEl = document.getElementById(assistantMessageId);
+                            if (messageEl) {
+                                const reasoningSection = messageEl.querySelector('.reasoning-section');
+                                if (reasoningSection) {
+                                    reasoningSection.classList.remove('is-streaming');
+                                    const statusSpan = reasoningSection.querySelector('.reasoning-status');
+                                    if (statusSpan) {
+                                        statusSpan.remove();
+                                    }
+                                }
+                            }
                         } else if (data.type === 'image') {
                             const imageHtml = createImageWithDownload(data.content, message);
                             updateMessage(assistantMessageId, imageHtml);
@@ -595,6 +687,101 @@ function updateMessage(id, content, isMarkdown = false) {
         // Ensure the message is visible on mobile
         ensureMessageVisible(message, container);
     }
+}
+
+// Update message with reasoning section
+function updateMessageWithReasoning(id, reasoning, content, isMarkdown = false, isStreaming = true) {
+    const message = document.getElementById(id);
+    if (message) {
+        const contentDiv = message.querySelector('.message-content');
+        
+        let fullContent = '';
+        
+        // Add collapsible reasoning section if available
+        if (reasoning) {
+            fullContent += createReasoningSection(reasoning, isStreaming);
+        }
+        
+        // Add main content
+        if (isMarkdown && markdownIt) {
+            fullContent += markdownIt.render(content);
+        } else {
+            fullContent += content;
+        }
+        
+        contentDiv.innerHTML = fullContent;
+        
+        // Apply copy buttons to code blocks
+        if (isMarkdown) {
+            addCopyButtons(contentDiv);
+        }
+        
+        // Add event listeners for collapsible reasoning
+        if (reasoning) {
+            setupReasoningToggle(contentDiv);
+        }
+        
+        const container = document.getElementById('messagesContainer');
+        
+        // Force a reflow to ensure the DOM is updated
+        message.offsetHeight;
+        
+        // Ensure the message is visible on mobile
+        ensureMessageVisible(message, container);
+    }
+}
+
+// Create collapsible reasoning section HTML
+function createReasoningSection(reasoning, isStreaming = false) {
+    const reasoningId = 'reasoning-' + Date.now();
+    const streamingClass = isStreaming ? ' is-streaming' : '';
+    // Auto-expand reasoning for the first message in a chat
+    const isFirstMessage = document.querySelectorAll('.reasoning-section').length === 0;
+    const expanded = isFirstMessage;
+    
+    return `
+        <div class="reasoning-section${streamingClass}" data-reasoning-id="${reasoningId}">
+            <button class="reasoning-toggle" data-reasoning-id="${reasoningId}" aria-expanded="${expanded}" aria-controls="${reasoningId}">
+                <svg class="reasoning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="${expanded ? 'transform: rotate(90deg);' : ''}">
+                    <path d="M9 18l6-6-6-6"/>
+                </svg>
+                <span class="reasoning-label">AI Reasoning</span>
+                ${isStreaming ? '<span class="reasoning-status"> • Analyzing...</span>' : ''}
+            </button>
+            <div id="${reasoningId}" class="reasoning-content" ${!expanded ? 'hidden' : ''}>
+                <div class="reasoning-text">${markdownIt ? markdownIt.render(reasoning) : reasoning}</div>
+            </div>
+        </div>
+    `;
+}
+
+// Setup event listeners for reasoning toggle
+function setupReasoningToggle(container) {
+    const toggleButtons = container.querySelectorAll('.reasoning-toggle');
+    
+    toggleButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const reasoningId = button.getAttribute('data-reasoning-id');
+            const reasoningContent = document.getElementById(reasoningId);
+            const icon = button.querySelector('.reasoning-icon');
+            const isExpanded = button.getAttribute('aria-expanded') === 'true';
+            
+            if (isExpanded) {
+                // Collapse
+                button.setAttribute('aria-expanded', 'false');
+                reasoningContent.hidden = true;
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                // Expand
+                button.setAttribute('aria-expanded', 'true');
+                reasoningContent.hidden = false;
+                icon.style.transform = 'rotate(90deg)';
+                
+                // Haptic feedback on mobile
+                triggerHapticFeedback('light');
+            }
+        });
+    });
 }
 
 // Ensure message is visible above input area
@@ -833,14 +1020,21 @@ async function downloadImage(imageUrl, filename) {
 function updateSuggestions() {
     const suggestionContainers = document.querySelectorAll('.suggestions');
     const modelKey = `${currentModel}:${currentModelId}`;
-    const suggestions = modelSuggestions[modelKey] || modelSuggestions['text:gpt-4.1'];
+    const suggestions = modelSuggestions[modelKey] || modelSuggestions['text:gpt-5-2025-08-07'];
     
     suggestionContainers.forEach(container => {
-        container.innerHTML = suggestions.map((suggestion, index) => `
-            <button class="suggestion" onclick="sendSuggestion('${suggestion.full}')" aria-label="Send suggestion: ${suggestion.text}">
-                ${suggestion.text}
-            </button>
-        `).join('');
+        container.innerHTML = suggestions.map((suggestion, index) => {
+            // Escape both single and double quotes for safe HTML attribute insertion
+            const escapedSuggestion = suggestion.full
+                .replace(/\\/g, '\\\\')  // Escape backslashes first
+                .replace(/'/g, "\\'")    // Escape single quotes
+                .replace(/"/g, '&quot;'); // Escape double quotes
+            return `
+                <button class="suggestion" onclick="sendSuggestion('${escapedSuggestion}')" aria-label="Send suggestion: ${suggestion.text}">
+                    ${suggestion.text}
+                </button>
+            `;
+        }).join('');
     });
 }
 
@@ -848,7 +1042,10 @@ function updateSuggestions() {
 function sendSuggestion(text) {
     const input = document.getElementById('messageInput');
     
-    input.value = text;
+    // Decode HTML entities that were escaped for safe attribute insertion
+    const decodedText = text.replace(/&quot;/g, '"');
+    
+    input.value = decodedText;
     autoResizeTextarea(input);
     
     // Just send the message with the current model
@@ -893,18 +1090,25 @@ async function newChat() {
     // After fade animation, replace content
     setTimeout(() => {
         const modelKey = `${currentModel}:${currentModelId}`;
-        const suggestions = modelSuggestions[modelKey] || modelSuggestions['text:gpt-4.1'];
+        const suggestions = modelSuggestions[modelKey] || modelSuggestions['text:gpt-5-2025-08-07'];
         
         container.innerHTML = `
             <div class="welcome-message">
                 <h2>welcome to yurie</h2>
-                <p>select a model and start chatting. generate text or create images.</p>
+                <p>now featuring GPT-5 family models with 400k context window and advanced reasoning. generate text or create images.</p>
                 <div class="suggestions" role="group" aria-label="Suggested prompts">
-                    ${suggestions.map(suggestion => `
-                        <button class="suggestion" onclick="sendSuggestion('${suggestion.full}')" aria-label="Send suggestion: ${suggestion.text}">
-                            ${suggestion.text}
-                        </button>
-                    `).join('')}
+                    ${suggestions.map(suggestion => {
+                        // Escape both single and double quotes for safe HTML attribute insertion
+                        const escapedSuggestion = suggestion.full
+                            .replace(/\\/g, '\\\\')  // Escape backslashes first
+                            .replace(/'/g, "\\'")    // Escape single quotes
+                            .replace(/"/g, '&quot;'); // Escape double quotes
+                        return `
+                            <button class="suggestion" onclick="sendSuggestion('${escapedSuggestion}')" aria-label="Send suggestion: ${suggestion.text}">
+                                ${suggestion.text}
+                            </button>
+                        `;
+                    }).join('')}
                 </div>
             </div>
         `;

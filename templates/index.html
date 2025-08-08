@@ -60,6 +60,9 @@
                 </button>
                 <select id="modelSelector" class="model-selector" aria-label="Select AI model">
                     <optgroup label="Text Models">
+                        <option value="text:gpt-5-2025-08-07" selected>GPT-5</option>
+                        <option value="text:gpt-5-mini-2025-08-07">GPT-5 Mini</option>
+                        <option value="text:gpt-5-nano-2025-08-07">GPT-5 Nano</option>
                         <option value="text:gpt-4.1">GPT-4.1</option>
                         <option value="text:claude-4-sonnet">Claude 4 Sonnet</option>
                     </optgroup>
@@ -80,16 +83,16 @@
         <main class="messages-container" id="messagesContainer" role="main" aria-label="Chat messages">
             <div class="welcome-message">
                 <h2>welcome to yurie</h2>
-                <p>select a model and start chatting. generate text or create images.</p>
+                <p>now featuring GPT-5 family models with 400k context window and advanced reasoning. generate text or create images.</p>
                 <div class="suggestions" role="group" aria-label="Suggested prompts">
-                    <button class="suggestion" onclick="sendSuggestion('Explain quantum computing in simple terms')" aria-label="Send suggestion: Explain quantum computing">
-                        explain quantum computing
+                    <button class="suggestion" onclick="sendSuggestion('Solve this complex reasoning problem: If all roses are flowers, and some flowers fade quickly, can we conclude that some roses fade quickly?')" aria-label="Send suggestion: Complex reasoning problem">
+                        complex reasoning problem
                     </button>
-                    <button class="suggestion" onclick="sendSuggestion('Write a Python function to calculate fibonacci numbers')" aria-label="Send suggestion: Write Python function">
-                        write a python function
+                    <button class="suggestion" onclick="sendSuggestion('Perform a multi-step analysis of the economic impacts of renewable energy adoption')" aria-label="Send suggestion: Multi-step analysis">
+                        multi-step analysis
                     </button>
-                    <button class="suggestion" onclick="sendSuggestion('Summarize the key principles of AI ethics')" aria-label="Send suggestion: Summarize AI ethics">
-                        summarize ai ethics
+                    <button class="suggestion" onclick="sendSuggestion('Generate a complete React component with TypeScript that implements a sortable, filterable data table')" aria-label="Send suggestion: Advanced code generation">
+                        advanced code generation
                     </button>
                 </div>
             </div>
