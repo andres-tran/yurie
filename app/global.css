@@ -142,6 +142,19 @@ input[type='email'] {
   text-rendering: optimizeLegibility;
 }
 
+/* Stabilize input text rendering on iOS to prevent overlap when placeholder transitions */
+.stable-input {
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  contain: layout paint style;
+}
+
+.stable-input:focus {
+  contain: paint;
+}
+
 table {
   display: block;
   max-width: fit-content;
