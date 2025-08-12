@@ -186,7 +186,7 @@ export default function ChatClient() {
             disabled={isLoading}
           />
           <input
-            className="flex-1 rounded border border-neutral-200 dark:border-neutral-800 bg-transparent px-3 py-2 outline-none"
+            className="flex-1 rounded border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black px-3 py-2 outline-none"
             placeholder={placeholder}
             value={input}
             onChange={(e) => setInput(e.target.value)}
