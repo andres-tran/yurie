@@ -179,7 +179,7 @@ export default function ChatClient() {
             ))
           )}
         </div>
-        <form onSubmit={sendMessage} className="mt-3 flex items-center gap-2">
+        <form onSubmit={sendMessage} className="mt-3 flex items-center gap-2" aria-busy={isLoading}>
           <ModelSelector
             value={model}
             onChange={setModel}
@@ -190,7 +190,8 @@ export default function ChatClient() {
             placeholder={placeholder}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            disabled={isLoading}
+            readOnly={isLoading}
+            aria-disabled={isLoading}
           />
           <button
             type="submit"
