@@ -41,10 +41,23 @@ export async function POST(request: Request) {
         .replace(bareDataUrl, '[image omitted]')
     }
 
+    // Strong system rules to keep answers concise and code-only when appropriate
+    const RULES = [
+      'SYSTEM RULES:',
+      '- You are Yurie. Keep answers short and focused.',
+      '- Do NOT scaffold entire apps, multi-file projects, or provide step-by-step setup unless the user explicitly asks.',
+      '- Prefer a single minimal code snippet over multiple sections.',
+      '- Avoid shell commands and package.json unless explicitly requested.',
+      '- For code, output valid fenced Markdown with the smallest necessary snippet.',
+    ].join('\n')
+
     const promptRaw =
+      RULES +
+      '\n\nConversation history follows. Respond as Yurie.\n' +
       messages
         .map((m) => `${m.role === 'user' ? 'User' : 'Yurie'}: ${stripImageData(m.content)}`)
-        .join('\n') + '\nYurie:'
+        .join('\n') +
+      '\nYurie:'
 
     // Keep prompt within a reasonable character budget to avoid large requests
     const MAX_PROMPT_CHARS = 20000
@@ -104,7 +117,8 @@ export async function POST(request: Request) {
     const stream = await client.responses.stream({
       model: selectedModel,
       reasoning: { effort: "low" },
-      instructions: "You are Yurie, a fun and helpful assistant.",
+      instructions:
+        "You are Yurie, a fun and helpful assistant.",
       input: prompt,
       // Cast for SDK compatibility: some versions don't include 'image_generation' in Tool union
       tools: [{ type: 'image_generation' } as any],
@@ -125,7 +139,6 @@ export async function POST(request: Request) {
         } finally {
           // Try to finalize, then emit any generated images at the end
           try {
-            // @ts-ignore finalize helper may exist in newer SDKs
             const hasFinal = typeof (stream as any).final === 'function'
             const finalResponse = hasFinal ? await (stream as any).final() : undefined
             const outputs = (finalResponse && finalResponse.output) || []

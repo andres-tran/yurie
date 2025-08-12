@@ -1,5 +1,10 @@
 @import 'tailwindcss';
 
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New";
+}
+
 ::selection {
   background-color: #47a3f3;
   color: #fefefe;
@@ -123,6 +128,73 @@ html {
   margin-bottom: 1.25em !important;
 }
 
+/* Tighter spacing for inline chat messages that use prose rendering */
+.prose-message > :first-child {
+  margin-top: 0 !important;
+}
+
+.prose-message > :last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Tighter spacing and full-width for chat-rendered markdown */
+.prose-message {
+  @apply w-full;
+  max-width: 100% !important;
+  width: 100% !important;
+  display: block;
+}
+
+/* Ensure children cannot reintroduce a max-width constraint */
+.prose-message > * {
+  max-width: 100% !important;
+}
+
+.prose-message p {
+  @apply my-2; /* reduce paragraph spacing inside chat */
+}
+
+/* Wrap long lines so all code is visible in chat messages */
+.prose-message pre,
+.prose-message pre code {
+  /* Preserve full code/text content on one line; scroll horizontally if needed */
+  white-space: pre;
+  word-break: normal;
+  overflow-x: auto;
+}
+
+/* Chat code block chrome */
+.chat-code {
+  @apply border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden mb-2;
+}
+.chat-code-header {
+  @apply flex items-center justify-between px-3 py-1.5 text-xs bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800;
+}
+.chat-code-lang {
+  @apply uppercase tracking-wide text-neutral-500 dark:text-neutral-400 select-none;
+}
+.chat-copy {
+  @apply rounded px-2 py-0.5 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 bg-white dark:bg-black;
+}
+.chat-code pre {
+  @apply bg-transparent m-0 p-3 text-sm;
+}
+
+/* Re-enable horizontal scrollbar visibility for chat code blocks */
+.prose-message pre::-webkit-scrollbar {
+  display: initial;
+  height: 8px;
+}
+.prose-message pre {
+  scrollbar-width: thin; /* Firefox */
+}
+
+/* Slightly bolder body text in chat for readability, without affecting code */
+.prose-message p,
+.prose-message li {
+  @apply font-medium;
+}
+
 pre::-webkit-scrollbar {
   display: none;
 }
@@ -160,6 +232,38 @@ table {
   max-width: fit-content;
   overflow-x: auto;
   white-space: nowrap;
+}
+
+/* Chat tables: full-width, readable borders, and subtle zebra stripes */
+.prose-message table {
+  display: block; /* enable horizontal scroll if needed */
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap; /* keep table cells intact; scroll horizontally */
+  border: 1px solid theme(colors.neutral.200);
+  border-radius: 0.5rem;
+}
+
+.dark .prose-message table {
+  border-color: theme(colors.neutral.800);
+}
+
+.prose-message table thead th {
+  @apply bg-neutral-50 dark:bg-neutral-900 font-medium;
+}
+
+.prose-message table th,
+.prose-message table td {
+  @apply px-3 py-2 text-left border-r border-neutral-200 dark:border-neutral-800;
+}
+
+.prose-message table th:last-child,
+.prose-message table td:last-child {
+  @apply border-r-0;
+}
+
+.prose-message table tbody tr:nth-child(odd) td {
+  @apply bg-neutral-50 dark:bg-neutral-900/30;
 }
 
 .title {

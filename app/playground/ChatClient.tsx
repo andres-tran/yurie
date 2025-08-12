@@ -1,7 +1,9 @@
 "use client"
 
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { ModelSelector } from '../components/model-selector'
+import { Marked } from 'marked'
+import { highlight } from 'sugar-high'
 
 type ChatMessage = {
   role: 'user' | 'assistant'
@@ -20,7 +22,81 @@ export default function ChatClient() {
     []
   )
 
-  function renderMessageContent(content: string) {
+  // Configure a markdown parser with code highlighting once
+  const md = useMemo(() => {
+    const instance = new Marked({ gfm: true, breaks: true })
+    instance.use({
+      renderer: {
+        code({ text, lang }) {
+          const language = (lang || '').trim().split(/\s+/)[0]
+          const html = highlight(text)
+          const langClass = language ? `language-${language}` : ''
+          const label = language || 'text'
+          return `
+<div class=\"chat-code\">
+  <div class=\"chat-code-header\">
+    <span class=\"chat-code-lang\">${label}</span>
+    <button type=\"button\" class=\"chat-copy\">Copy</button>
+  </div>
+  <pre><code class=\"${langClass}\">${html}</code></pre>
+</div>`
+        },
+        codespan({ text }) {
+          const html = highlight(text)
+          return `<code>${html}</code>`
+        },
+      },
+    })
+    return instance
+  }, [])
+
+  // Attach a delegated handler for copy buttons inside streamed messages
+  useEffect(() => {
+    const root = outputRef.current
+    if (!root) return
+    const handle = (e: Event) => {
+      const target = e.target as HTMLElement | null
+      const btn = target?.closest('.chat-copy') as HTMLButtonElement | null
+      if (!btn) return
+      const wrapper = btn.closest('.chat-code') as HTMLElement | null
+      const codeEl = wrapper?.querySelector('pre code') as HTMLElement | null
+      const text = codeEl?.textContent || ''
+      try {
+        navigator.clipboard.writeText(text)
+        const previous = btn.textContent
+        btn.textContent = 'Copied'
+        setTimeout(() => {
+          btn.textContent = previous || 'Copy'
+        }, 1200)
+      } catch {}
+    }
+    root.addEventListener('click', handle)
+    return () => root.removeEventListener('click', handle)
+  }, [])
+
+  // Very small sanitizer to prevent injected HTML from altering the page
+  function sanitizeHtml(html: string): string {
+    if (!html) return html
+    // Remove dangerous whole tags (and their content where applicable)
+    const blockedContentTags = ['script', 'style', 'title', 'iframe', 'object', 'embed', 'noscript']
+    const contentTagPattern = new RegExp(`<\\s*(${blockedContentTags.join('|')})\\b[\\s\\S]*?<\\/\\s*\\1\\s*>`, 'gi')
+    html = html.replace(contentTagPattern, '')
+
+    // Remove dangerous void/standalone tags
+    const blockedVoidTags = ['link', 'meta', 'base', 'form', 'input', 'select', 'option', 'textarea', 'frame', 'frameset']
+    const voidTagPattern = new RegExp(`<\\s*(${blockedVoidTags.join('|')})\\b[^>]*>`, 'gi')
+    html = html.replace(voidTagPattern, '')
+
+    // Strip inline event handlers like onclick="..."
+    html = html.replace(/\son[a-z]+\s*=\s*("[^"]*"|'[^']*'|[^\s>]+)/gi, '')
+
+    // Neutralize javascript: URLs in href/src
+    html = html.replace(/(href|src)\s*=\s*(["'])\s*javascript:[^"']*\2/gi, '$1="#"')
+
+    return html
+  }
+
+  function renderMessageContent(role: 'user' | 'assistant', content: string) {
     // Supported image tokens:
     // 1) <image:data:image/<type>;base64,...>
     // 2) Legacy square-bracket token with data URL
@@ -52,12 +128,59 @@ export default function ChatClient() {
       parts.push({ type: 'text', value: content.slice(lastIndex) })
     }
 
+    let labelInjected = false
+    const speaker = role === 'user' ? 'You' : 'Yurie'
     return (
       <>
-        {parts.map((p, i) =>
-          p.type === 'text' ? (
-            <span key={i}>{p.value}</span>
-          ) : (
+        {parts.map((p, i) => {
+          if (p.type === 'text') {
+            const rawHtml = md.parse(p.value) as string
+            const isParagraph = /^\s*<p[>\s]/.test(rawHtml)
+            if (!labelInjected) {
+              labelInjected = true
+              if (isParagraph) {
+                const withLabel = rawHtml.replace(
+                  /<p(.*?)>/,
+                  `<p$1><span class=\\"font-semibold mr-2\\">${speaker}:&nbsp;</span>`
+                )
+                return (
+                  <div
+                    key={i}
+                    className="prose-message dark:prose-invert font-sans"
+                    dangerouslySetInnerHTML={{ __html: sanitizeHtml(withLabel) }}
+                  />
+                )
+              }
+              return (
+                <div key={`block-${i}`} className="prose-message dark:prose-invert font-sans">
+                  <div className="font-semibold mb-2">{speaker}:</div>
+                  <div dangerouslySetInnerHTML={{ __html: sanitizeHtml(rawHtml) }} />
+                </div>
+              )
+            }
+            return (
+              <div
+                key={i}
+                className="prose-message dark:prose-invert font-sans"
+                dangerouslySetInnerHTML={{ __html: sanitizeHtml(rawHtml) }}
+              />
+            )
+          }
+          // image part
+          if (!labelInjected) {
+            labelInjected = true
+            return (
+              <div key={i} className="prose-message dark:prose-invert font-sans">
+                <span className="font-semibold mr-2">{speaker}: </span>
+                <img
+                  src={p.src}
+                  alt="Generated image"
+                  className="mt-2 rounded border border-neutral-200 dark:border-neutral-800 max-w-full"
+                />
+              </div>
+            )
+          }
+          return (
             <img
               key={i}
               src={p.src}
@@ -65,7 +188,7 @@ export default function ChatClient() {
               className="mt-2 rounded border border-neutral-200 dark:border-neutral-800 max-w-full"
             />
           )
-        )}
+        })}
       </>
     )
   }
@@ -164,38 +287,38 @@ export default function ChatClient() {
       <div className="w-full">
         <div
           ref={outputRef}
-          className="border border-neutral-200 dark:border-neutral-800 rounded p-3 h-96 overflow-y-auto text-sm whitespace-pre-wrap"
+          className="border border-neutral-200 dark:border-neutral-800 rounded px-3 pt-2 pb-3 h-96 overflow-y-auto text-sm font-sans"
         >
           {messages.length === 0 ? (
             <p className="text-neutral-500">Yurie is ready. Start the conversation below.</p>
           ) : (
-            messages.map((m, i) => (
-              <div key={i} className="mb-2">
-                <span className="font-semibold mr-2">
-                  {m.role === 'user' ? 'You' : 'Yurie'}:
-                </span>
-                <span>{renderMessageContent(m.content)}</span>
-              </div>
-            ))
+            messages.map((m, i) => {
+              const isFirst = i === 0
+              const speakerChanged = !isFirst && messages[i - 1].role !== m.role
+              const topMarginClass = isFirst ? 'mt-1' : speakerChanged ? 'mt-2' : 'mt-0.5'
+              return (
+                <div key={i} className={`${topMarginClass} mb-0`}>
+                  <div className="min-w-0 w-full">
+                    {renderMessageContent(m.role, m.content)}
+                  </div>
+                </div>
+              )
+            })
           )}
         </div>
         <form onSubmit={sendMessage} className="mt-3 flex items-center gap-2" aria-busy={isLoading}>
           <ModelSelector
             value={model}
             onChange={setModel}
-            disabled={isLoading}
           />
           <input
             className="stable-input flex-1 rounded border border-neutral-200 dark:border-neutral-800 bg-white dark:bg-black px-3 py-2 outline-none transform-gpu will-change-transform placeholder:text-neutral-500 dark:placeholder:text-neutral-400"
             placeholder={placeholder}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            readOnly={isLoading}
-            aria-disabled={isLoading}
           />
           <button
             type="submit"
-            disabled={isLoading}
             aria-label="Send message"
             className="rounded border border-neutral-200 dark:border-neutral-800 bg-white text-black dark:bg-black dark:text-white h-10 w-10 flex items-center justify-center"
           >
