@@ -1,6 +1,6 @@
 # Yurie Blog
 
-A minimalist portfolio + blog built with Next.js App Router and Tailwind v4, now with an OpenAI‑powered chat assistant.
+A minimalist portfolio + blog built with Next.js App Router and Tailwind v4, now with an OpenAI‑powered chat playground.
 
 ## Features
 
@@ -8,7 +8,7 @@ A minimalist portfolio + blog built with Next.js App Router and Tailwind v4, now
 - SEO: sitemap, robots, JSON‑LD schema
 - RSS feed and dynamic OG images
 - Tailwind v4, Geist font, Vercel Speed Insights / Analytics
-- Chat assistant at `/chat` with streaming responses
+- Chat playground at `/playground` with streaming text responses and optional inline images
 - Reusable model selector component (`app/components/model-selector.tsx`)
 
 ## Quickstart
@@ -35,7 +35,7 @@ OPENAI_API_KEY=your_openai_key
 pnpm dev
 ```
 
-Open the printed URL (typically `http://localhost:3000`) and visit `/chat`.
+Open the printed URL (typically `http://localhost:3000`) and visit `/playground`.
 
 ## Scripts
 
@@ -43,9 +43,9 @@ Open the printed URL (typically `http://localhost:3000`) and visit `/chat`.
 - `pnpm build`: Build for production
 - `pnpm start`: Start the production server
 
-## Chat API
+## Playground API
 
-- Endpoint: `POST /api/chat`
+- Endpoint: `POST /api/playground`
 - Request body:
 
 ```json
@@ -55,7 +55,16 @@ Open the printed URL (typically `http://localhost:3000`) and visit `/chat`.
 }
 ```
 
-The server streams plain text tokens in the response body. See `app/api/chat/route.ts`.
+- The server streams plain text tokens (`text/plain`) in the response body.
+- When an image is generated, the stream includes a data URL sentinel like:
+
+  ```
+  <image:data:image/png;base64,BASE64_DATA>
+  ```
+
+  Your client can detect these tokens and render the image inline.
+
+See `app/api/playground/route.ts`.
 
 ### Model selector
 
@@ -70,7 +79,7 @@ The chat page uses a reusable selector in `app/components/model-selector.tsx`.
 
 - Posts live in `app/blog/posts/*.mdx`
 - Blog routes are in `app/blog/*`
-- Chat UI is in `app/chat/page.tsx`
+- Playground UI is in `app/playground/page.tsx` and `app/playground/ChatClient.tsx`
 
 ## Deployment
 
