@@ -1,4 +1,5 @@
 import OpenAI from 'openai'
+export const runtime = 'nodejs'
 
 type ChatMessage = {
   role: 'system' | 'user' | 'assistant'
