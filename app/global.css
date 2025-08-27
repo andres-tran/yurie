@@ -1,0 +1,272 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New";
+}
+
+::selection {
+  background-color: #98a9f4;
+  color: #fefefe;
+}
+
+:root {
+  accent-color: #98a9f4;
+  --sh-class: #2d5e9d;
+  --sh-identifier: #354150;
+  --sh-sign: #8996a3;
+  --sh-string: #007f7a;
+  --sh-keyword: #e02518;
+  --sh-comment: #a19595;
+  --sh-jsxliterals: #6266d1;
+  --sh-property: #e25a1c;
+  --sh-entity: #e25a1c;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --sh-class: #4c97f8;
+    --sh-identifier: white;
+    --sh-keyword: #f47067;
+    --sh-string: #0fa295;
+  }
+  html {
+    color-scheme: dark;
+  }
+}
+
+html {
+  min-width: 360px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.prose .anchor {
+  @apply absolute invisible no-underline;
+
+  margin-left: -1em;
+  padding-right: 0.5em;
+  width: 80%;
+  max-width: 700px;
+  cursor: pointer;
+}
+
+.anchor:hover {
+  @apply visible;
+}
+
+.prose a {
+  @apply underline transition-all decoration-neutral-400 dark:decoration-neutral-600 underline-offset-2 decoration-[0.1em];
+}
+
+.prose .anchor:after {
+  @apply text-neutral-300 dark:text-neutral-700;
+  content: '#';
+}
+
+.prose *:hover > .anchor {
+  @apply visible;
+}
+
+.prose pre {
+  @apply bg-neutral-50 dark:bg-neutral-900 rounded-lg overflow-x-auto border border-neutral-200 dark:border-neutral-900 py-2 px-3 text-sm;
+}
+
+.prose code {
+  @apply px-1 py-0.5 rounded-lg;
+}
+
+.prose pre code {
+  @apply p-0;
+  border: initial;
+  line-height: 1.5;
+}
+
+.prose code span {
+  @apply font-medium;
+}
+
+.prose img {
+  /* Don't apply styles to next/image */
+  @apply m-0;
+}
+
+.prose p {
+  @apply my-4 text-neutral-800 dark:text-neutral-200;
+}
+
+.prose h1 {
+  @apply text-4xl font-medium tracking-tight mt-6 mb-2;
+}
+
+.prose h2 {
+  @apply text-xl font-medium tracking-tight mt-6 mb-2;
+}
+
+.prose h3 {
+  @apply text-xl font-medium tracking-tight mt-6 mb-2;
+}
+
+.prose h4 {
+  @apply text-lg font-medium tracking-tight mt-6 mb-2;
+}
+
+.prose strong {
+  @apply font-medium;
+}
+
+.prose ul {
+  @apply list-disc pl-6;
+}
+
+.prose ol {
+  @apply list-decimal pl-6;
+}
+
+.prose > :first-child {
+  /* Override removing top margin, causing layout shift */
+  margin-top: 1.25em !important;
+  margin-bottom: 1.25em !important;
+}
+
+/* Tighter spacing for inline chat messages that use prose rendering */
+.prose-message > :first-child {
+  margin-top: 0 !important;
+}
+
+.prose-message > :last-child {
+  margin-bottom: 0 !important;
+}
+
+/* Tighter spacing and full-width for chat-rendered markdown */
+.prose-message {
+  @apply w-full;
+  max-width: 100% !important;
+  width: 100% !important;
+  display: block;
+}
+
+/* Ensure children cannot reintroduce a max-width constraint */
+.prose-message > * {
+  max-width: 100% !important;
+}
+
+.prose-message p {
+  @apply my-2; /* reduce paragraph spacing inside chat */
+}
+
+/* Wrap long lines so all code is visible in chat messages */
+.prose-message pre,
+.prose-message pre code {
+  /* Preserve full code/text content on one line; scroll horizontally if needed */
+  white-space: pre;
+  word-break: normal;
+  overflow-x: auto;
+}
+
+/* Chat code block chrome */
+.chat-code {
+  @apply border border-neutral-200 dark:border-neutral-800 rounded-lg overflow-hidden mb-2;
+}
+.chat-code-header {
+  @apply flex items-center justify-between px-3 py-1.5 text-xs bg-neutral-50 dark:bg-neutral-900 border-b border-neutral-200 dark:border-neutral-800;
+}
+.chat-code-lang {
+  @apply uppercase tracking-wide text-neutral-500 dark:text-neutral-400 select-none;
+}
+.chat-copy {
+  @apply rounded px-2 py-0.5 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-300 bg-white dark:bg-black;
+}
+.chat-code pre {
+  @apply bg-transparent m-0 p-3 text-sm;
+}
+
+/* Re-enable horizontal scrollbar visibility for chat code blocks */
+.prose-message pre::-webkit-scrollbar {
+  display: initial;
+  height: 8px;
+}
+.prose-message pre {
+  scrollbar-width: thin; /* Firefox */
+}
+
+/* Slightly bolder body text in chat for readability, without affecting code */
+.prose-message p,
+.prose-message li {
+  @apply font-medium;
+}
+
+pre::-webkit-scrollbar {
+  display: none;
+}
+
+pre {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* Remove Safari input shadow on mobile */
+input[type='text'],
+input[type='email'] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  -webkit-text-size-adjust: 100%;
+  text-rendering: optimizeLegibility;
+}
+
+/* Stabilize input text rendering on iOS to prevent overlap when placeholder transitions */
+.stable-input {
+  line-height: 1.5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  contain: layout paint style;
+}
+
+.stable-input:focus {
+  contain: paint;
+}
+
+table {
+  display: block;
+  max-width: fit-content;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+/* Chat tables: full-width, readable borders, and subtle zebra stripes */
+.prose-message table {
+  display: block; /* enable horizontal scroll if needed */
+  max-width: 100%;
+  overflow-x: auto;
+  white-space: nowrap; /* keep table cells intact; scroll horizontally */
+  border: 1px solid theme(colors.neutral.200);
+  border-radius: 0.5rem;
+}
+
+.dark .prose-message table {
+  border-color: theme(colors.neutral.800);
+}
+
+.prose-message table thead th {
+  @apply bg-neutral-50 dark:bg-neutral-900 font-medium;
+}
+
+.prose-message table th,
+.prose-message table td {
+  @apply px-3 py-2 text-left border-r border-neutral-200 dark:border-neutral-800;
+}
+
+.prose-message table th:last-child,
+.prose-message table td:last-child {
+  @apply border-r-0;
+}
+
+.prose-message table tbody tr:nth-child(odd) td {
+  @apply bg-neutral-50 dark:bg-neutral-900/30;
+}
+
+.title {
+  text-wrap: balance;
+}
