@@ -7,6 +7,9 @@ type ChatMessage = {
 }
 
 const ALLOW_REASONING_STREAM = process.env.ALLOW_REASONING_STREAM !== '0'
+const ENABLE_REASONING =
+  String(process.env.ENABLE_REASONING || '').toLowerCase() === 'true' ||
+  String(process.env.ENABLE_REASONING || '') === '1'
 
 // Simple streaming leak guard to prevent accidental disclosure of internal instructions
 function redactPotentialInstructionLeaks(text: string): string {
@@ -173,8 +176,11 @@ export async function POST(request: Request) {
       prompt = header + trimmedHistory + tail
     }
 
-    const selectedModel = 'gpt-5'
-    const useWebSearchEffective = true
+    const selectedModel =
+      (process.env.OPENAI_TEXT_MODEL && String(process.env.OPENAI_TEXT_MODEL)) || 'gpt-4o-mini'
+    const useWebSearchEffective =
+      String(process.env.ENABLE_WEB_SEARCH || '').toLowerCase() === 'true' ||
+      String(process.env.ENABLE_WEB_SEARCH || '') === '1'
 
     const buildWebSearchTool = (): any => {
       return { type: 'web_search' as const, search_context_size: 'high' as const }
@@ -208,7 +214,7 @@ export async function POST(request: Request) {
       const responseCreateParams: any = {
         model: selectedModel,
         instructions: INSTRUCTIONS_MARKDOWN,
-        reasoning: ({ effort: selectedEffort as any, summary: 'auto' } as any),
+        reasoning: ENABLE_REASONING ? ({ effort: selectedEffort as any, summary: 'auto' } as any) : undefined,
         text: ({ verbosity: 'high' } as any),
         input: [
           {
@@ -235,7 +241,7 @@ export async function POST(request: Request) {
                 controller.enqueue(encoder.encode(redactPotentialInstructionLeaks(delta)))
                 continue
               }
-              if (ALLOW_REASONING_STREAM && type.startsWith('response.reasoning') && (event as any)?.delta) {
+              if (ENABLE_REASONING && ALLOW_REASONING_STREAM && type.startsWith('response.reasoning') && (event as any)?.delta) {
                 const thought = redactPotentialInstructionLeaks(String((event as any).delta))
                 controller.enqueue(encoder.encode(`\n<thinking:${thought}>`))
                 continue
@@ -402,7 +408,7 @@ export async function POST(request: Request) {
         const responseCreateParams: any = {
           model: selectedModel,
           instructions: INSTRUCTIONS_MARKDOWN,
-          reasoning: ({ effort: selectedEffort as any, summary: 'auto' } as any),
+          reasoning: ENABLE_REASONING ? ({ effort: selectedEffort as any, summary: 'auto' } as any) : undefined,
           text: ({ verbosity: 'high' } as any),
           tools: [toolOptions as any],
           previous_response_id: previousResponseId ?? undefined,
@@ -434,7 +440,7 @@ export async function POST(request: Request) {
                   if (b64) controller.enqueue(encoder.encode(`\n<image_partial:data:image/png;base64,${b64}>\n`))
                   continue
                 }
-                if (ALLOW_REASONING_STREAM && type.startsWith('response.reasoning') && (event as any)?.delta) {
+                if (ENABLE_REASONING && ALLOW_REASONING_STREAM && type.startsWith('response.reasoning') && (event as any)?.delta) {
                   const thought = redactPotentialInstructionLeaks(String((event as any).delta))
                   controller.enqueue(encoder.encode(`\n<thinking:${thought}>`))
                   continue
@@ -525,7 +531,7 @@ export async function POST(request: Request) {
     if (webSearchAllowed) includeList.push('web_search_call.results')
     const stream = await client.responses.stream({
       model: selectedModel,
-      reasoning: ({ effort: selectedEffort as any, summary: 'auto' } as any),
+      reasoning: ENABLE_REASONING ? ({ effort: selectedEffort as any, summary: 'auto' } as any) : undefined,
       text: ({ verbosity: 'high' } as any),
       instructions: INSTRUCTIONS_MARKDOWN,
       input: prompt,
@@ -546,7 +552,7 @@ export async function POST(request: Request) {
               controller.enqueue(encoder.encode(redactPotentialInstructionLeaks(delta)))
               continue
             }
-            if (ALLOW_REASONING_STREAM && type.startsWith('response.reasoning') && (event as any)?.delta) {
+            if (ENABLE_REASONING && ALLOW_REASONING_STREAM && type.startsWith('response.reasoning') && (event as any)?.delta) {
               const thought = redactPotentialInstructionLeaks(String((event as any).delta))
               controller.enqueue(encoder.encode(`\n<thinking:${thought}>`))
               continue
